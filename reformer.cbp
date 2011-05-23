@@ -18,6 +18,8 @@
 					<Add option="-lsfml-graphics-s" />
 					<Add option="-lsfml-window-s" />
 					<Add option="-lsfml-system-s" />
+					<Add option="-lmozjs185-1.0" />
+					<Add option="-lnspr4" />
 				</Linker>
 				<ExtraCommands>
 					<Add before="make jsapigen" />
@@ -42,12 +44,13 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="Makefile" />
-		<Unit filename="jsmapping.j" />
-		<Unit filename="jsmapping.j.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="jsmapping.j.h" />
+		<Unit filename="graphics.cpp" />
+		<Unit filename="graphics.hpp" />
+		<Unit filename="jsmapping.cpp" />
+		<Unit filename="jsmapping.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="reformer.js" />
+		<Unit filename="underscore.js" />
 		<Extensions>
 			<envvars />
 			<code_completion />
