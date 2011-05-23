@@ -1,4 +1,6 @@
 var global = this;
 (function() {
-  puts();
+  _.each([0,1], function(v) {
+    puts();
+  });
 })()

@@ -81,9 +81,7 @@ jsEnv initJsEnvironment() {
 
 void executeScript(const char* path, JSContext* cx, JSObject* global)
 {
-  printf("preparing to run script ");
-  printf(path);
-  printf("\n");
+  printf("executing %s...\n", path);
   /* Execute a script */
   JSObject *scriptObject;
   jsval rval;

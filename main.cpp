@@ -9,6 +9,9 @@ int main() {
   printf("before js init...\n");
   jsEnv env = initJsEnvironment();
 
+  // load up underscore
+  executeScript("underscore.js", env.cx, env.global);
+  // load up the main reformer.js script
   executeScript("reformer.js", env.cx, env.global);
 
   teardownJsEnvironment(env.rt, env.cx);
