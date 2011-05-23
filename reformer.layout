@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="Makefile" open="0" top="0" tabpos="0">
+		<Cursor position="62" topLine="0" />
+	</File>
+	<File name="jsmapping.j" open="1" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="jsmapping.j.c" open="1" top="0" tabpos="4">
+		<Cursor position="493" topLine="6" />
+	</File>
+	<File name="jsmapping.j.h" open="1" top="0" tabpos="3">
+		<Cursor position="47" topLine="0" />
+	</File>
+	<File name="main.cpp" open="1" top="1" tabpos="1">
+		<Cursor position="73" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

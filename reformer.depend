@@ -1,0 +1,39 @@
+# depslib dependency file v1.0
+1306129762 source:/home/jeff/src/reformer/main.cpp
+	<SFML/System.hpp>
+	<SFML/Window.hpp>
+	<iostream>
+	<stdio.h>
+	"jsmapping.hpp"
+
+1305930571 source:/home/jeff/src/reformer/jsmapping.j.c
+	"jsmapping.j.h"
+	<alloca.h>
+	<stdlib.h>
+	<string.h>
+	<wchar.h>
+	<jsapi.h>
+
+1305928966 /home/jeff/src/reformer/jsmapping.h
+
+1305930451 /home/jeff/src/reformer/jsmapping.j.h
+
+1305992287 /home/jeff/src/reformer/jsmapping.j.hpp
+
+1306003731 source:/home/jeff/src/reformer/jsmapping.j.cpp
+	"jsmapping.j.hpp"
+	<jsapi.h>
+	<alloca.h>
+	<stdlib.h>
+	<string.h>
+	<wchar.h>
+	<jsapi.h>
+
+1306129882 source:/home/jeff/src/reformer/jsmapping.cpp
+	"jsmapping.hpp"
+
+1306129828 /home/jeff/src/reformer/jsmapping.hpp
+	<jsapi.h>
+	<stdlib.h>
+	<stdio.h>
+
