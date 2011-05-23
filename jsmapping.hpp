@@ -11,4 +11,4 @@ typedef struct {
 
 jsEnv initJsEnvironment();
 void teardownJsEnvironment(JSRuntime* rt, JSContext* cx);
-void executeScript(const char* path);
+void executeScript(const char* path, JSContext* cx, JSObject* global);

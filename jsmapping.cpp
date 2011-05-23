@@ -1,10 +1,17 @@
 #include "jsmapping.hpp"
 
-  static void
-  hello_world(void)
-  {
-    printf("Hello world from javascript!\n");
-  }
+
+JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
+{
+  printf("Hello world from javascript!\n");
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec reformer_native_functions[] = {
+  JS_FS("puts", reformer_native_puts, 0, 0),
+  JS_FS_END
+};
 
 /* The class of the global object. */
 static JSClass global_class = {
@@ -62,30 +69,44 @@ jsEnv initJsEnvironment() {
       exit(EXIT_FAILURE);
   }
 
+  /* Define functions */
+  if (!JS_DefineFunctions(cx, global, reformer_native_functions)) {
+    printf("failure to declare functions");
+    exit(EXIT_FAILURE);
+  }
+
   jsEnv env = {rt, cx, global};
   return env;
 }
 
-void executeScript(const char* path)
+void executeScript(const char* path, JSContext* cx, JSObject* global)
 {
+  printf("preparing to run script ");
+  printf(path);
+  printf("\n");
   /* Execute a script */
-  /*JSScript *script;
+  JSObject *scriptObject;
   jsval rval;
-  */
+
   /* Compile a script file into a script object */
-  /*script = JS_CompileFile(cx, global, path);
-  if (!script) {
+  scriptObject = JS_CompileFile(cx, global, path);
+  if (!scriptObject) {
       exit(EXIT_FAILURE);
-  }*/
+  }
+
+  if (JS_AddObjectRoot(cx, &scriptObject) != JS_TRUE) {
+    exit(EXIT_FAILURE);
+  }
 
   /* Execute script object */
-  /*if (JS_ExecuteScript(cx, global, script, &rval) != JS_TRUE) {
+  if (JS_ExecuteScript(cx, global, scriptObject, &rval) != JS_TRUE) {
       exit(EXIT_FAILURE);
-  }*/
+  }
 
-  /* Remove script object from memory */
-  /*JS_DestroyScript(cx, script);
-  */
+  // done with script..
+  if (JS_RemoveObjectRoot(cx, &scriptObject) != JS_TRUE) {
+    exit(EXIT_FAILURE);
+  }
 }
 
 void teardownJsEnvironment(JSRuntime* rt, JSContext* cx)
