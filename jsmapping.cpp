@@ -3,13 +3,35 @@
 
 JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
 {
-  printf("Hello world from javascript!\n");
+  /*
+  printf("gonna print... %d\n", argc);
+  char *text;
+
+  if (argc == 0)
+    return JS_TRUE;
+  if (JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "s", &text) != JS_TRUE)
+    return JS_FALSE;
+  printf("print: %s\n", text);
   JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+  */
+  JSString* text;
+
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &text)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "wtf can't parse arguments", 1);
+      return JS_FALSE;
+  }
+
+  char* textStr = JS_EncodeString(cx, text);
+  printf("%s\n", textStr);
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);  /* return undefined */
   return JS_TRUE;
 }
 
 static JSFunctionSpec reformer_native_functions[] = {
-  JS_FS("puts", reformer_native_puts, 0, 0),
+  JS_FS("puts", reformer_native_puts, 1, 0),
   JS_FS_END
 };
 
@@ -41,7 +63,6 @@ jsEnv initJsEnvironment() {
   printf("before creating runtime..\n");
   /* Create an instance of the engine */
   rt = JS_NewRuntime(1024*1024);
-
 
   if (!rt) {
       exit(EXIT_FAILURE);
