@@ -8,6 +8,3 @@ typedef struct {
 // graphics setup stuff
 graphicsEnv initGraphics();
 void teardownGraphics(sf::RenderWindow* window);
-
-// image library
-sf::Image* loadImage(char* path);

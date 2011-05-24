@@ -5,6 +5,7 @@
 
 #include "jsmapping.hpp"
 #include "graphics.hpp"
+#include "medialibrary.hpp"
 
 int main() {
   printf("before js init...\n");
@@ -20,8 +21,12 @@ int main() {
 
   printf("about to create sprite..\n");
   sf::Sprite playerSprite;
-  playerSprite.SetImage(*(loadImage("circle_asterisk.png")));
-  playerSprite.SetPosition({ 20, 20});
+  playerSprite.SetImage(*(MediaLibrary::LoadImage("circle_asterisk.png")));
+  playerSprite.SetPosition({ 40, 20});
+
+  sf::Sprite playerSprite2;
+  playerSprite2.SetImage(*(MediaLibrary::LoadImage("circle_asterisk.png")));
+  playerSprite2.SetPosition({ 250, 100});
 
   printf("about to open window\n");
   while(gfxEnv.window->IsOpened()) {
@@ -38,6 +43,7 @@ int main() {
 
     // drawing
     gfxEnv.window->Draw(playerSprite);
+    gfxEnv.window->Draw(playerSprite2);
 
     gfxEnv.window->Display();
   }

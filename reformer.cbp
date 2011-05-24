@@ -51,6 +51,8 @@
 		<Unit filename="jsmapping.cpp" />
 		<Unit filename="jsmapping.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="medialibrary.cpp" />
+		<Unit filename="medialibrary.hpp" />
 		<Unit filename="reformer.js" />
 		<Unit filename="underscore.js" />
 		<Extensions>
