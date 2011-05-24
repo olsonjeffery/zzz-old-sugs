@@ -48,8 +48,8 @@
 		<Unit filename="Makefile" />
 		<Unit filename="graphics.cpp" />
 		<Unit filename="graphics.hpp" />
-		<Unit filename="jsmapping.cpp" />
-		<Unit filename="jsmapping.hpp" />
+		<Unit filename="jssetup.cpp" />
+		<Unit filename="jssetup.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="medialibrary.cpp" />
 		<Unit filename="medialibrary.hpp" />

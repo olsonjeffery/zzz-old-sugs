@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "jsmapping.hpp"
+#include "jssetup.hpp"
 #include "graphics.hpp"
 #include "medialibrary.hpp"
 

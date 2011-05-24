@@ -1,20 +1,8 @@
-#include "jsmapping.hpp"
+#include "jssetup.hpp"
 
 
 JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
 {
-  /*
-  printf("gonna print... %d\n", argc);
-  char *text;
-
-  if (argc == 0)
-    return JS_TRUE;
-  if (JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "s", &text) != JS_TRUE)
-    return JS_FALSE;
-  printf("print: %s\n", text);
-  JS_SET_RVAL(cx, vp, JSVAL_VOID);
-  return JS_TRUE;
-  */
   JSString* text;
 
   if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &text)) {
@@ -30,7 +18,7 @@ JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
-static JSFunctionSpec reformer_native_functions[] = {
+static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("puts", reformer_native_puts, 1, 0),
   JS_FS_END
 };
@@ -91,7 +79,7 @@ jsEnv initJsEnvironment() {
   }
 
   /* Define functions */
-  if (!JS_DefineFunctions(cx, global, reformer_native_functions)) {
+  if (!JS_DefineFunctions(cx, global, reformer_global_native_functions)) {
     printf("failure to declare functions");
     exit(EXIT_FAILURE);
   }
