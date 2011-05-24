@@ -13,13 +13,15 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add option="-DSFML_DYNAMIC" />
 				</Compiler>
 				<Linker>
-					<Add option="-lsfml-graphics-s" />
-					<Add option="-lsfml-window-s" />
-					<Add option="-lsfml-system-s" />
+					<Add option="-lsfml-graphics" />
+					<Add option="-lsfml-window" />
+					<Add option="-lsfml-system" />
 					<Add option="-lmozjs185-1.0" />
 					<Add option="-lnspr4" />
+					<Add option="-lGL" />
 				</Linker>
 				<ExtraCommands>
 					<Add before="make jsapigen" />
