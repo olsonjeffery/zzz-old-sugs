@@ -15,20 +15,34 @@ int main() {
   // load up the main reformer.js script
   executeScript("reformer.js", env.cx, env.global);
 
-  graphicsEnv gfx = initGraphics();
+  printf("about to init graphics..\n");
+  graphicsEnv gfxEnv = initGraphics();
 
-  while(gfx.window->IsOpened()) {
+  printf("about to create sprite..\n");
+  sf::Sprite playerSprite;
+  playerSprite.SetImage(*(loadImage("circle_asterisk.png")));
+  playerSprite.SetPosition({ 20, 20});
+
+  printf("about to open window\n");
+  while(gfxEnv.window->IsOpened()) {
     sf::Event Event;
-    while(gfx.window->GetEvent(Event)) {
+
+    // event processing
+    while(gfxEnv.window->GetEvent(Event)) {
       if (Event.Type == sf::Event::Closed) {
-        gfx.window->Close();
+        gfxEnv.window->Close();
       }
     }
 
-    gfx.window->Clear();
+    gfxEnv.window->Clear();
 
-    gfx.window->Display();
+    // drawing
+    gfxEnv.window->Draw(playerSprite);
+
+    gfxEnv.window->Display();
   }
+
+  teardownGraphics(gfxEnv.window);
 
   teardownJsEnvironment(env.rt, env.cx);
 
