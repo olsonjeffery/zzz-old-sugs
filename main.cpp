@@ -10,7 +10,7 @@
 
 int main() {
   jsEnv jsEnv = initJsEnvironment();
-  graphicsEnv gfxEnv = initGraphics();
+  graphicsEnv gfxEnv = initGraphics(jsEnv.cx);
 
   printf("loading javascript libraries...\n");
   // load up underscore
@@ -20,14 +20,6 @@ int main() {
   // the actual game script
   printf("loading game script...\n");
   executeScript("game.js", jsEnv.cx, jsEnv.global);
-
-  sf::Sprite playerSprite;
-  playerSprite.SetImage(*(MediaLibrary::LoadImage("circle_asterisk.png")));
-  playerSprite.SetPosition({ 40, 20});
-
-  sf::Sprite playerSprite2;
-  playerSprite2.SetImage(*(MediaLibrary::LoadImage("circle_asterisk.png")));
-  playerSprite2.SetPosition({ 250, 100});
 
   printf("about to open window\n");
   while(gfxEnv.window->IsOpened()) {
@@ -43,16 +35,14 @@ int main() {
     // BEGINNING OF THE DRAW/RENDER LOOP
     gfxEnv.window->Clear();
 
-    callIntoJsRender(jsEnv, gfxEnv);
     // drawing
-    gfxEnv.window->Draw(playerSprite);
-    gfxEnv.window->Draw(playerSprite2);
+    callIntoJsRender(jsEnv, gfxEnv);
 
     gfxEnv.window->Display();
     // END OF DRAW/RENDER LOOP
   }
 
-  teardownGraphics(gfxEnv.window);
+  teardownGraphics(gfxEnv.window, gfxEnv.canvas, jsEnv.cx);
 
   teardownJsEnvironment(jsEnv.rt, jsEnv.cx);
 

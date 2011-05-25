@@ -5,28 +5,31 @@
 		<Cursor position="62" topLine="0" />
 	</File>
 	<File name="graphics.cpp" open="1" top="0" tabpos="2">
-		<Cursor position="264" topLine="0" />
+		<Cursor position="236" topLine="0" />
 	</File>
 	<File name="graphics.hpp" open="1" top="0" tabpos="3">
-		<Cursor position="269" topLine="0" />
+		<Cursor position="158" topLine="0" />
 	</File>
-	<File name="jsgraphics.cpp" open="1" top="1" tabpos="7">
-		<Cursor position="3100" topLine="87" />
+	<File name="jscanvas.cpp" open="1" top="1" tabpos="12">
+		<Cursor position="889" topLine="15" />
+	</File>
+	<File name="jscanvas.hpp" open="1" top="0" tabpos="11">
+		<Cursor position="98" topLine="0" />
+	</File>
+	<File name="jsgraphics.cpp" open="1" top="0" tabpos="7">
+		<Cursor position="1673" topLine="49" />
 	</File>
 	<File name="jsgraphics.hpp" open="1" top="0" tabpos="6">
-		<Cursor position="68" topLine="0" />
+		<Cursor position="245" topLine="0" />
 	</File>
 	<File name="jssetup.cpp" open="1" top="0" tabpos="9">
-		<Cursor position="120" topLine="0" />
+		<Cursor position="2964" topLine="108" />
 	</File>
 	<File name="jssetup.hpp" open="1" top="0" tabpos="8">
-		<Cursor position="141" topLine="0" />
-	</File>
-	<File name="jsutils.hpp" open="1" top="0" tabpos="10">
-		<Cursor position="156" topLine="0" />
+		<Cursor position="139" topLine="0" />
 	</File>
 	<File name="main.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="1161" topLine="24" />
+		<Cursor position="1518" topLine="35" />
 	</File>
 	<File name="medialibrary.cpp" open="1" top="0" tabpos="5">
 		<Cursor position="52" topLine="0" />
@@ -36,5 +39,8 @@
 	</File>
 	<File name="reformer.js" open="0" top="0" tabpos="6">
 		<Cursor position="115" topLine="0" />
+	</File>
+	<File name="types.hpp" open="1" top="0" tabpos="10">
+		<Cursor position="240" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>

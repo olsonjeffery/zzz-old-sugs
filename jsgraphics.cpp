@@ -92,9 +92,16 @@ static JSFunctionSpec graphics_native_functions[] = {
   JS_FS_END
 };
 
+/*
+ *
+ * PUBLIC FUNCTIONS
+ *
+ */
 void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv) {
+  jsval argv[1];
+  argv[0] =  OBJECT_TO_JSVAL(gfxEnv.canvas);
   jsval rval;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "renderSprites", 0, NULL, &rval);
+  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "renderSprites", 1, argv, &rval);
 }
 
 void registerGraphicsNatives(JSContext* cx, JSObject* global) {
@@ -103,3 +110,4 @@ void registerGraphicsNatives(JSContext* cx, JSObject* global) {
     exit(EXIT_FAILURE);
   }
 }
+

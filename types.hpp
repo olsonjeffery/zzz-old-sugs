@@ -13,6 +13,7 @@ typedef struct {
 
 typedef struct {
   sf::RenderWindow* window;
+  JSObject* canvas;
 } graphicsEnv;
 
 #endif

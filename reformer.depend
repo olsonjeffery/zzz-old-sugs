@@ -1,10 +1,13 @@
 # depslib dependency file v1.0
-1306165696 source:/home/jeff/src/reformer/main.cpp
+1306331766 source:/home/jeff/src/reformer/main.cpp
 	<SFML/System.hpp>
 	<SFML/Window.hpp>
 	<iostream>
 	<stdio.h>
-	"jsmapping.hpp"
+	"jssetup.hpp"
+	"graphics.hpp"
+	"jsgraphics.hpp"
+	"medialibrary.hpp"
 
 1305930571 source:/home/jeff/src/reformer/jsmapping.j.c
 	"jsmapping.j.h"
@@ -36,4 +39,47 @@
 	<jsapi.h>
 	<stdlib.h>
 	<stdio.h>
+
+1306331877 source:/home/jeff/src/reformer/graphics.cpp
+	"graphics.hpp"
+
+1306331870 /home/jeff/src/reformer/graphics.hpp
+	<SFML/Graphics.hpp>
+	<stdio.h>
+	<jsapi.h>
+	"types.hpp"
+	"jscanvas.hpp"
+
+1306331561 /home/jeff/src/reformer/types.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+
+1306332009 /home/jeff/src/reformer/jscanvas.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+
+1306362066 source:/home/jeff/src/reformer/jsgraphics.cpp
+	"jsgraphics.hpp"
+
+1306331870 /home/jeff/src/reformer/jsgraphics.hpp
+	<jsapi.h>
+	"medialibrary.hpp"
+	"types.hpp"
+
+1306268818 /home/jeff/src/reformer/medialibrary.hpp
+	<SFML/Graphics.hpp>
+	<stdio.h>
+
+1306329876 source:/home/jeff/src/reformer/jssetup.cpp
+	"jssetup.hpp"
+
+1306330803 /home/jeff/src/reformer/jssetup.hpp
+	<jsapi.h>
+	<stdlib.h>
+	<stdio.h>
+	"types.hpp"
+	"jsgraphics.hpp"
+
+1306258290 source:/home/jeff/src/reformer/medialibrary.cpp
+	"medialibrary.hpp"
 
