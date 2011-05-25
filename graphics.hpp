@@ -4,9 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <stdio.h>
 
-typedef struct {
-  sf::RenderWindow* window;
-} graphicsEnv;
+#include "types.hpp"
 
 // graphics setup stuff
 graphicsEnv initGraphics();

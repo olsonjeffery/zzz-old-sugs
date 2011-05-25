@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "jsutils.hpp"
+#include "types.hpp"
 #include "jsgraphics.hpp"
 
 

@@ -3,9 +3,8 @@
 
 #include <jsapi.h>
 
-#include "graphics.hpp"
 #include "medialibrary.hpp"
-#include "jsutils.hpp"
+#include "types.hpp"
 
 void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv);
 

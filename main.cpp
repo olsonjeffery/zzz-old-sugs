@@ -39,15 +39,17 @@ int main() {
         gfxEnv.window->Close();
       }
     }
-    callIntoJsRender(jsEnv, gfxEnv);
 
+    // BEGINNING OF THE DRAW/RENDER LOOP
     gfxEnv.window->Clear();
 
+    callIntoJsRender(jsEnv, gfxEnv);
     // drawing
     gfxEnv.window->Draw(playerSprite);
     gfxEnv.window->Draw(playerSprite2);
 
     gfxEnv.window->Display();
+    // END OF DRAW/RENDER LOOP
   }
 
   teardownGraphics(gfxEnv.window);
