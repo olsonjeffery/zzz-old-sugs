@@ -5,21 +5,22 @@
 
 #include "jssetup.hpp"
 #include "graphics.hpp"
+#include "jsgraphics.hpp"
 #include "medialibrary.hpp"
 
 int main() {
-  printf("before js init...\n");
-  jsEnv env = initJsEnvironment();
-
-  // load up underscore
-  executeScript("underscore.js", env.cx, env.global);
-  // load up the main reformer.js script
-  executeScript("reformer.js", env.cx, env.global);
-
-  printf("about to init graphics..\n");
+  jsEnv jsEnv = initJsEnvironment();
   graphicsEnv gfxEnv = initGraphics();
 
-  printf("about to create sprite..\n");
+  printf("loading javascript libraries...\n");
+  // load up underscore
+  executeScript("underscore.js", jsEnv.cx, jsEnv.global);
+  // load up the main reformer.js library script
+  executeScript("reformer.js", jsEnv.cx, jsEnv.global);
+  // the actual game script
+  printf("loading game script...\n");
+  executeScript("game.js", jsEnv.cx, jsEnv.global);
+
   sf::Sprite playerSprite;
   playerSprite.SetImage(*(MediaLibrary::LoadImage("circle_asterisk.png")));
   playerSprite.SetPosition({ 40, 20});
@@ -38,6 +39,7 @@ int main() {
         gfxEnv.window->Close();
       }
     }
+    callIntoJsRender(jsEnv, gfxEnv);
 
     gfxEnv.window->Clear();
 
@@ -50,7 +52,7 @@ int main() {
 
   teardownGraphics(gfxEnv.window);
 
-  teardownJsEnvironment(env.rt, env.cx);
+  teardownJsEnvironment(jsEnv.rt, jsEnv.cx);
 
   return EXIT_SUCCESS;
 }

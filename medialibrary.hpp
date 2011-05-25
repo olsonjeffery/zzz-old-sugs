@@ -1,3 +1,6 @@
+#ifndef __medialibrary_hpp__
+#define __medialibrary_hpp__
+
 #include <SFML/Graphics.hpp>
 #include <stdio.h>
 
@@ -8,3 +11,5 @@ class MediaLibrary
   public:
     static sf::Image* LoadImage(std::string path);
 };
+
+#endif

@@ -1,6 +1,6 @@
 #include "jssetup.hpp"
 
-
+/* NATIVE UTIL FUNCTIONS */
 JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
 {
   JSString* text;
@@ -42,13 +42,13 @@ void reportError(JSContext *cx, const char *message, JSErrorReport *report)
 
 
 jsEnv initJsEnvironment() {
-  printf("Initializing scriptmonkey javascript environment..?\n");
+  printf("Initializing scriptmonkey javascript environment..\n");
 
   JSContext *cx;
   JSRuntime *rt;
   JSObject  *global;
 
-  printf("before creating runtime..\n");
+  //printf("before creating runtime..\n");
   /* Create an instance of the engine */
   rt = JS_NewRuntime(1024*1024);
 
@@ -56,7 +56,7 @@ jsEnv initJsEnvironment() {
       exit(EXIT_FAILURE);
   }
 
-  printf("created runtime..\n");
+  //printf("created runtime..\n");
 
   /* Create an execution context */
   cx = JS_NewContext(rt, 8192);
@@ -65,14 +65,14 @@ jsEnv initJsEnvironment() {
       exit(EXIT_FAILURE);
   }
 
-  printf("created context...\n");
+  //printf("created context...\n");
 
   /* Create the global object in a new compartment. */
   global = JS_NewCompartmentAndGlobalObject(cx, &global_class, NULL);
   if (global == NULL)
       exit(EXIT_FAILURE);
 
-  printf("created global obj\n");
+  //printf("created global obj\n");
 
   if (JS_InitStandardClasses(cx, global) != JS_TRUE) {
       exit(EXIT_FAILURE);
@@ -83,6 +83,7 @@ jsEnv initJsEnvironment() {
     printf("failure to declare functions");
     exit(EXIT_FAILURE);
   }
+  registerGraphicsNatives(cx, global);
 
   jsEnv env = {rt, cx, global};
   return env;
