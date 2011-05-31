@@ -45,7 +45,6 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="Makefile" />
 		<Unit filename="graphics.cpp" />
 		<Unit filename="graphics.hpp" />
 		<Unit filename="jscanvas.cpp" />
@@ -57,9 +56,7 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="medialibrary.cpp" />
 		<Unit filename="medialibrary.hpp" />
-		<Unit filename="reformer.js" />
 		<Unit filename="types.hpp" />
-		<Unit filename="underscore.js" />
 		<Extensions>
 			<envvars />
 			<code_completion />

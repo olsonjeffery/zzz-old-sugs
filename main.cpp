@@ -14,11 +14,7 @@ int main() {
     ALL THE SETUP STUFF
   **********************/
   predicateResult result;
-
   jsEnv jsEnv = initJsEnvironment();
-  graphicsEnv gfxEnv = initGraphics(jsEnv.cx);
-
-  printf("loading javascript libraries...\n");
   // load up underscore
   result = executeScript("underscore.js", jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
@@ -26,13 +22,15 @@ int main() {
     exit(EXIT_FAILURE);
   }
   // load up the main reformer.js library script
-  result = executeScript("reformer.js", jsEnv.cx, jsEnv.global);
+  result = executeScript("core.js", jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  // the actual game script
-  printf("loading game script...\n");
+
+  // init graphics
+  graphicsEnv gfxEnv = initGraphics(jsEnv.cx);
+
   result = executeScript("game.js", jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
