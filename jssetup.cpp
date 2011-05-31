@@ -17,9 +17,32 @@ JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
   JS_SET_RVAL(cx, vp, JSVAL_VOID);  /* return undefined */
   return JS_TRUE;
 }
+JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* global;
+  JSString* text;
+
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oS", &global, &text)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "wtf can't parse arguments", 1);
+      return JS_FALSE;
+  }
+
+  char* path = JS_EncodeString(cx, text);
+
+  predicateResult result = executeScript(path, cx, global);
+  if (result.result == JS_FALSE) {
+    JS_ReportError(cx, "wtf can't parse arguments", 1);
+    return JS_FALSE;
+  }
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);  /* return undefined */
+  return JS_TRUE;
+}
 
 static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("puts", reformer_native_puts, 1, 0),
+  JS_FS("__native_load", reformer_native_executeScript, 2, 0),
   JS_FS_END
 };
 
@@ -89,6 +112,10 @@ jsEnv initJsEnvironment() {
   return env;
 }
 
+predicateResult runConfig(JSContext* cx, JSObject *global, char* configPath) {
+  executeScript(configPath, cx, global);
+}
+
 predicateResult executeScript(const char* path, JSContext* cx, JSObject* global)
 {
   printf("executing %s...\n", path);
@@ -134,4 +161,13 @@ void teardownJsEnvironment(JSRuntime* rt, JSContext* cx)
   JS_DestroyContext(cx);
   JS_DestroyRuntime(rt);
   JS_ShutDown();
+}
+
+predicateResult execStartupCallbacks(jsEnv jsEnv) {
+  jsval argv[0];
+  jsval rval;
+  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
+    return {JS_FALSE, "error occured while called doStartup()"};
+  }
+  return { JS_TRUE, ""};
 }

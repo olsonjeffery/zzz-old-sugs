@@ -2,7 +2,11 @@
   var addedSprite = false;
   var showSpritePos = false;
 
-  var sprite = new Sprite("circle_asterisk.png");
+  var sprite = null;
+  $.startup(function() {
+    sprite = new Sprite("circle_asterisk.png");
+  });
+
   $.render(function(canvas) {
     if(!addedSprite) {
       sprites.push(sprite);

@@ -27,12 +27,18 @@ int main() {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
+  // load up the main reformer.js library script
+  result = executeScript("config.js", jsEnv.cx, jsEnv.global);
+  if(result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
+  }
 
   // init graphics
   graphicsEnv gfxEnv = initGraphics(jsEnv.cx);
 
-  result = executeScript("game.js", jsEnv.cx, jsEnv.global);
-  if(result.result == JS_FALSE) {
+  result = execStartupCallbacks(jsEnv);
+  if (result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
