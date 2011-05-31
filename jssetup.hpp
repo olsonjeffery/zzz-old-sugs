@@ -12,6 +12,6 @@
 
 jsEnv initJsEnvironment();
 void teardownJsEnvironment(JSRuntime* rt, JSContext* cx);
-void executeScript(const char* path, JSContext* cx, JSObject* global);
+predicateResult executeScript(const char* path, JSContext* cx, JSObject* global);
 
 #endif

@@ -89,7 +89,7 @@ jsEnv initJsEnvironment() {
   return env;
 }
 
-void executeScript(const char* path, JSContext* cx, JSObject* global)
+predicateResult executeScript(const char* path, JSContext* cx, JSObject* global)
 {
   printf("executing %s...\n", path);
   /* Execute a script */
@@ -99,22 +99,32 @@ void executeScript(const char* path, JSContext* cx, JSObject* global)
   /* Compile a script file into a script object */
   scriptObject = JS_CompileFile(cx, global, path);
   if (!scriptObject) {
-      exit(EXIT_FAILURE);
+    char buffer[2056];
+    sprintf(buffer, "Failed to compile %s\n", path);
+    return {JS_FALSE, buffer};
   }
 
   if (JS_AddObjectRoot(cx, &scriptObject) != JS_TRUE) {
-    exit(EXIT_FAILURE);
+    char buffer[2056];
+    sprintf(buffer, "Failed to add root object for %s\n", path);
+    return {JS_FALSE, buffer};
   }
 
   /* Execute script object */
   if (JS_ExecuteScript(cx, global, scriptObject, &rval) != JS_TRUE) {
-      exit(EXIT_FAILURE);
+    char buffer[2056];
+    sprintf(buffer, "Failed to execute %s\n", path);
+    return {JS_FALSE, buffer};
   }
 
   // done with script..
   if (JS_RemoveObjectRoot(cx, &scriptObject) != JS_TRUE) {
-    exit(EXIT_FAILURE);
+    char buffer[2056];
+    sprintf(buffer, "Failed to remove root object for %s\n", path);
+    return {JS_FALSE, buffer};
   }
+
+  return {JS_TRUE, ""};
 }
 
 void teardownJsEnvironment(JSRuntime* rt, JSContext* cx)

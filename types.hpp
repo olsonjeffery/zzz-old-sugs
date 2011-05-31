@@ -5,6 +5,11 @@
 #include <SFML/Graphics.hpp>
 
 typedef struct {
+  JSIntn result;
+  char* message;
+} predicateResult;
+
+typedef struct {
   JSRuntime* rt;
   JSContext* cx;
   JSObject* global;
