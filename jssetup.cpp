@@ -39,10 +39,20 @@ JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
   JS_SET_RVAL(cx, vp, JSVAL_VOID);  /* return undefined */
   return JS_TRUE;
 }
+JSBool reformer_native_getcwd(JSContext* cx, uintN argc, jsval* vp)
+{
+  char cwdBuffer[FILENAME_MAX];
+  getcwd(cwdBuffer, sizeof(cwdBuffer));
+
+  JSString* cwd = JS_NewStringCopyZ(cx, cwdBuffer);
+  jsval rVal = STRING_TO_JSVAL(cwd);
+  JS_SET_RVAL(cx, vp, rVal);
+}
 
 static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("puts", reformer_native_puts, 1, 0),
   JS_FS("__native_load", reformer_native_executeScript, 2, 0),
+  JS_FS("__native_getcwd", reformer_native_getcwd, 0, 0),
   JS_FS_END
 };
 

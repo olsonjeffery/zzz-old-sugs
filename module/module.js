@@ -1,6 +1,7 @@
 (function() {
   var addedSprite = false;
   var showSpritePos = false;
+  var sprites = [];
 
   var sprite = null;
   $.startup(function() {

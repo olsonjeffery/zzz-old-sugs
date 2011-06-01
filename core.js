@@ -1,13 +1,23 @@
 var global = this;
 (function() {
-  sprites = [];
+  // scripts passed into the libScripts params in config
+  var scriptsToBeLoaded = [];
+  // callbacks registered via $.startup()
+  var startupCallbacks = [];
+  // callbacks registered via $.render()
+  var renderCallbacks = [];
+
+  // the global prefix for loading scripts, assets, etc from the
+  // loaded module.. specified (relative to the cwd) in config.js
+  // and combined with getcwd() for a full path
+  var moduleDirectoryPrefix = '';
 
   /*
   * Sprite class -- Encapsulates a loaded image and it's position on
   * the screen
   */
   global.Sprite = function(imgPath) {
-    this.nativeSprite = __native_newSprite(imgPath);
+    this.nativeSprite = __native_newSprite(moduleDirectoryPrefix + imgPath);
   };
   global.Sprite.prototype = new Object();
   global.Sprite.prototype.setPos = function(pos) {
@@ -29,10 +39,6 @@ var global = this;
   global.Canvas.prototype.draw = function(sprite) {
     this.nativeCanvas.__native_draw(this.nativeCanvas, sprite.nativeSprite);
   };
-
-  var scriptsToBeLoaded = [];
-  var startupCallbacks = [];
-  var renderCallbacks = [];
 
   /*
   * doStartup() -- Called from native code once on startup to run
@@ -57,21 +63,36 @@ var global = this;
   /*
   * load(path) -- load an external javascript file
   */
-  global.load = function(path) {
+  var loadNoPrefix = function(path) {
     global.__native_load(global, path);
+  };
+  global.load = function(path) {
+    loadNoPrefix(moduleDirectoryPrefix + path);
   };
 
   // global event registrar/util interface
   global.$ = {
     /*
-    * Invoked from config.js Does:
-    * - Designates the "lib" scripts to be loaded into the JS runtime
-    * - Calls out the main game script, which is executed last
+    * $.config -- a handler that is invoked with an object hash
+    * hash from config.js .. consult config.js for docs on config
+    * params
     */
     config: function(conf) {
-      _.each(conf.lib,function(v) { scriptsToBeLoaded.push(v); });
-      scriptsToBeLoaded.push(conf.main);
-      _.each(scriptsToBeLoaded, function(v) { global.load(v); });
+      // Pluck out the moduleDir and build a prefix dir for loading of
+      // assets, etc
+      var cwd = global.__native_getcwd();
+      moduleDirectoryPrefix = cwd + '/'+conf.moduleDir;
+      moduleDirectoryPrefix = moduleDirectoryPrefix.replace('\\','/')
+      var lastChar = moduleDirectoryPrefix[moduleDirectoryPrefix.length - 1]
+      if (lastChar !== '/') {
+        moduleDirectoryPrefix += '/'
+      }
+      puts('moduleDir: '+moduleDirectoryPrefix);
+
+      // load up scripts
+      _.each(conf.libScripts,function(v) { scriptsToBeLoaded.push(v); });
+      scriptsToBeLoaded.push(moduleDirectoryPrefix+"module.js");
+      _.each(scriptsToBeLoaded, function(v) { loadNoPrefix(v); });
     },
     /*
     * $.startup() -- callbacks registered in this function are called

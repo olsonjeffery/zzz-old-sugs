@@ -5,6 +5,7 @@
 #include <jsapi.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "types.hpp"
 #include "jsgraphics.hpp"

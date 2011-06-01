@@ -1,4 +1,4 @@
 $.config({
-  lib: [],
-  main: "game.js"
+  libScripts: [],
+  moduleDir: "module"
 });
