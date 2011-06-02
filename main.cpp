@@ -21,8 +21,18 @@ int main() {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
+  result = executeScript("coffee-script.js", jsEnv.cx, jsEnv.global);
+  if(result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
+  }
   // load up the main reformer.js library script
-  result = executeScript("core.js", jsEnv.cx, jsEnv.global);
+  /*result = executeScript("core.js", jsEnv.cx, jsEnv.global);
+  if(result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
+  }*/
+  result = executeCoffeeScript("core.coffee", jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);

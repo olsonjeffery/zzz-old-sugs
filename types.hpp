@@ -3,6 +3,8 @@
 
 #include <jsapi.h>
 #include <SFML/Graphics.hpp>
+#include <iostream>
+#include <fstream>
 
 typedef struct {
   JSIntn result;
@@ -15,10 +17,13 @@ typedef struct {
   JSObject* global;
 } jsEnv;
 
-
 typedef struct {
   sf::RenderWindow* window;
   JSObject* canvas;
 } graphicsEnv;
+
+/* util functions */
+void readEntireFile(const char* path, char** buffer, int* length);
+bool fileExists(const char * filename);
 
 #endif

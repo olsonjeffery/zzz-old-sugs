@@ -1,5 +1,8 @@
 #include "jssetup.hpp"
 
+/* prototypes */
+predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global);
+
 /* NATIVE UTIL FUNCTIONS */
 JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -39,6 +42,28 @@ JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
   JS_SET_RVAL(cx, vp, JSVAL_VOID);  /* return undefined */
   return JS_TRUE;
 }
+JSBool reformer_native_executeCoffeeScript(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* global;
+  JSString* text;
+
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oS", &global, &text)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "wtf can't parse arguments", 1);
+      return JS_FALSE;
+  }
+
+  char* path = JS_EncodeString(cx, text);
+
+  predicateResult result = executeCoffeeScript(path, cx, global);
+  if (result.result == JS_FALSE) {
+    JS_ReportError(cx, "wtf can't parse arguments", 1);
+    return JS_FALSE;
+  }
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);  /* return undefined */
+  return JS_TRUE;
+}
 JSBool reformer_native_getcwd(JSContext* cx, uintN argc, jsval* vp)
 {
   char cwdBuffer[FILENAME_MAX];
@@ -48,11 +73,32 @@ JSBool reformer_native_getcwd(JSContext* cx, uintN argc, jsval* vp)
   jsval rVal = STRING_TO_JSVAL(cwd);
   JS_SET_RVAL(cx, vp, rVal);
 }
+JSBool reformer_native_fileExists(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSString* text;
+
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &text)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "reformer_native_fileExists: couldn't parse path arg", 1);
+      return JS_FALSE;
+  }
+
+  char* path = JS_EncodeString(cx, text);
+  JSBool exists = JS_FALSE;
+  if (fileExists(path)) {
+    exists = JS_TRUE;
+  }
+  jsval rVal = BOOLEAN_TO_JSVAL(exists);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
 
 static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("puts", reformer_native_puts, 1, 0),
   JS_FS("__native_load", reformer_native_executeScript, 2, 0),
+  JS_FS("__native_load_coffee", reformer_native_executeCoffeeScript, 2, 0),
   JS_FS("__native_getcwd", reformer_native_getcwd, 0, 0),
+  JS_FS("__native_fileExists", reformer_native_fileExists, 1, 0),
   JS_FS_END
 };
 
@@ -67,10 +113,11 @@ static JSClass global_class = {
 /* The error reporter callback. */
 void reportError(JSContext *cx, const char *message, JSErrorReport *report)
 {
-    fprintf(stderr, "%s:%u:%s\n",
-            report->filename ? report->filename : "<no filename>",
-            (unsigned int) report->lineno,
-            message);
+  printf("PANIC!\n");
+  fprintf(stderr, "%s:%u:%s\n",
+          report->filename ? report->filename : "<no filename>",
+          (unsigned int) report->lineno,
+          message);
 }
 
 
@@ -83,7 +130,7 @@ jsEnv initJsEnvironment() {
 
   //printf("before creating runtime..\n");
   /* Create an instance of the engine */
-  rt = JS_NewRuntime(1024*1024);
+  rt = JS_NewRuntime(8L * 1024L * 1024L);
 
   if (!rt) {
       exit(EXIT_FAILURE);
@@ -118,6 +165,8 @@ jsEnv initJsEnvironment() {
   }
   registerGraphicsNatives(cx, global);
 
+  JS_SetErrorReporter(cx, reportError);
+
   jsEnv env = {rt, cx, global};
   return env;
 }
@@ -126,15 +175,23 @@ predicateResult runConfig(JSContext* cx, JSObject *global, char* configPath) {
   executeScript(configPath, cx, global);
 }
 
-predicateResult executeScript(const char* path, JSContext* cx, JSObject* global)
-{
+predicateResult executeScript(const char* path, JSContext* cx, JSObject* global) {
+  char* srcBuffer;
+  int length;
+  readEntireFile(path, &srcBuffer, &length);
+
+  return executeScriptFromSrc(path, &srcBuffer, length, cx, global);
+  //return buildAndRunScriptSrc(srcBuffer, cx, global);
+}
+predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global) {
   printf("executing %s...\n", path);
   /* Execute a script */
   JSObject *scriptObject;
   jsval rval;
 
   /* Compile a script file into a script object */
-  scriptObject = JS_CompileFile(cx, global, path);
+  //scriptObject = JS_CompileFile(cx, global, path);
+  scriptObject = JS_CompileScript(cx, global, *src, length, path, 1);
   if (!scriptObject) {
     char buffer[2056];
     sprintf(buffer, "Failed to compile %s\n", path);
@@ -162,6 +219,46 @@ predicateResult executeScript(const char* path, JSContext* cx, JSObject* global)
   }
 
   return {JS_TRUE, ""};
+}
+
+predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* global)
+{
+  char* buffer;
+  int length;
+  readEntireFile(path, &buffer, &length);
+
+  jsval argv[2];
+  JSString* coffeeFileText = JS_NewStringCopyZ(cx, buffer);
+  argv[0] = STRING_TO_JSVAL(coffeeFileText);
+  JSObject* options = JS_NewObject(cx, NULL, NULL, NULL);
+  argv[1] = OBJECT_TO_JSVAL(options);
+
+  jsval csVal;
+  if (JS_GetProperty(cx, global, "CoffeeScript", &csVal) != JS_TRUE) {
+    return { JS_FALSE, "couldn't get CoffeeScript prop from global\n" };
+  }
+  JSObject* coffeeScript = JSVAL_TO_OBJECT(csVal);
+
+  JSBool hasCompile;
+  JS_HasProperty(cx, coffeeScript, "compile", &hasCompile);
+  if (hasCompile != JS_TRUE) {
+    return {JS_FALSE, "no compile function on CoffeeScript obj. grabbed wrong one?"};
+  }
+
+  jsval rVal;
+  if (JS_CallFunctionName(cx, coffeeScript, "compile", 2, argv, &rVal) != JS_TRUE) {
+    return { JS_FALSE, "failed to compile passed in coffee file\n"};
+  }
+
+  JSString* jsSrcString;
+  jsSrcString = JSVAL_TO_STRING(rVal);
+
+  char* srcString = JS_EncodeString(cx, jsSrcString);
+  if (srcString == NULL) {
+    return { JS_FALSE, "failed to encode string when prepping to run coffee file."};
+  }
+
+  return executeScriptFromSrc(path, &srcString, strlen(srcString), cx, global);
 }
 
 void teardownJsEnvironment(JSRuntime* rt, JSContext* cx)
