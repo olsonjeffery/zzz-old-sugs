@@ -10,7 +10,7 @@ JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
 
   if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &text)) {
       /* Throw a JavaScript exception. */
-      JS_ReportError(cx, "wtf can't parse arguments", 1);
+      JS_ReportError(cx, "reformer_native_puts: Error parsing arg");
       return JS_FALSE;
   }
 
@@ -27,7 +27,7 @@ JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
 
   if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oS", &global, &text)) {
       /* Throw a JavaScript exception. */
-      JS_ReportError(cx, "wtf can't parse arguments", 1);
+      JS_ReportError(cx, "reformer_native_executeScript -- error converting path arg");
       return JS_FALSE;
   }
 
@@ -35,7 +35,7 @@ JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
 
   predicateResult result = executeScript(path, cx, global);
   if (result.result == JS_FALSE) {
-    JS_ReportError(cx, "wtf can't parse arguments", 1);
+    JS_ReportError(cx, "reformer_native_executeScript -- error running js script '%s': %s", path, result.message);
     return JS_FALSE;
   }
 
@@ -49,7 +49,7 @@ JSBool reformer_native_executeCoffeeScript(JSContext* cx, uintN argc, jsval* vp)
 
   if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oS", &global, &text)) {
       /* Throw a JavaScript exception. */
-      JS_ReportError(cx, "wtf can't parse arguments", 1);
+      JS_ReportError(cx, "reformer_native_executeCoffeeScript -- error converting path arg");
       return JS_FALSE;
   }
 
@@ -57,7 +57,7 @@ JSBool reformer_native_executeCoffeeScript(JSContext* cx, uintN argc, jsval* vp)
 
   predicateResult result = executeCoffeeScript(path, cx, global);
   if (result.result == JS_FALSE) {
-    JS_ReportError(cx, "wtf can't parse arguments", 1);
+    JS_ReportError(cx, "reformer_native_executeCoffeeScript -- error running coffee script '%s': %s", path, result.message);
     return JS_FALSE;
   }
 
@@ -79,7 +79,7 @@ JSBool reformer_native_fileExists(JSContext* cx, uintN argc, jsval* vp)
 
   if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &text)) {
       /* Throw a JavaScript exception. */
-      JS_ReportError(cx, "reformer_native_fileExists: couldn't parse path arg", 1);
+      JS_ReportError(cx, "reformer_native_fileExists: couldn't parse path arg");
       return JS_FALSE;
   }
 
@@ -113,7 +113,7 @@ static JSClass global_class = {
 /* The error reporter callback. */
 void reportError(JSContext *cx, const char *message, JSErrorReport *report)
 {
-  printf("PANIC!\n");
+  printf("!!!ERROR!!!\n");
   fprintf(stderr, "%s:%u:%s\n",
           report->filename ? report->filename : "<no filename>",
           (unsigned int) report->lineno,
@@ -164,6 +164,7 @@ jsEnv initJsEnvironment() {
     exit(EXIT_FAILURE);
   }
   registerGraphicsNatives(cx, global);
+  registerInputNatives(cx, global);
 
   JS_SetErrorReporter(cx, reportError);
 
@@ -181,7 +182,7 @@ predicateResult executeScript(const char* path, JSContext* cx, JSObject* global)
   readEntireFile(path, &srcBuffer, &length);
 
   return executeScriptFromSrc(path, &srcBuffer, length, cx, global);
-  //return buildAndRunScriptSrc(srcBuffer, cx, global);
+  delete srcBuffer;
 }
 predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global) {
   printf("executing %s...\n", path);
@@ -245,6 +246,7 @@ predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* g
     return {JS_FALSE, "no compile function on CoffeeScript obj. grabbed wrong one?"};
   }
 
+  std::cout << buffer << std::endl;
   jsval rVal;
   if (JS_CallFunctionName(cx, coffeeScript, "compile", 2, argv, &rVal) != JS_TRUE) {
     return { JS_FALSE, "failed to compile passed in coffee file\n"};
@@ -258,15 +260,18 @@ predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* g
     return { JS_FALSE, "failed to encode string when prepping to run coffee file."};
   }
 
+  delete buffer;
   return executeScriptFromSrc(path, &srcString, strlen(srcString), cx, global);
 }
 
 void teardownJsEnvironment(JSRuntime* rt, JSContext* cx)
 {
-  printf("Tearing down javascript environment...\n");
+  printf("Destroy context...\n");
   /* Cleanup */
   JS_DestroyContext(cx);
+  printf("Destroy runtime...\n");
   JS_DestroyRuntime(rt);
+  printf("js shutdown...\n");
   JS_ShutDown();
 }
 

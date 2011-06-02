@@ -35,6 +35,13 @@ class Canvas
     @nativeCanvas.__native_draw @nativeCanvas, sprite.nativeSprite
 global.Canvas = Canvas
 
+class Input
+  constructor: (nativeInput) ->
+    @nativeInput = nativeInput
+
+  isKeyDown: (key) ->
+    @nativeInput.__native_isKeyDown @nativeInput, key
+
 # doStartup() -- Called from native code once on startup to run
 # all of the registered callbacks to be ran on startup. Graphics
 # has been set up, along with environments.
@@ -47,6 +54,7 @@ global.doStartup = ->
 # and is Display()'d afterward.
 global.renderSprites = (nativeCanvas) ->
   canvas = new Canvas(nativeCanvas)
+  #input = new Input(sfmlWindow)
   _.each renderCallbacks, (cb) -> cb(canvas)
 
 # load(path) -- load an external javascript file

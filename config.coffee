@@ -1,0 +1,4 @@
+$.config {
+  libScripts: []
+  moduleDir: "module"
+}

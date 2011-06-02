@@ -38,10 +38,19 @@ int main() {
     exit(EXIT_FAILURE);
   }
   // load up the main reformer.js library script
-  result = executeScript("config.js", jsEnv.cx, jsEnv.global);
-  if(result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
+  if (fileExists("config.js")) {
+    result = executeScript("config.js", jsEnv.cx, jsEnv.global);
+    if(result.result == JS_FALSE) {
+      printf(result.message);
+      exit(EXIT_FAILURE);
+    }
+  }
+  else {
+    result = executeCoffeeScript("config.coffee", jsEnv.cx, jsEnv.global);
+    if(result.result == JS_FALSE) {
+      printf(result.message);
+      exit(EXIT_FAILURE);
+    }
   }
 
   // init graphics

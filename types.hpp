@@ -1,6 +1,8 @@
 #ifndef __types_hpp__
 #define __types_hpp__
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <jsapi.h>
 #include <SFML/Graphics.hpp>
 #include <iostream>

@@ -13,7 +13,6 @@ JSBool reformer_native_canvas_draw(JSContext* cx, uintN argc, jsval* vp)
   // need error check
   sf::Sprite* sprite = (sf::Sprite*)(JS_GetPrivate(cx, spriteObj));
   sf::RenderWindow* win = (sf::RenderWindow*)(JS_GetPrivate(cx, This));
-
   win->Draw(*sprite);
 
   JS_SET_RVAL(cx, vp, JSVAL_VOID);

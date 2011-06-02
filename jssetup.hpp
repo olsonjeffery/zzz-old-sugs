@@ -10,6 +10,7 @@
 
 #include "types.hpp"
 #include "jsgraphics.hpp"
+#include "jsinput.hpp"
 
 
 jsEnv initJsEnvironment();

@@ -1,4 +1,0 @@
-$.config({
-  libScripts: [],
-  moduleDir: "module"
-});

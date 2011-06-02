@@ -1,7 +1,6 @@
 #include "types.hpp"
 
 void readEntireFile(const char* path, char** buffer, int* length) {
-
   std::ifstream is;
   is.open (path, std::ios::binary );
 
