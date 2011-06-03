@@ -163,6 +163,11 @@ jsEnv initJsEnvironment() {
 predicateResult executeScript(const char* path, JSContext* cx, JSObject* global) {
   char* srcBuffer;
   int length;
+  if (!fileExists(path)) {
+    char msg[2056];
+    sprintf(msg, "Script %s not found!\n", path);
+    return {JS_FALSE, msg};
+  }
   readEntireFile(path, &srcBuffer, &length);
 
   predicateResult result = executeScriptFromSrc(path, &srcBuffer, length, cx, global);
@@ -173,6 +178,11 @@ predicateResult executeScript(const char* path, JSContext* cx, JSObject* global)
 predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* global) {
   char* buffer;
   int length;
+  if (!fileExists(path)) {
+    char msg[2056];
+    sprintf(msg, "Script %s not found and can't be loaded!\n", path);
+    return {JS_FALSE, msg};
+  }
   readEntireFile(path, &buffer, &length);
 
   jsval argv[2];
