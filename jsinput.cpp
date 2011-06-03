@@ -40,7 +40,6 @@ reformer_native_input_resolver(JSContext *cx, JSObject *obj, jsid id) {
     JS_SetProperty(cx, obj, propName, &propVal);
   }
 
-
   return JS_TRUE;
 }
 

@@ -51,6 +51,8 @@
 		<Unit filename="jscanvas.hpp" />
 		<Unit filename="jsgraphics.cpp" />
 		<Unit filename="jsgraphics.hpp" />
+		<Unit filename="jsinput.cpp" />
+		<Unit filename="jsinput.hpp" />
 		<Unit filename="jssetup.cpp" />
 		<Unit filename="jssetup.hpp" />
 		<Unit filename="main.cpp" />

@@ -128,37 +128,26 @@ jsEnv initJsEnvironment() {
   JSRuntime *rt;
   JSObject  *global;
 
-  //printf("before creating runtime..\n");
-  /* Create an instance of the engine */
   rt = JS_NewRuntime(8L * 1024L * 1024L);
 
   if (!rt) {
       exit(EXIT_FAILURE);
   }
 
-  //printf("created runtime..\n");
-
-  /* Create an execution context */
   cx = JS_NewContext(rt, 8192);
 
   if (!cx) {
       exit(EXIT_FAILURE);
   }
 
-  //printf("created context...\n");
-
-  /* Create the global object in a new compartment. */
   global = JS_NewCompartmentAndGlobalObject(cx, &global_class, NULL);
   if (global == NULL)
       exit(EXIT_FAILURE);
-
-  //printf("created global obj\n");
 
   if (JS_InitStandardClasses(cx, global) != JS_TRUE) {
       exit(EXIT_FAILURE);
   }
 
-  /* Define functions */
   if (!JS_DefineFunctions(cx, global, reformer_global_native_functions)) {
     printf("failure to declare functions");
     exit(EXIT_FAILURE);
@@ -181,17 +170,63 @@ predicateResult executeScript(const char* path, JSContext* cx, JSObject* global)
   int length;
   readEntireFile(path, &srcBuffer, &length);
 
-  return executeScriptFromSrc(path, &srcBuffer, length, cx, global);
-  delete srcBuffer;
+  predicateResult result = executeScriptFromSrc(path, &srcBuffer, length, cx, global);
+  free(srcBuffer);
+  return result;
 }
+
+predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* global) {
+  char* buffer;
+  int length;
+  readEntireFile(path, &buffer, &length);
+
+  jsval argv[2];
+  JSString* coffeeFileText = JS_NewStringCopyZ(cx, buffer);
+  argv[0] = STRING_TO_JSVAL(coffeeFileText);
+  JSObject* options = JS_NewObject(cx, NULL, NULL, NULL);
+  argv[1] = OBJECT_TO_JSVAL(options);
+
+  jsval csVal;
+  if (JS_GetProperty(cx, global, "CoffeeScript", &csVal) != JS_TRUE) {
+    return { JS_FALSE, "couldn't get CoffeeScript prop from global\n" };
+  }
+
+  JSObject* coffeeScript = JSVAL_TO_OBJECT(csVal);
+
+  JSBool hasCompile;
+  JS_HasProperty(cx, coffeeScript, "compile", &hasCompile);
+  if (hasCompile != JS_TRUE) {
+    printf("barf time?\n", path);
+    return {JS_FALSE, "no compile function on CoffeeScript obj. grabbed wrong one?"};
+  }
+
+  jsval rVal;
+  if (JS_CallFunctionName(cx, coffeeScript, "compile", 2, argv, &rVal) != JS_TRUE) {
+    char buffer[2056];
+    sprintf(buffer, "Failed to compile coffeescript file %s\n", path);
+    return {JS_FALSE, buffer};
+  }
+
+  JSString* jsSrcString;
+  jsSrcString = JSVAL_TO_STRING(rVal);
+
+  char* srcString = JS_EncodeString(cx, jsSrcString);
+  if (srcString == NULL) {
+    return { JS_FALSE, "failed to encode string when prepping to run coffee file."};
+  }
+
+  predicateResult result = executeScriptFromSrc(path, &srcString, strlen(srcString) - sizeof(char), cx, global);
+  free(buffer);
+  return result;
+}
+
 predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global) {
-  printf("executing %s...\n", path);
+  printf("executing %s from source...\n", path);
   /* Execute a script */
   JSObject *scriptObject;
   jsval rval;
 
   /* Compile a script file into a script object */
-  //scriptObject = JS_CompileFile(cx, global, path);
   scriptObject = JS_CompileScript(cx, global, *src, length, path, 1);
   if (!scriptObject) {
     char buffer[2056];
@@ -219,55 +254,13 @@ predicateResult executeScriptFromSrc(const char* path, char** src, int length, J
     return {JS_FALSE, buffer};
   }
 
+  printf("done executing %s from source...\n", path);
   return {JS_TRUE, ""};
-}
-
-predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* global)
-{
-  char* buffer;
-  int length;
-  readEntireFile(path, &buffer, &length);
-
-  jsval argv[2];
-  JSString* coffeeFileText = JS_NewStringCopyZ(cx, buffer);
-  argv[0] = STRING_TO_JSVAL(coffeeFileText);
-  JSObject* options = JS_NewObject(cx, NULL, NULL, NULL);
-  argv[1] = OBJECT_TO_JSVAL(options);
-
-  jsval csVal;
-  if (JS_GetProperty(cx, global, "CoffeeScript", &csVal) != JS_TRUE) {
-    return { JS_FALSE, "couldn't get CoffeeScript prop from global\n" };
-  }
-  JSObject* coffeeScript = JSVAL_TO_OBJECT(csVal);
-
-  JSBool hasCompile;
-  JS_HasProperty(cx, coffeeScript, "compile", &hasCompile);
-  if (hasCompile != JS_TRUE) {
-    return {JS_FALSE, "no compile function on CoffeeScript obj. grabbed wrong one?"};
-  }
-
-  std::cout << buffer << std::endl;
-  jsval rVal;
-  if (JS_CallFunctionName(cx, coffeeScript, "compile", 2, argv, &rVal) != JS_TRUE) {
-    return { JS_FALSE, "failed to compile passed in coffee file\n"};
-  }
-
-  JSString* jsSrcString;
-  jsSrcString = JSVAL_TO_STRING(rVal);
-
-  char* srcString = JS_EncodeString(cx, jsSrcString);
-  if (srcString == NULL) {
-    return { JS_FALSE, "failed to encode string when prepping to run coffee file."};
-  }
-
-  delete buffer;
-  return executeScriptFromSrc(path, &srcString, strlen(srcString), cx, global);
 }
 
 void teardownJsEnvironment(JSRuntime* rt, JSContext* cx)
 {
   printf("Destroy context...\n");
-  /* Cleanup */
   JS_DestroyContext(cx);
   printf("Destroy runtime...\n");
   JS_DestroyRuntime(rt);
