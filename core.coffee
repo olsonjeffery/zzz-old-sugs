@@ -1,4 +1,7 @@
 global = this
+
+loadNoPrefix("types.coffee")
+
 # scripts passed into the libScripts params in config
 scriptsToBeLoaded = []
 # callbacks registered via $.startup()
@@ -25,17 +28,6 @@ global.renderSprites = (nativeCanvas) ->
   canvas = new Canvas(nativeCanvas)
   #input = new Input(sfmlWindow)
   _.each renderCallbacks, (cb) -> cb(canvas)
-
-# load(path) -- load an external javascript file
-loadNoPrefix = (path) ->
-  if path.match(/\.coffee$/)
-    __native_load_coffee global, path
-  else
-    global.__native_load global, path
-  undefined
-
-global.load = (path) ->
-  loadNoPrefix(global.__modDir + path)
 
 # global event registrar/util interface
 global.$ = {

@@ -15,7 +15,8 @@ int main() {
   **********************/
   predicateResult result;
   jsEnv jsEnv = initJsEnvironment();
-  // load up underscore
+
+  // Load up our core dependencies
   result = executeScript("underscore.js", jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
@@ -26,18 +27,18 @@ int main() {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  // load up the main reformer.js library script
-  /*result = executeScript("core.js", jsEnv.cx, jsEnv.global);
+  result = executeCoffeeScript("kernel.coffee", jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
-  }*/
+  }
   result = executeCoffeeScript("core.coffee", jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  // load up the main reformer.js library script
+
+  // The introduction of user code
   if (fileExists("config.js")) {
     result = executeScript("config.js", jsEnv.cx, jsEnv.global);
     if(result.result == JS_FALSE) {
