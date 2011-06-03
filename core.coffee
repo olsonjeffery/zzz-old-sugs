@@ -11,37 +11,6 @@ renderCallbacks = []
 # and combined with getcwd() for a full path
 global.__modDir = ''
 
-# Sprite class -- Encapsulates a loaded image and it's position on
-# the screen
-class Sprite
-  constructor: (imgPath) ->
-    @nativeSprite = __native_newSprite(global.__modDir + imgPath)
-
-  setPos: (pos) ->
-    @nativeSprite.__native_setPos @nativeSprite, pos
-
-  getPos: ->
-    @nativeSprite.__native_getPos @nativeSprite
-
-global.Sprite = Sprite
-# Canvas class -- The "display surface" that a user draws to during the
-# render loop (callbacks registered to $.render() ). Instances of this
-# class are *only* available during the render loop.
-class Canvas
-  constructor: (nativeCanvas) ->
-    @nativeCanvas = nativeCanvas
-
-  draw: (sprite) ->
-    @nativeCanvas.__native_draw @nativeCanvas, sprite.nativeSprite
-global.Canvas = Canvas
-
-class Input
-  constructor: (nativeInput) ->
-    @nativeInput = nativeInput
-
-  isKeyDown: (key) ->
-    @nativeInput.__native_isKeyDown @nativeInput, key
-
 # doStartup() -- Called from native code once on startup to run
 # all of the registered callbacks to be ran on startup. Graphics
 # has been set up, along with environments.
@@ -71,11 +40,10 @@ global.load = (path) ->
 # global event registrar/util interface
 global.$ = {
   # $.config -- a handler that is invoked with an object hash
-  # hash from config.js .. consult config.js for docs on config
-  # params
+  # from config.js .. consult config.js for docs on config params
   config: (conf) ->
     # Pluck out the moduleDir and build a prefix dir for loading of
-    # assets, etc
+    # assets, etc in our module
     cwd = global.__native_getcwd()
     global.__modDir = cwd + '/'+conf.moduleDir
     global.__modDir = global.__modDir.replace('\\','/')
@@ -84,11 +52,13 @@ global.$ = {
       __modDir += '/'
     puts "moduleDir: #{global.__modDir}"
 
-    # load up scripts
+    # load up scripts in the config's libScripts member
     _.each conf.libScripts, (v) -> scriptsToBeLoaded.push(v)
+
+    # find our module script and add it to the list of scripts to be loaded
     moduleScript = if __native_fileExists(global.__modDir+"module.js") then "module.js" else "module.coffee"
     scriptsToBeLoaded.push global.__modDir + moduleScript
-    _.each scriptsToBeLoaded, (v) -> 
+    _.each scriptsToBeLoaded, (v) ->
       puts "loading #{v}..."
       loadNoPrefix(v)
 

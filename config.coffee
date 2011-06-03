@@ -1,4 +1,4 @@
 $.config {
-  libScripts: []
+  libScripts: ["types.coffee"]
   moduleDir: "module"
 }
