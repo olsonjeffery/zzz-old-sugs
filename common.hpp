@@ -1,5 +1,5 @@
-#ifndef __types_hpp__
-#define __types_hpp__
+#ifndef __common_hpp__
+#define __common_hpp__
 
 #include <stdio.h>
 #include <stdlib.h>

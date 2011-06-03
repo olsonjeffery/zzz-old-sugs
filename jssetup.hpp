@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "types.hpp"
+#include "common.hpp"
 #include "jsgraphics.hpp"
 #include "jsinput.hpp"
 

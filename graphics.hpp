@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <jsapi.h>
 
-#include "types.hpp"
+#include "common.hpp"
 #include "jscanvas.hpp"
 
 // graphics setup stuff

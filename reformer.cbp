@@ -45,6 +45,8 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="common.cpp" />
+		<Unit filename="common.hpp" />
 		<Unit filename="graphics.cpp" />
 		<Unit filename="graphics.hpp" />
 		<Unit filename="jscanvas.cpp" />
@@ -58,8 +60,6 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="medialibrary.cpp" />
 		<Unit filename="medialibrary.hpp" />
-		<Unit filename="types.cpp" />
-		<Unit filename="types.hpp" />
 		<Extensions>
 			<envvars />
 			<code_completion />

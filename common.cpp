@@ -1,4 +1,4 @@
-#include "types.hpp"
+#include "common.hpp"
 long fsize(FILE * file)
 {
     if(fseek(file, 0, SEEK_END))
