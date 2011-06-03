@@ -56,6 +56,18 @@ static JSFunctionSpec sprite_native_functions[] = {
   JS_FS_END
 };
 
+static void
+classdef_sprite_finalize(JSContext* cx, JSObject* sp) {
+  sf::Sprite* sprite = (sf::Sprite*)JS_GetPrivate(cx, sp);
+  delete sprite;
+}
+static JSClass spriteClassDef = {
+  "NativeSprite",
+  JSCLASS_HAS_PRIVATE,
+  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+  JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, classdef_sprite_finalize
+};
+
 /* NATIVE FUNCTIONS */
 JSBool reformer_native_newSprite(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -78,7 +90,7 @@ JSBool reformer_native_newSprite(JSContext* cx, uintN argc, jsval* vp)
   sf::Sprite* sfmlSprite = new sf::Sprite();
   sfmlSprite->SetImage(*img);
 
-  JSObject* spriteObj = JS_NewObject(cx, NULL, NULL, NULL);
+  JSObject* spriteObj = JS_NewObject(cx, &spriteClassDef, NULL, NULL);
   JS_DefineFunctions(cx, spriteObj, sprite_native_functions);
   JS_SetPrivate(cx, spriteObj, sfmlSprite);
   jsval rVal = OBJECT_TO_JSVAL(spriteObj);
