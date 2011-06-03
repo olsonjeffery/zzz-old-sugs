@@ -9,13 +9,13 @@ renderCallbacks = []
 # the global prefix for loading scripts, assets, etc from the
 # loaded module.. specified (relative to the cwd) in config.js
 # and combined with getcwd() for a full path
-moduleDirectoryPrefix = ''
+global.__modDir = ''
 
 # Sprite class -- Encapsulates a loaded image and it's position on
 # the screen
 class Sprite
   constructor: (imgPath) ->
-    @nativeSprite = __native_newSprite(moduleDirectoryPrefix + imgPath)
+    @nativeSprite = __native_newSprite(global.__modDir + imgPath)
 
   setPos: (pos) ->
     @nativeSprite.__native_setPos @nativeSprite, pos
@@ -66,7 +66,7 @@ loadNoPrefix = (path) ->
   undefined
 
 global.load = (path) ->
-  loadNoPrefix(moduleDirectoryPrefix + path)
+  loadNoPrefix(global.__modDir + path)
 
 # global event registrar/util interface
 global.$ = {
@@ -77,17 +77,17 @@ global.$ = {
     # Pluck out the moduleDir and build a prefix dir for loading of
     # assets, etc
     cwd = global.__native_getcwd()
-    moduleDirectoryPrefix = cwd + '/'+conf.moduleDir
-    moduleDirectoryPrefix = moduleDirectoryPrefix.replace('\\','/')
-    lastChar = moduleDirectoryPrefix[moduleDirectoryPrefix.length - 1]
+    global.__modDir = cwd + '/'+conf.moduleDir
+    global.__modDir = global.__modDir.replace('\\','/')
+    lastChar = global.__modDir[global.__modDir.length - 1]
     if lastChar != '/'
-      moduleDirectoryPrefix += '/'
-    puts "moduleDir: #{moduleDirectoryPrefix}"
+      __modDir += '/'
+    puts "moduleDir: #{global.__modDir}"
 
     # load up scripts
     _.each conf.libScripts, (v) -> scriptsToBeLoaded.push(v)
-    moduleScript = if __native_fileExists(moduleDirectoryPrefix+"module.js") then "module.js" else "module.coffee"
-    scriptsToBeLoaded.push moduleDirectoryPrefix + moduleScript
+    moduleScript = if __native_fileExists(global.__modDir+"module.js") then "module.js" else "module.coffee"
+    scriptsToBeLoaded.push global.__modDir + moduleScript
     _.each scriptsToBeLoaded, (v) -> 
       puts "loading #{v}..."
       loadNoPrefix(v)
