@@ -6,6 +6,8 @@ loadNoPrefix("types.coffee")
 scriptsToBeLoaded = []
 # callbacks registered via $.startup()
 startupCallbacks = []
+# callbacks registered via $.mainLoop()
+mainLoopCallbacks = []
 # callbacks registered via $.render()
 renderCallbacks = []
 
@@ -27,7 +29,8 @@ global.doStartup = ->
 global.renderSprites = (nativeCanvas, nativeInput) ->
   canvas = new Canvas(nativeCanvas)
   input = new Input(nativeInput)
-  _.each renderCallbacks, (cb) -> cb(canvas, input)
+  _.each mainLoopCallbacks, (cb) -> cb input
+  _.each renderCallbacks, (cb) -> cb canvas
 
 # global event registrar/util interface
 global.$ = {
@@ -60,6 +63,11 @@ global.$ = {
   # there's no canvas to draw to at this point)
   startup: (callback) ->
     startupCallbacks.push callback
+
+  # $.mainLoop() -- callbacks registered here are called with the input
+  # object before the $.render(). Intended for game logic.
+  mainLoop: (callback) ->
+    mainLoopCallbacks.push callback
 
   # $.render() -- callbacks registered with this function will be called
   # once at the beginning of every render loop. The display is Clear()'d

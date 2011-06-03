@@ -1,18 +1,20 @@
-sprites = []
-
 sprite = null
+
 $.startup ->
   sprite = new Sprite "circle_asterisk.png"
   sprite.setPos {x:60, y:70}
-  sprites.push sprite
 
-$.render (canvas, input) ->
-  canvas.draw sprite
+$.mainLoop (input) ->
+  pos = sprite.getPos()
   if input.isKeyDown Keys.Up
-    puts 'pushed up key!'
+    pos = {x: pos.x, y: (if (pos.y - 1) < 0 then 0 else pos.y - 1) }
   if input.isKeyDown Keys.Down
-    puts 'pushed down key!'
+    pos = {x: pos.x, y: pos.y + 1}
   if input.isKeyDown Keys.Left
-    puts 'pushed left key!'
+    pos = {x: (if (pos.x - 1) < 0 then 0 else pos.x - 1), y: pos.y}
   if input.isKeyDown Keys.Right
-    puts 'pushed right key!'
+    pos = {x: pos.x + 1, y: pos.y }
+  sprite.setPos pos
+
+$.render (canvas) ->
+  canvas.draw sprite
