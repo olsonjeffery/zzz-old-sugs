@@ -97,11 +97,12 @@ static JSFunctionSpec graphics_native_functions[] = {
  * PUBLIC FUNCTIONS
  *
  */
-void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv) {
-  jsval argv[1];
-  argv[0] =  OBJECT_TO_JSVAL(gfxEnv.canvas);
+void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv) {
+  jsval argv[2];
+  argv[0] = OBJECT_TO_JSVAL(gfxEnv.canvas);
+  argv[1] = OBJECT_TO_JSVAL(evEnv.input);
   jsval rval;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "renderSprites", 1, argv, &rval);
+  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "renderSprites", 2, argv, &rval);
 }
 
 void registerGraphicsNatives(JSContext* cx, JSObject* global) {

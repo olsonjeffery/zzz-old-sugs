@@ -6,6 +6,7 @@
 #include "jssetup.hpp"
 #include "graphics.hpp"
 #include "jsgraphics.hpp"
+#include "jsinput.hpp"
 #include "medialibrary.hpp"
 
 int main() {
@@ -56,6 +57,9 @@ int main() {
 
   // init graphics
   graphicsEnv gfxEnv = initGraphics(jsEnv.cx);
+  eventEnv evEnv = {
+    newInputFrom(gfxEnv.window, jsEnv.cx)
+  };
 
   result = execStartupCallbacks(jsEnv);
   if (result.result == JS_FALSE) {
@@ -81,7 +85,7 @@ int main() {
     gfxEnv.window->Clear();
 
     // drawing
-    callIntoJsRender(jsEnv, gfxEnv);
+    callIntoJsRender(jsEnv, gfxEnv, evEnv);
 
     gfxEnv.window->Display();
     // END OF DRAW/RENDER LOOP

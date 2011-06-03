@@ -24,10 +24,10 @@ global.doStartup = ->
 # every render loop to allow user code to process game logic and
 # set stuff to be drawn. Before being called, the display is Clear()'d,
 # and is Display()'d afterward.
-global.renderSprites = (nativeCanvas) ->
+global.renderSprites = (nativeCanvas, nativeInput) ->
   canvas = new Canvas(nativeCanvas)
-  #input = new Input(sfmlWindow)
-  _.each renderCallbacks, (cb) -> cb(canvas)
+  input = new Input(nativeInput)
+  _.each renderCallbacks, (cb) -> cb(canvas, input)
 
 # global event registrar/util interface
 global.$ = {

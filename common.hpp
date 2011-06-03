@@ -24,6 +24,10 @@ typedef struct {
   JSObject* canvas;
 } graphicsEnv;
 
+typedef struct {
+  JSObject* input;
+} eventEnv;
+
 /* util functions */
 void readEntireFile(const char* path, char** buffer, int* length);
 bool fileExists(const char * filename);

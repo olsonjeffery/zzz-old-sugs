@@ -1,4 +1,3 @@
-showSpritePos = false
 sprites = []
 
 sprite = null
@@ -7,10 +6,13 @@ $.startup ->
   sprite.setPos {x:60, y:70}
   sprites.push sprite
 
-$.render (canvas) ->
-  if !showSpritePos
-    pos = _.first(sprites).getPos()
-    x = pos.x
-    puts "coffee sprite pos: #{pos.x}, #{pos.y}"
-    showSpritePos = true
+$.render (canvas, input) ->
   canvas.draw sprite
+  if input.isKeyDown Keys.Up
+    puts 'pushed up key!'
+  if input.isKeyDown Keys.Down
+    puts 'pushed down key!'
+  if input.isKeyDown Keys.Left
+    puts 'pushed left key!'
+  if input.isKeyDown Keys.Right
+    puts 'pushed right key!'
