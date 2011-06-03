@@ -120,7 +120,6 @@ void reportError(JSContext *cx, const char *message, JSErrorReport *report)
           message);
 }
 
-
 jsEnv initJsEnvironment() {
   printf("Initializing scriptmonkey javascript environment..\n");
 
@@ -159,10 +158,6 @@ jsEnv initJsEnvironment() {
 
   jsEnv env = {rt, cx, global};
   return env;
-}
-
-predicateResult runConfig(JSContext* cx, JSObject *global, char* configPath) {
-  executeScript(configPath, cx, global);
 }
 
 predicateResult executeScript(const char* path, JSContext* cx, JSObject* global) {
