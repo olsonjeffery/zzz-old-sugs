@@ -14,27 +14,26 @@ reformer_native_input_resolver(JSContext *cx, JSObject *obj, jsid id) {
   JSString* propNameJsString = JSVAL_TO_STRING(idVal);
   char* propName = JS_EncodeString(cx, propNameJsString);
 
-  JSObject* keyObj = NULL;
-  if (strcmp(propName, "Up")) {
+  JSObject* keyObj = 0;
+  if (strcmp(propName, "Up") == 0) {
     keyObj = getKeyObjectFor(cx, sf::Key::Up);
   }
-  else if (strcmp(propName, "Down")) {
+  else if (strcmp(propName, "Down") == 0) {
     keyObj = getKeyObjectFor(cx, sf::Key::Down);
   }
-  else if (strcmp(propName, "Left")) {
+  else if (strcmp(propName, "Left") == 0) {
     keyObj = getKeyObjectFor(cx, sf::Key::Left);
   }
-  else if (strcmp(propName, "Right")) {
+  else if (strcmp(propName, "Right") == 0) {
     keyObj = getKeyObjectFor(cx, sf::Key::Right);
   }
   else {
     JS_ReportError(cx, "Unable to find matching key for %s", propName);
-    keyObj = NULL;
     printf("did not find matching key");
     return JS_FALSE;
   }
 
-  if (keyObj != NULL) {
+  if (keyObj != 0) {
     printf("found matching key?\n");
     jsval propVal = OBJECT_TO_JSVAL(keyObj);
     JS_SetProperty(cx, obj, propName, &propVal);
