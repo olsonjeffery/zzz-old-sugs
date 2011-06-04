@@ -1,4 +1,4 @@
 $.config {
   libScripts: []
-  moduleDir: "module"
+  moduleDir: "../reformermodule"
 }
