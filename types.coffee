@@ -14,6 +14,9 @@ class Sprite
 
   move: (distances) ->
     @nativeSprite.__native_move @nativeSprite, distances
+
+  rotate: (deg) ->
+    @nativeSprite.__native_rotate @nativeSprite, deg
 global.Sprite = Sprite
 
 # Canvas class -- The "display surface" that a user draws to during the

@@ -77,8 +77,27 @@ JSBool reformer_native_sprite_move(JSContext* cx, uintN argc, jsval* vp)
   }
 
   sf::Sprite* sprite = (sf::Sprite*)(JS_GetPrivate(cx, This));
-  printf("moving sprite --  x: %f y: %f\n", x, y);
   sprite->Move(x, y);
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+JSBool reformer_native_sprite_rotate(JSContext* cx, uintN argc, jsval* vp)
+{
+  // note that, here, we're basically saying that this native function
+  // is only meant to be used as a method, because we have a This.. currently
+  // requires some legwork to get the enclosing object.. until I can find a better
+  // way..
+  JSObject* This;
+  jsdouble rotDegree;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "od", &This, &rotDegree)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "reformer_native_sprite_rotate: can't parse out arguments", 1);
+      return JS_FALSE;
+  }
+  sf::Sprite* sprite = (sf::Sprite*)(JS_GetPrivate(cx, This));
+  printf("going to rotate %f\n", rotDegree);
+  sprite->Rotate(rotDegree);
 
   JS_SET_RVAL(cx, vp, JSVAL_VOID);
   return JS_TRUE;
@@ -87,6 +106,7 @@ static JSFunctionSpec sprite_native_functions[] = {
   JS_FS("__native_setPos", reformer_native_sprite_setPosition, 2, 0),
   JS_FS("__native_getPos", reformer_native_sprite_getPosition, 1, 0),
   JS_FS("__native_move", reformer_native_sprite_move, 2, 0),
+  JS_FS("__native_rotate", reformer_native_sprite_rotate, 2, 0),
   JS_FS_END
 };
 
@@ -123,6 +143,9 @@ JSBool reformer_native_newSprite(JSContext* cx, uintN argc, jsval* vp)
   }
   sf::Sprite* sfmlSprite = new sf::Sprite();
   sfmlSprite->SetImage(*img);
+  double width = img->GetWidth();
+  double height = img->GetHeight();
+  sfmlSprite->SetCenter(width / 2.f, height / 2.f);
 
   JSObject* spriteObj = JS_NewObject(cx, &spriteClassDef, NULL, NULL);
   JS_DefineFunctions(cx, spriteObj, sprite_native_functions);
