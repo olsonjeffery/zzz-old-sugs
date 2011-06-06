@@ -70,9 +70,14 @@ int main() {
   /*****************
     MAIN GAME LOOP
   *****************/
-  printf("about to open window\n");
+  printf("beginning main game loop\n");
+
+  float frametime;
+  float framerate;
   while(gfxEnv.window->IsOpened()) {
     sf::Event Event;
+    frametime = gfxEnv.window->GetFrameTime();
+    framerate = 1.f / frametime;
 
     // event processing
     while(gfxEnv.window->GetEvent(Event)) {
@@ -85,7 +90,7 @@ int main() {
     gfxEnv.window->Clear();
 
     // drawing
-    callIntoJsRender(jsEnv, gfxEnv, evEnv);
+    callIntoJsRender(jsEnv, gfxEnv, evEnv, frametime, framerate);
 
     gfxEnv.window->Display();
     // END OF DRAW/RENDER LOOP

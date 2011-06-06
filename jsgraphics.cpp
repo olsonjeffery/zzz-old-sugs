@@ -50,9 +50,43 @@ JSBool reformer_native_sprite_getPosition(JSContext* cx, uintN argc, jsval* vp)
 
   return JS_TRUE;
 }
+JSBool reformer_native_sprite_move(JSContext* cx, uintN argc, jsval* vp)
+{
+  // note that, here, we're basically saying that this native function
+  // is only meant to be used as a method, because we have a This.. currently
+  // requires some legwork to get the enclosing object.. until I can find a better
+  // way..
+  JSObject* This;
+  JSObject* posObj;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oo", &This, &posObj)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "reformer_native_sprite_move: can't parse out arguments", 1);
+      return JS_FALSE;
+  }
+  jsval xVal;
+  jsval yVal;
+  JS_GetProperty(cx, posObj, "x", &xVal);
+  JS_GetProperty(cx, posObj, "y", &yVal);
+  double x = JSVAL_TO_DOUBLE(xVal);
+  if (isnan(x)) {
+    x = 0.f;
+  }
+  double y = JSVAL_TO_DOUBLE(yVal);
+  if (isnan(y)) {
+    y = 0.f;
+  }
+
+  sf::Sprite* sprite = (sf::Sprite*)(JS_GetPrivate(cx, This));
+  printf("moving sprite --  x: %f y: %f\n", x, y);
+  sprite->Move(x, y);
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
 static JSFunctionSpec sprite_native_functions[] = {
   JS_FS("__native_setPos", reformer_native_sprite_setPosition, 2, 0),
   JS_FS("__native_getPos", reformer_native_sprite_getPosition, 1, 0),
+  JS_FS("__native_move", reformer_native_sprite_move, 2, 0),
   JS_FS_END
 };
 
@@ -109,12 +143,15 @@ static JSFunctionSpec graphics_native_functions[] = {
  * PUBLIC FUNCTIONS
  *
  */
-void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv) {
-  jsval argv[2];
+void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv, double frametime, double framerate) {
+  jsval argv[4];
+
   argv[0] = OBJECT_TO_JSVAL(gfxEnv.canvas);
   argv[1] = OBJECT_TO_JSVAL(evEnv.input);
+  argv[2] = DOUBLE_TO_JSVAL(frametime);
+  argv[3] = DOUBLE_TO_JSVAL(framerate);
   jsval rval;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "renderSprites", 2, argv, &rval);
+  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "renderSprites", 4, argv, &rval);
 }
 
 void registerGraphicsNatives(JSContext* cx, JSObject* global) {

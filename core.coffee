@@ -26,11 +26,14 @@ global.doStartup = ->
 # every render loop to allow user code to process game logic and
 # set stuff to be drawn. Before being called, the display is Clear()'d,
 # and is Display()'d afterward.
-global.renderSprites = (nativeCanvas, nativeInput) ->
+#
+# This is, pretty much, the main hook into the user code's side
+# of the main game loop
+global.renderSprites = (nativeCanvas, nativeInput, frametime, framerate) ->
   canvas = new Canvas(nativeCanvas)
   input = new Input(nativeInput)
-  _.each mainLoopCallbacks, (cb) -> cb input
-  _.each renderCallbacks, (cb) -> cb canvas
+  _.each mainLoopCallbacks, (cb) -> cb input, frametime
+  _.each renderCallbacks, (cb) -> cb canvas, framerate
 
 # global event registrar/util interface
 global.$ = {

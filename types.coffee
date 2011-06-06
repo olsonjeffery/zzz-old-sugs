@@ -11,6 +11,9 @@ class Sprite
 
   getPos: ->
     @nativeSprite.__native_getPos @nativeSprite
+
+  move: (distances) ->
+    @nativeSprite.__native_move @nativeSprite, distances
 global.Sprite = Sprite
 
 # Canvas class -- The "display surface" that a user draws to during the
