@@ -50,6 +50,21 @@ JSBool reformer_native_sprite_getPosition(JSContext* cx, uintN argc, jsval* vp)
 
   return JS_TRUE;
 }
+JSBool reformer_native_sprite_getRotation(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* This;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &This)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "reformer_native_sprite_getRotation: can't parse args", 1);
+      return JS_FALSE;
+  }
+  sf::Sprite* sprite = (sf::Sprite*)(JS_GetPrivate(cx, This));
+  jsval rotVal = DOUBLE_TO_JSVAL(sprite->GetRotation());
+
+  JS_SET_RVAL(cx, vp, rotVal);
+
+  return JS_TRUE;
+}
 JSBool reformer_native_sprite_move(JSContext* cx, uintN argc, jsval* vp)
 {
   // note that, here, we're basically saying that this native function
@@ -105,6 +120,7 @@ JSBool reformer_native_sprite_rotate(JSContext* cx, uintN argc, jsval* vp)
 static JSFunctionSpec sprite_native_functions[] = {
   JS_FS("__native_setPos", reformer_native_sprite_setPosition, 2, 0),
   JS_FS("__native_getPos", reformer_native_sprite_getPosition, 1, 0),
+  JS_FS("__native_getRotation", reformer_native_sprite_getRotation, 1, 0),
   JS_FS("__native_move", reformer_native_sprite_move, 2, 0),
   JS_FS("__native_rotate", reformer_native_sprite_rotate, 2, 0),
   JS_FS_END
