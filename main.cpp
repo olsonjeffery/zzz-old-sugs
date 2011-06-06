@@ -61,6 +61,7 @@ int main() {
     newInputFrom(gfxEnv.window, jsEnv.cx)
   };
 
+  // run $.startup() in user code
   result = execStartupCallbacks(jsEnv);
   if (result.result == JS_FALSE) {
     printf(result.message);
@@ -79,7 +80,7 @@ int main() {
     frametime = gfxEnv.window->GetFrameTime();
     framerate = 1.f / frametime;
 
-    // event processing
+    // check for window close/quit event..
     while(gfxEnv.window->GetEvent(Event)) {
       if (Event.Type == sf::Event::Closed) {
         gfxEnv.window->Close();
@@ -89,7 +90,8 @@ int main() {
     // BEGINNING OF THE DRAW/RENDER LOOP
     gfxEnv.window->Clear();
 
-    // drawing
+    // run $.mainLoop() and $.render() callbacks in
+    // user code
     callIntoJsRender(jsEnv, gfxEnv, evEnv, frametime, framerate);
 
     gfxEnv.window->Display();
