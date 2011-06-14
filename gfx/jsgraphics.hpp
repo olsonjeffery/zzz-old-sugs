@@ -4,8 +4,9 @@
 #include <math.h>
 #include <jsapi.h>
 
-#include "medialibrary.hpp"
-#include "common.hpp"
+#include "../medialibrary.hpp"
+#include "../common.hpp"
+#include "jssprite.hpp"
 
 void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv eventEnv, double frametime, double framerate);
 

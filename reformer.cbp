@@ -35,12 +35,16 @@
 		</Compiler>
 		<Unit filename="common.cpp" />
 		<Unit filename="common.hpp" />
+		<Unit filename="gfx/jsdrawable.cpp" />
+		<Unit filename="gfx/jsdrawable.hpp" />
+		<Unit filename="gfx/jsgraphics.cpp" />
+		<Unit filename="gfx/jsgraphics.hpp" />
+		<Unit filename="gfx/jssprite.cpp" />
+		<Unit filename="gfx/jssprite.hpp" />
 		<Unit filename="graphics.cpp" />
 		<Unit filename="graphics.hpp" />
 		<Unit filename="jscanvas.cpp" />
 		<Unit filename="jscanvas.hpp" />
-		<Unit filename="jsgraphics.cpp" />
-		<Unit filename="jsgraphics.hpp" />
 		<Unit filename="jsinput.cpp" />
 		<Unit filename="jsinput.hpp" />
 		<Unit filename="jssetup.cpp" />

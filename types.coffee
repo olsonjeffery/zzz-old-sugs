@@ -4,7 +4,7 @@ global = this
 # the screen
 class Sprite
   constructor: (imgPath) ->
-    @nativeSprite = __native_newSprite(global.__modDir + imgPath)
+    @nativeSprite = __native_factory_sprite(global.__modDir + imgPath)
 
   setPos: (pos) ->
     @nativeSprite.__native_setPos @nativeSprite, pos

@@ -9,7 +9,7 @@
 #include <string.h>
 
 #include "common.hpp"
-#include "jsgraphics.hpp"
+#include "gfx/jsgraphics.hpp"
 #include "jsinput.hpp"
 
 

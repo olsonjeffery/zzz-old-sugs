@@ -5,7 +5,7 @@
 
 #include "jssetup.hpp"
 #include "graphics.hpp"
-#include "jsgraphics.hpp"
+#include "gfx/jsgraphics.hpp"
 #include "jsinput.hpp"
 #include "medialibrary.hpp"
 
