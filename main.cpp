@@ -33,7 +33,7 @@ int main() {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  result = executeCoffeeScript("core.coffee", jsEnv.cx, jsEnv.global);
+  result = executeCoffeeScript("sugs.coffee", jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
