@@ -1,11 +1,11 @@
-#ifndef __graphics_hpp__
-#define __graphics_hpp__
+#ifndef __sfmlsetup_hpp__
+#define __sfmlsetup_hpp__
 
 #include <SFML/Graphics.hpp>
 #include <stdio.h>
 #include <jsapi.h>
 
-#include "common.hpp"
+#include "../common.hpp"
 #include "jscanvas.hpp"
 
 // graphics setup stuff

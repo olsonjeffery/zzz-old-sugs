@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="reformer" />
+		<Option title="sugs" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="linux64Debug">
-				<Option output="bin/Debug/reformer" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/linux64Debug/sugs" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -35,16 +35,16 @@
 		</Compiler>
 		<Unit filename="common.cpp" />
 		<Unit filename="common.hpp" />
+		<Unit filename="gfx/jscanvas.cpp" />
+		<Unit filename="gfx/jscanvas.hpp" />
 		<Unit filename="gfx/jsdrawable.cpp" />
 		<Unit filename="gfx/jsdrawable.hpp" />
 		<Unit filename="gfx/jsgraphics.cpp" />
 		<Unit filename="gfx/jsgraphics.hpp" />
 		<Unit filename="gfx/jssprite.cpp" />
 		<Unit filename="gfx/jssprite.hpp" />
-		<Unit filename="graphics.cpp" />
-		<Unit filename="graphics.hpp" />
-		<Unit filename="jscanvas.cpp" />
-		<Unit filename="jscanvas.hpp" />
+		<Unit filename="gfx/sfmlsetup.cpp" />
+		<Unit filename="gfx/sfmlsetup.hpp" />
 		<Unit filename="jsinput.cpp" />
 		<Unit filename="jsinput.hpp" />
 		<Unit filename="jssetup.cpp" />

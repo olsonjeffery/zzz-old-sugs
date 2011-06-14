@@ -1,4 +1,4 @@
-#include "graphics.hpp"
+#include "sfmlsetup.hpp"
 
 graphicsEnv initGraphics(JSContext* cx) {
   printf("initializing graphics environment");

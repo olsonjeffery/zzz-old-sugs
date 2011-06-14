@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #include "jssetup.hpp"
-#include "graphics.hpp"
+#include "gfx/sfmlsetup.hpp"
 #include "gfx/jsgraphics.hpp"
 #include "jsinput.hpp"
 #include "medialibrary.hpp"

@@ -1,4 +1,5 @@
 /bin
 /obj
 *swp
-/reformer.layout
+/sugs.layout
+/sugs.depend
