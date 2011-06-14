@@ -111,7 +111,6 @@ JSBool reformer_native_sprite_rotate(JSContext* cx, uintN argc, jsval* vp)
       return JS_FALSE;
   }
   sf::Sprite* sprite = (sf::Sprite*)(JS_GetPrivate(cx, This));
-  printf("going to rotate %f\n", rotDegree);
   sprite->Rotate(rotDegree);
 
   JS_SET_RVAL(cx, vp, JSVAL_VOID);
