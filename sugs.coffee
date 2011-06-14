@@ -1,7 +1,5 @@
 global = this
 
-loadNoPrefix("types.coffee")
-
 # scripts passed into the libScripts params in config
 scriptsToBeLoaded = []
 # callbacks registered via $.startup()
@@ -21,6 +19,7 @@ global.__modDir = ''
 # has been set up, along with environments.
 global.doStartup = ->
   _.each startupCallbacks, (cb) -> cb()
+  global.__triggerUnresolvedMessages()
 
 # renderSprites() -- Called from native code at the beginning of
 # every render loop to allow user code to process game logic and
@@ -81,3 +80,7 @@ global.$ = {
   render: (callback) ->
     renderCallbacks.push callback
 }
+
+# core js libraries to load
+loadNoPrefix "jslib/types.coffee"
+loadNoPrefix "jslib/messaging.coffee"
