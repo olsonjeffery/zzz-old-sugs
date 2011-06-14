@@ -160,7 +160,7 @@ JSBool reformer_native_newSprite(JSContext* cx, uintN argc, jsval* vp)
   sfmlSprite->SetImage(*img);
   double width = img->GetWidth();
   double height = img->GetHeight();
-  sfmlSprite->SetCenter(width / 2.f, height / 2.f);
+  sfmlSprite->SetOrigin(width / 2.f, height / 2.f);
 
   JSObject* spriteObj = JS_NewObject(cx, &spriteClassDef, NULL, NULL);
   JS_DefineFunctions(cx, spriteObj, sprite_native_functions);

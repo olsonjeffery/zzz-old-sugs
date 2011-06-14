@@ -77,11 +77,11 @@ int main() {
   float framerate;
   while(gfxEnv.window->IsOpened()) {
     sf::Event Event;
-    frametime = gfxEnv.window->GetFrameTime();
+    frametime = gfxEnv.window->GetFrameTime() * 0.001f;
     framerate = 1.f / frametime;
 
     // check for window close/quit event..
-    while(gfxEnv.window->GetEvent(Event)) {
+    while(gfxEnv.window->PollEvent(Event)) {
       if (Event.Type == sf::Event::Closed) {
         gfxEnv.window->Close();
       }
