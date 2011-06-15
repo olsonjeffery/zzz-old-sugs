@@ -127,7 +127,7 @@ jsEnv initJsEnvironment() {
   JSRuntime *rt;
   JSObject  *global;
 
-  rt = JS_NewRuntime(8L * 1024L * 1024L);
+  rt = JS_NewRuntime(128L * 1024L * 1024L);
 
   if (!rt) {
       exit(EXIT_FAILURE);
@@ -202,7 +202,7 @@ predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* g
   JS_HasProperty(cx, coffeeScript, "compile", &hasCompile);
   if (hasCompile != JS_TRUE) {
     printf("barf time?\n", path);
-    return {JS_FALSE, "no compile function on CoffeeScript obj. grabbed wrong one?"};
+    return {JS_FALSE, "no compile function on CoffeeScript obj. grabbed wrong one?\n"};
   }
 
   jsval rVal;
@@ -217,7 +217,7 @@ predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* g
 
   char* srcString = JS_EncodeString(cx, jsSrcString);
   if (srcString == NULL) {
-    return { JS_FALSE, "failed to encode string when prepping to run coffee file."};
+    return { JS_FALSE, "failed to encode string when prepping to run coffee file.\n"};
   }
 
   predicateResult result = executeScriptFromSrc(path, &srcString, strlen(srcString) - sizeof(char), cx, global);
@@ -277,7 +277,91 @@ predicateResult execStartupCallbacks(jsEnv jsEnv) {
   jsval argv[0];
   jsval rval;
   if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
-    return {JS_FALSE, "error occured while called doStartup()"};
+    return {JS_FALSE, "error occured while called doStartup()\n"};
   }
   return { JS_TRUE, ""};
+}
+
+sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
+    jsval scVal;
+    if(!JS_GetProperty(cx, global, "sugsConfig", &scVal)) {
+        printf("getCurrentConfig: failed to fetch config from global.sugsConfig\n");
+        exit(EXIT_FAILURE);
+    }
+    JSObject* sugsConfig = JSVAL_TO_OBJECT(scVal);
+
+    jsval widthVal;
+    if(!JS_GetProperty(cx, sugsConfig, "screenWidth", &widthVal)) {
+        printf("getCurrentConfig: failure to pull screenWidth from global.sugsConfig\n");
+        exit(EXIT_FAILURE);
+    }
+    double width = SUGS_JSVAL_TO_NUMBER(widthVal);
+
+    jsval heightVal;
+    if(!JS_GetProperty(cx, sugsConfig, "screenHeight", &heightVal)) {
+        printf("getCurrentConfig: failure to pull screenHeight from global.sugsConfig\n");
+        exit(EXIT_FAILURE);
+    }
+    double height = SUGS_JSVAL_TO_NUMBER(heightVal);
+
+    jsval colorDepthVal;
+    if(!JS_GetProperty(cx, sugsConfig, "colorDepth", &colorDepthVal)) {
+        printf("getCurrentConfig: failure to pull colorDepth from global.sugsConfig\n");
+        exit(EXIT_FAILURE);
+    }
+    double colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
+
+    jsval moduleDirVal;
+    if(!JS_GetProperty(cx, sugsConfig, "moduleDir", &moduleDirVal)) {
+        printf("getCurrentConfig: failure to pull moduleDir from global.sugsConfig\n");
+        exit(EXIT_FAILURE);
+    }
+    JSString* moduleDirObj = JSVAL_TO_STRING(moduleDirVal);
+    char* moduleDir = JS_EncodeString(cx, moduleDirObj);
+
+    jsval moduleEntryPointVal;
+    if(!JS_GetProperty(cx, sugsConfig, "moduleEntryPoint", &moduleEntryPointVal)) {
+        printf("getCurrentConfig: failure to pull moduleEntryPoint from global.sugsConfig\n");
+        exit(EXIT_FAILURE);
+    }
+    JSString* moduleEntryPointObj = JSVAL_TO_STRING(moduleEntryPointVal);
+    char* moduleEntryPoint = JS_EncodeString(cx, moduleEntryPointObj);
+
+    jsval isCoffeeVal;
+    if(!JS_GetProperty(cx, sugsConfig, "entryPointIsCoffee", &isCoffeeVal)) {
+        printf("couldn't get isCoffee from config\n");
+        exit(EXIT_FAILURE);
+    }
+    JSBool entryPointIsCoffee = JSVAL_TO_BOOLEAN(isCoffeeVal);
+
+    return {
+        moduleDir,
+        moduleEntryPoint,
+        width,
+        height,
+        colorDepth,
+        entryPointIsCoffee
+    };
+}
+
+sugsConfig execConfig(jsEnv jsEnv)
+{
+  predicateResult result;
+  // The introduction of user code
+  if (fileExists("config.js")) {
+    result = executeScript("config.js", jsEnv.cx, jsEnv.global);
+    if(result.result == JS_FALSE) {
+      printf(result.message);
+      exit(EXIT_FAILURE);
+    }
+  }
+  else {
+    result = executeCoffeeScript("config.coffee", jsEnv.cx, jsEnv.global);
+    if(result.result == JS_FALSE) {
+      printf(result.message);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  return getCurrentConfig(jsEnv.cx, jsEnv.global);
 }

@@ -9,7 +9,7 @@
 #include "jscanvas.hpp"
 
 // graphics setup stuff
-graphicsEnv initGraphics(JSContext* cx);
+graphicsEnv initGraphics(JSContext* cx, sugsConfig config);
 void teardownGraphics(sf::RenderWindow* window, JSObject* canvas, JSContext* cx);
 
 #endif

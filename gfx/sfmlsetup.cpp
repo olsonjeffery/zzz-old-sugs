@@ -1,8 +1,11 @@
 #include "sfmlsetup.hpp"
 
-graphicsEnv initGraphics(JSContext* cx) {
-  printf("initializing graphics environment");
-  sf::RenderWindow* win = new sf::RenderWindow(sf::VideoMode(640,480, 32), "reFormer");
+graphicsEnv initGraphics(JSContext* cx, sugsConfig config) {
+  printf("initializing graphics environment\n");
+  sf::RenderWindow* win = new sf::RenderWindow(sf::VideoMode(config.screenWidth,
+                                                             config.screenHeight,
+                                                             config.colorDepth),
+                                               "sugs");
   JSObject* canvas = newCanvasFrom(win, cx);
 
   graphicsEnv gfxEnv = { win, canvas };

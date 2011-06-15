@@ -39,27 +39,24 @@ int main() {
     exit(EXIT_FAILURE);
   }
 
-  // The introduction of user code
-  if (fileExists("config.js")) {
-    result = executeScript("config.js", jsEnv.cx, jsEnv.global);
-    if(result.result == JS_FALSE) {
-      printf(result.message);
-      exit(EXIT_FAILURE);
-    }
-  }
-  else {
-    result = executeCoffeeScript("config.coffee", jsEnv.cx, jsEnv.global);
-    if(result.result == JS_FALSE) {
-      printf(result.message);
-      exit(EXIT_FAILURE);
-    }
-  }
+  sugsConfig config = execConfig(jsEnv);
 
   // init graphics
-  graphicsEnv gfxEnv = initGraphics(jsEnv.cx);
+  graphicsEnv gfxEnv = initGraphics(jsEnv.cx, config);
   eventEnv evEnv = {
     newInputFrom(gfxEnv.window, jsEnv.cx)
   };
+
+  printf("gonna execute %s %d\n", config.moduleEntryPoint, config.entryPointIsCoffee);
+
+  if (config.entryPointIsCoffee == JS_TRUE) {
+    printf("entry point is .coffee\n");
+    executeCoffeeScript(config.moduleEntryPoint, jsEnv.cx, jsEnv.global);
+  }
+  else {
+    printf("entry point is .js\n");
+    executeScript(config.moduleEntryPoint, jsEnv.cx, jsEnv.global);
+  }
 
   // run $.startup() in user code
   result = execStartupCallbacks(jsEnv);
@@ -71,7 +68,7 @@ int main() {
   /*****************
     MAIN GAME LOOP
   *****************/
-  printf("beginning main game loop\n");
+  printf("entering main game loop\n");
 
   float frametime;
   float framerate;

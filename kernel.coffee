@@ -3,8 +3,12 @@
 # so that the latter can declare all our library deps via __loadNoPrefix()
 global = this
 
+global.pathEndsInDotCoffee = (path) ->
+  path.match(/\.coffee$/)
+
+
 global.loadNoPrefix = (path) ->
-  if path.match(/\.coffee$/)
+  if global.pathEndsInDotCoffee path
     __native_load_coffee global, path
   else
     global.__native_load global, path
@@ -12,4 +16,4 @@ global.loadNoPrefix = (path) ->
 
 # load(path) -- load an external javascript file
 global.load = (path) ->
-  loadNoPrefix(global.__modDir + path)
+  loadNoPrefix(global.sugsConfig.moduleDir + path)

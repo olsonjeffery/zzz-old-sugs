@@ -1,18 +1,11 @@
 global = this
 
-# scripts passed into the libScripts params in config
-scriptsToBeLoaded = []
 # callbacks registered via $.startup()
 startupCallbacks = []
 # callbacks registered via $.mainLoop()
 mainLoopCallbacks = []
 # callbacks registered via $.render()
 renderCallbacks = []
-
-# the global prefix for loading scripts, assets, etc from the
-# loaded module.. specified (relative to the cwd) in config.js
-# and combined with getcwd() for a full path
-global.__modDir = ''
 
 # doStartup() -- Called from native code once on startup to run
 # all of the registered callbacks to be ran on startup. Graphics
@@ -35,29 +28,37 @@ global.renderSprites = (nativeCanvas, nativeInput, frametime, framerate) ->
   _.each renderCallbacks, (cb) -> cb canvas, framerate
 
 # global event registrar/util interface
+configHasRan = false
+sugsConfig = null
+
 global.$ = {
   # $.config -- a handler that is invoked with an object hash
   # from config.js .. consult config.js for docs on config params
   config: (conf) ->
-    # Pluck out the moduleDir and build a prefix dir for loading of
-    # assets, etc in our module
-    cwd = global.__native_getcwd()
-    global.__modDir = cwd + '/'+conf.moduleDir
-    global.__modDir = global.__modDir.replace('\\','/')
-    lastChar = global.__modDir[global.__modDir.length - 1]
-    if lastChar != '/'
-      __modDir += '/'
-    puts "moduleDir: #{global.__modDir}"
+    if not configHasRan
+      configHasRan = true
+      # Pluck out the moduleDir and build a prefix dir for loading of
+      # assets, etc in our module
+      cwd = global.__native_getcwd()
+      moduleDir = cwd + '/'+conf.moduleDir
+      moduleDir = moduleDir.replace('\\','/')
+      lastChar = moduleDir[moduleDir.length - 1]
+      if lastChar != '/'
+        moduleDir += '/'
+      puts "moduleDir: #{moduleDir}"
 
-    # load up scripts in the config's libScripts member
-    _.each conf.libScripts, (v) -> scriptsToBeLoaded.push(v)
+      # find our module script and add it to the list of scripts to be loaded
+      moduleEntryPoint = if __native_fileExists(moduleDir+"module.js") then "module.js" else "module.coffee"
 
-    # find our module script and add it to the list of scripts to be loaded
-    moduleScript = if __native_fileExists(global.__modDir+"module.js") then "module.js" else "module.coffee"
-    scriptsToBeLoaded.push global.__modDir + moduleScript
-    _.each scriptsToBeLoaded, (v) ->
-      puts "loading #{v}..."
-      loadNoPrefix(v)
+      global.sugsConfig =
+        screenWidth: conf.screen.width
+        screenHeight: conf.screen.height
+        colorDepth: conf.screen.colorDepth
+        moduleDir: moduleDir
+        moduleEntryPoint: moduleDir+moduleEntryPoint
+        entryPointIsCoffee: if (global.pathEndsInDotCoffee moduleEntryPoint) then true else false
+    else
+      throw "only one call to $.config is allowed to per app"
 
   # $.startup() -- callbacks registered in this function are called
   # after the graphics system is initialized, but before the render
