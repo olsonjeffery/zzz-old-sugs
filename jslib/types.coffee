@@ -15,6 +15,9 @@ class Sprite
   getRotation: ->
     @nativeSprite.__native_getRotation @nativeSprite
 
+  setRotation: (rot) ->
+    @nativeSprite.__native_setRotation @nativeSprite, rot
+
   move: (distances) ->
     @nativeSprite.__native_move @nativeSprite, distances
 

@@ -17,8 +17,8 @@ JSBool reformer_native_drawable_setPosition(JSContext* cx, uintN argc, jsval* vp
   jsval yVal;
   JS_GetProperty(cx, posObj, "x", &xVal);
   JS_GetProperty(cx, posObj, "y", &yVal);
-  int x = JSVAL_TO_INT(xVal);
-  int y = JSVAL_TO_INT(yVal);
+  double x = JSVAL_IS_INT(xVal) ? JSVAL_TO_INT(xVal) : JSVAL_TO_DOUBLE(xVal);
+  double y = JSVAL_IS_INT(yVal) ? JSVAL_TO_INT(yVal) : JSVAL_TO_DOUBLE(yVal);
 
   sf::Drawable* drawable = (sf::Drawable*)(JS_GetPrivate(cx, This));
   drawable->SetPosition(x, y);
@@ -65,6 +65,26 @@ JSBool reformer_native_drawable_getRotation(JSContext* cx, uintN argc, jsval* vp
 
   return JS_TRUE;
 }
+JSBool reformer_native_drawable_setRotation(JSContext* cx, uintN argc, jsval* vp)
+{
+  // note that, here, we're basically saying that this native function
+  // is only meant to be used as a method, because we have a This.. currently
+  // requires some legwork to get the enclosing object.. until I can find a better
+  // way..
+  JSObject* This;
+  jsdouble rot;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "od", &This, &rot)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "reformer_native_drawable_setRotation: can't parse arguments for pos obj", 1);
+      return JS_FALSE;
+  }
+  sf::Drawable* drawable = (sf::Drawable*)(JS_GetPrivate(cx, This));
+  drawable->SetRotation(rot);
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+
 JSBool reformer_native_drawable_move(JSContext* cx, uintN argc, jsval* vp)
 {
   // note that, here, we're basically saying that this native function
@@ -122,6 +142,7 @@ drawable_native_functions[] = {
   JS_FS("__native_setPos", reformer_native_drawable_setPosition, 2, 0),
   JS_FS("__native_getPos", reformer_native_drawable_getPosition, 1, 0),
   JS_FS("__native_getRotation", reformer_native_drawable_getRotation, 1, 0),
+  JS_FS("__native_setRotation", reformer_native_drawable_setRotation, 2, 0),
   JS_FS("__native_move", reformer_native_drawable_move, 2, 0),
   JS_FS("__native_rotate", reformer_native_drawable_rotate, 2, 0),
   JS_FS_END

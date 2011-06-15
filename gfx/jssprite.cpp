@@ -24,6 +24,7 @@ native_sprite_factory(JSContext* cx, uintN argc, jsval* vp) {
   double width = img->GetWidth();
   double height = img->GetHeight();
   sfmlSprite->SetOrigin(width / 2.f, height / 2.f);
+  sfmlSprite->SetPosition(0,0);
 
   JSObject* spriteObj = JS_NewObject(cx, getDrawableClassDef(), NULL, NULL);
   JS_DefineFunctions(cx, spriteObj, getDrawableFunctionSpec());
