@@ -28,6 +28,36 @@ classdef_keyfinder_resolver(JSContext *cx, JSObject *obj, jsid id) {
   else if (strcmp(propName, "Right") == 0) {
     keyObj = getKeyObjectFor(cx, sf::Key::Right);
   }
+  else if (strcmp(propName, "Num1") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num1);
+  }
+  else if (strcmp(propName, "Num2") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num2);
+  }
+  else if (strcmp(propName, "Num3") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num3);
+  }
+  else if (strcmp(propName, "Num4") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num4);
+  }
+  else if (strcmp(propName, "Num5") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num5);
+  }
+  else if (strcmp(propName, "Num6") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num6);
+  }
+  else if (strcmp(propName, "Num7") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num7);
+  }
+  else if (strcmp(propName, "Num8") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num8);
+  }
+  else if (strcmp(propName, "Num9") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num9);
+  }
+  else if (strcmp(propName, "Num0") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Num0);
+  }
   else {
     JS_ReportError(cx, "Unable to find matching key for %s", propName);
     return JS_FALSE;
