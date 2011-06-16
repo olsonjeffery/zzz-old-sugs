@@ -5,15 +5,14 @@
  * PUBLIC FUNCTIONS
  *
  */
-void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv, double frametime, double framerate) {
-  jsval argv[4];
+void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv, int msElapsed) {
+  jsval argv[3];
 
   argv[0] = OBJECT_TO_JSVAL(gfxEnv.canvas);
   argv[1] = OBJECT_TO_JSVAL(evEnv.input);
-  argv[2] = DOUBLE_TO_JSVAL(frametime);
-  argv[3] = DOUBLE_TO_JSVAL(framerate);
+  argv[2] = INT_TO_JSVAL(msElapsed);
   jsval rval;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "renderSprites", 4, argv, &rval);
+  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "renderSprites", 3, argv, &rval);
 }
 
 void registerGraphicsNatives(JSContext* cx, JSObject* global) {

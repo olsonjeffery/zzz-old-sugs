@@ -8,7 +8,7 @@
 #include "../common.hpp"
 #include "jssprite.hpp"
 
-void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv eventEnv, double frametime, double framerate);
+void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv eventEnv, int msElapsed);
 
 void registerGraphicsNatives(JSContext* cx, JSObject* global);
 

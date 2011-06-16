@@ -21,11 +21,11 @@ global.doStartup = ->
 #
 # This is, pretty much, the main hook into the user code's side
 # of the main game loop
-global.renderSprites = (nativeCanvas, nativeInput, frametime, framerate) ->
+global.renderSprites = (nativeCanvas, nativeInput, msElapsed) ->
   canvas = new Canvas(nativeCanvas)
   input = new Input(nativeInput)
-  _.each mainLoopCallbacks, (cb) -> cb input, frametime
-  _.each renderCallbacks, (cb) -> cb canvas, framerate
+  _.each mainLoopCallbacks, (cb) -> cb msElapsed
+  _.each renderCallbacks, (cb) -> cb input, canvas, msElapsed
 
 # global event registrar/util interface
 configHasRan = false

@@ -70,13 +70,11 @@ int main() {
   *****************/
   printf("entering main game loop\n");
 
-  float frametime;
-  float framerate;
+  int msElapsed = 0;
   while(gfxEnv.window->IsOpened()) {
     sf::Event Event;
-    frametime = gfxEnv.window->GetFrameTime() * 0.001f;
-    framerate = 1.f / frametime;
 
+    msElapsed = gfxEnv.window->GetFrameTime();
     // check for window close/quit event..
     while(gfxEnv.window->PollEvent(Event)) {
       if (Event.Type == sf::Event::Closed) {
@@ -89,7 +87,7 @@ int main() {
 
     // run $.mainLoop() and $.render() callbacks in
     // user code
-    callIntoJsRender(jsEnv, gfxEnv, evEnv, frametime, framerate);
+    callIntoJsRender(jsEnv, gfxEnv, evEnv, msElapsed);
 
     gfxEnv.window->Display();
     // END OF DRAW/RENDER LOOP
