@@ -8,5 +8,6 @@
 
 JSClass* getDrawableClassDef();
 JSFunctionSpec* getDrawableFunctionSpec();
+JSBool getColorFrom(JSContext* cx, JSObject* colorParams, sf::Color* outColor);
 
 #endif

@@ -171,3 +171,38 @@ JSClass*
 getDrawableClassDef() {
     return &drawableClassDef;
 }
+
+JSBool
+getColorFrom(JSContext* cx, JSObject* colorParams, sf::Color* outColor) {
+  jsval redVal;
+  if(!JS_GetProperty(cx, colorParams, "red", &redVal)) {
+    JS_ReportError(cx, "native_rectangle_factory: failed to pull red val from colorParams");
+    return JS_FALSE;
+  }
+  int red = SUGS_JSVAL_TO_NUMBER(redVal);
+
+  jsval greenVal;
+  if(!JS_GetProperty(cx, colorParams, "green", &greenVal)) {
+    JS_ReportError(cx, "native_rectangle_factory: failed to pull green val from colorParams");
+    return JS_FALSE;
+  }
+  int green = SUGS_JSVAL_TO_NUMBER(greenVal);
+
+  jsval blueVal;
+  if(!JS_GetProperty(cx, colorParams, "blue", &blueVal)) {
+    JS_ReportError(cx, "native_rectangle_factory: failed to pull blue val from colorParams");
+    return JS_FALSE;
+  }
+  int blue = SUGS_JSVAL_TO_NUMBER(blueVal);
+
+  jsval alphaVal;
+  if(!JS_GetProperty(cx, colorParams, "alpha", &alphaVal)) {
+    JS_ReportError(cx, "native_rectangle_factory: failed to pull alpha val from colorParams");
+    return JS_FALSE;
+  }
+  int alpha = SUGS_JSVAL_TO_NUMBER(alphaVal);
+
+  sf::Color result = sf::Color(red, green, blue, alpha);
+  *outColor = result;
+  return JS_TRUE;
+}
