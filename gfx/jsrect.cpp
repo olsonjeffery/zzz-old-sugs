@@ -30,10 +30,12 @@ native_rectangle_factory(JSContext* cx, uintN argc, jsval* vp) {
   sf::Color fillColor;
   if (!getColorFrom(cx, colorParams, &fillColor)) {
     JS_ReportError(cx, "native_rectangle_factory: failed to parse out fillColor");
+    return JS_FALSE;
   }
   sf::Color lineColor;
   if (!getColorFrom(cx, lineColorParams, &lineColor)) {
     JS_ReportError(cx, "native_rectangle_factory: failed to parse out lineColor");
+    return JS_FALSE;
   }
 
   sf::Shape* sfmlRectangle = new sf::Shape;
@@ -52,5 +54,5 @@ native_rectangle_factory(JSContext* cx, uintN argc, jsval* vp) {
 
 void
 registerRectangleFactory(JSContext* cx, JSObject* global) {
-    JS_DefineFunction(cx, global, "__native_factory_rectangle", native_rectangle_factory, 1, 0);
+    JS_DefineFunction(cx, global, "__native_factory_rectangle", native_rectangle_factory, 4, 0);
 }
