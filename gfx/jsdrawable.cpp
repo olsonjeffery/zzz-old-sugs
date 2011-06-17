@@ -151,7 +151,7 @@ drawable_native_functions[] = {
 static void
 classdef_drawable_finalize(JSContext* cx, JSObject* sp) {
   sf::Drawable* sprite = (sf::Drawable*)JS_GetPrivate(cx, sp);
-  printf("About to try and delete an sf::Drawable...");
+  printf("About to try and delete an sf::Drawable...\n");
   delete sprite;
 }
 static JSClass

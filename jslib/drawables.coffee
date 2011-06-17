@@ -33,3 +33,12 @@ class global.Rectangle extends Drawable
 class global.Circle extends Drawable
   constructor: (radius, fillColor, lineThickness, lineColor) ->
     @nativeDrawable = __native_factory_circle radius, fillColor, lineThickness, lineColor
+
+# Represents some on-screen text
+class global.Text extends Drawable
+  constructor: (content, fontSize, fontName, colorParams) ->
+    puts "provided fontName: #{fontName}"
+    @nativeDrawable = __native_factory_text content, fontSize, fontName, colorParams
+
+  setString: (content) ->
+    @nativeDrawable.__native_setString @nativeDrawable, content

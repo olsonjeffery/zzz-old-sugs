@@ -58,6 +58,9 @@ int main() {
     executeScript(config.moduleEntryPoint, jsEnv.cx, jsEnv.global);
   }
 
+    // some misc pre-startup things
+  MediaLibrary::RegisterDefaultFont();
+
   // run $.startup() in user code
   result = execStartupCallbacks(jsEnv);
   if (result.result == JS_FALSE) {

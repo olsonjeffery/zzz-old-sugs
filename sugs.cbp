@@ -47,6 +47,8 @@
 		<Unit filename="gfx/jsrect.hpp" />
 		<Unit filename="gfx/jssprite.cpp" />
 		<Unit filename="gfx/jssprite.hpp" />
+		<Unit filename="gfx/jstext.cpp" />
+		<Unit filename="gfx/jstext.hpp" />
 		<Unit filename="gfx/sfmlsetup.cpp" />
 		<Unit filename="gfx/sfmlsetup.hpp" />
 		<Unit filename="jsinput.cpp" />
