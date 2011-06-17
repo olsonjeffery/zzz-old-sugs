@@ -84,4 +84,5 @@ global.$ = {
 
 # core js libraries to load
 loadNoPrefix "jslib/types.coffee"
+loadNoPrefix "jslib/drawables.coffee"
 loadNoPrefix "jslib/messaging.coffee"

@@ -8,6 +8,7 @@
 #include "../common.hpp"
 #include "jssprite.hpp"
 #include "jsrect.hpp"
+#include "jscircle.hpp"
 
 void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv eventEnv, int msElapsed);
 

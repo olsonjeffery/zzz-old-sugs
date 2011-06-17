@@ -37,6 +37,8 @@
 		<Unit filename="common.hpp" />
 		<Unit filename="gfx/jscanvas.cpp" />
 		<Unit filename="gfx/jscanvas.hpp" />
+		<Unit filename="gfx/jscircle.cpp" />
+		<Unit filename="gfx/jscircle.hpp" />
 		<Unit filename="gfx/jsdrawable.cpp" />
 		<Unit filename="gfx/jsdrawable.hpp" />
 		<Unit filename="gfx/jsgraphics.cpp" />

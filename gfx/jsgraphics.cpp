@@ -18,4 +18,5 @@ void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv, int msEla
 void registerGraphicsNatives(JSContext* cx, JSObject* global) {
   registerSpriteFactory(cx, global);
   registerRectangleFactory(cx, global);
+  registerCircleFactory(cx, global);
 }
