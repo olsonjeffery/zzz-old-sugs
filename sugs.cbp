@@ -41,6 +41,8 @@
 		<Unit filename="gfx/jsdrawable.hpp" />
 		<Unit filename="gfx/jsgraphics.cpp" />
 		<Unit filename="gfx/jsgraphics.hpp" />
+		<Unit filename="gfx/jsrect.cpp" />
+		<Unit filename="gfx/jsrect.hpp" />
 		<Unit filename="gfx/jssprite.cpp" />
 		<Unit filename="gfx/jssprite.hpp" />
 		<Unit filename="gfx/sfmlsetup.cpp" />

@@ -1,29 +1,33 @@
 global = this
 
-# Sprite class -- Encapsulates a loaded image and it's position on
-# the screen
-class Sprite
-  constructor: (imgPath) ->
-    @nativeSprite = __native_factory_sprite global.sugsConfig.moduleDir + imgPath
-
+class Drawable
   setPos: (pos) ->
-    @nativeSprite.__native_setPos @nativeSprite, pos
+    @nativeDrawable.__native_setPos @nativeDrawable, pos
 
   getPos: ->
-    @nativeSprite.__native_getPos @nativeSprite
+    @nativeDrawable.__native_getPos @nativeDrawable
 
   getRotation: ->
-    @nativeSprite.__native_getRotation @nativeSprite
+    @nativeDrawable.__native_getRotation @nativeDrawable
 
   setRotation: (rot) ->
-    @nativeSprite.__native_setRotation @nativeSprite, rot
+    @nativeDrawable.__native_setRotation @nativeDrawable, rot
 
   move: (distances) ->
-    @nativeSprite.__native_move @nativeSprite, distances
+    @nativeDrawable.__native_move @nativeDrawable, distances
 
   rotate: (deg) ->
-    @nativeSprite.__native_rotate @nativeSprite, deg
-global.Sprite = Sprite
+    @nativeDrawable.__native_rotate @nativeDrawable, deg
+
+# Sprite class -- Encapsulates a loaded image and it's position on
+# the screen
+class global.Sprite extends Drawable
+  constructor: (imgPath) ->
+    @nativeDrawable = __native_factory_sprite global.sugsConfig.moduleDir + imgPath
+
+class global.Rectangle extends Drawable
+  constructor: (size, fillColor, lineThickness, lineColor) ->
+    @nativeDrawable = __native_factory_rectangle size, fillColor, lineThickness, lineColor
 
 # Canvas class -- The "display surface" that a user draws to during the
 # render loop (callbacks registered to $.render() ). Instances of this
@@ -33,7 +37,7 @@ class Canvas
     @nativeCanvas = nativeCanvas
 
   draw: (sprite) ->
-    @nativeCanvas.__native_draw @nativeCanvas, sprite.nativeSprite
+    @nativeCanvas.__native_draw @nativeCanvas, sprite.nativeDrawable
 global.Canvas = Canvas
 
 # Input class -- provides a means to poll for key/mouse button presses
