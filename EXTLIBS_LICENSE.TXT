@@ -1,0 +1,7 @@
+External dependency licenses:
+
+1. SpiderMonkey is provided under the terms of the Mozilla License
+  - https://developer.mozilla.org/en/SpiderMonkey
+
+2. SFML is provided under the terms of the zlib license
+  - http://www.sfml-dev.org/license.php
