@@ -19,12 +19,12 @@
 					<Add option="-lsfml-graphics" />
 					<Add option="-lsfml-window" />
 					<Add option="-lsfml-system" />
-					<Add option="-lmozjs185-1.0" />
+					<Add option="-lmozjs" />
 					<Add option="-lnspr4" />
 					<Add option="-lGL" />
 				</Linker>
 				<ExtraCommands>
-					<Add before="make jsapigen" />
+					<Add after="export LD_LIBRARY_PATH=/home/jeff/src/sugs/extlibs/linux64/lib" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
@@ -53,11 +53,21 @@
 		<Unit filename="gfx/sfmlsetup.hpp" />
 		<Unit filename="jsinput.cpp" />
 		<Unit filename="jsinput.hpp" />
-		<Unit filename="jssetup.cpp" />
-		<Unit filename="jssetup.hpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="medialibrary.cpp" />
 		<Unit filename="medialibrary.hpp" />
+		<Unit filename="worker/backend.cpp" />
+		<Unit filename="worker/backend.hpp" />
+		<Unit filename="worker/configurator.cpp" />
+		<Unit filename="worker/configurator.hpp" />
+		<Unit filename="worker/frontend.cpp" />
+		<Unit filename="worker/frontend.hpp" />
+		<Unit filename="worker/spidermonkey/jssetup.cpp" />
+		<Unit filename="worker/spidermonkey/jssetup.hpp" />
+		<Unit filename="worker/spidermonkey/scripting.cpp" />
+		<Unit filename="worker/spidermonkey/scripting.hpp" />
+		<Unit filename="worker/worker.cpp" />
+		<Unit filename="worker/worker.hpp" />
 		<Extensions>
 			<envvars />
 			<code_completion />
