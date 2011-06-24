@@ -28,9 +28,6 @@
 
 #include "jssetup.hpp"
 
-/* prototypes */
-predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global);
-
 /* NATIVE UTIL FUNCTIONS */
 JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -148,18 +145,20 @@ void reportError(JSContext *cx, const char *message, JSErrorReport *report)
           message);
 }
 
-jsEnv initJsEnvironment() {
-  printf("Initializing scriptmonkey javascript environment..\n");
-
-  JSContext *cx;
+JSRuntime* initRuntime(uint32 maxBytes) {
   JSRuntime *rt;
-  JSObject  *global;
-
-  rt = JS_NewRuntime(128L * 1024L * 1024L);
+  rt = JS_NewRuntime(maxBytes);
 
   if (!rt) {
       exit(EXIT_FAILURE);
   }
+  return rt;
+}
+jsEnv initContext(JSRuntime* rt) {
+  printf("Initializing scriptmonkey javascript environment..\n");
+
+  JSContext *cx;
+  JSObject  *global;
 
   cx = JS_NewContext(rt, 8192);
 
@@ -179,8 +178,6 @@ jsEnv initJsEnvironment() {
     printf("failure to declare functions");
     exit(EXIT_FAILURE);
   }
-  registerGraphicsNatives(cx, global);
-  registerInputNatives(cx, global);
 
   JS_SetErrorReporter(cx, reportError);
 
@@ -188,116 +185,18 @@ jsEnv initJsEnvironment() {
   return env;
 }
 
-predicateResult executeScript(const char* path, JSContext* cx, JSObject* global) {
-  char* srcBuffer;
-  int length;
-  if (!fileExists(path)) {
-    char msg[2056];
-    sprintf(msg, "Script %s not found!\n", path);
-    return {JS_FALSE, msg};
-  }
-  readEntireFile(path, &srcBuffer, &length);
-
-  predicateResult result = executeScriptFromSrc(path, &srcBuffer, length, cx, global);
-  free(srcBuffer);
-  return result;
-}
-
-predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* global) {
-  char* buffer;
-  int length;
-  if (!fileExists(path)) {
-    char msg[2056];
-    sprintf(msg, "Script %s not found and can't be loaded!\n", path);
-    return {JS_FALSE, msg};
-  }
-  readEntireFile(path, &buffer, &length);
-
-  jsval argv[2];
-  JSString* coffeeFileText = JS_NewStringCopyZ(cx, buffer);
-  argv[0] = STRING_TO_JSVAL(coffeeFileText);
-  JSObject* options = JS_NewObject(cx, NULL, NULL, NULL);
-  argv[1] = OBJECT_TO_JSVAL(options);
-
-  jsval csVal;
-  if (JS_GetProperty(cx, global, "CoffeeScript", &csVal) != JS_TRUE) {
-    return { JS_FALSE, "couldn't get CoffeeScript prop from global\n" };
-  }
-
-  JSObject* coffeeScript = JSVAL_TO_OBJECT(csVal);
-
-  JSBool hasCompile;
-  JS_HasProperty(cx, coffeeScript, "compile", &hasCompile);
-  if (hasCompile != JS_TRUE) {
-    printf("barf time?\n", path);
-    return {JS_FALSE, "no compile function on CoffeeScript obj. grabbed wrong one?\n"};
-  }
-
-  jsval rVal;
-  if (JS_CallFunctionName(cx, coffeeScript, "compile", 2, argv, &rVal) != JS_TRUE) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to compile coffeescript file %s\n", path);
-    return {JS_FALSE, buffer};
-  }
-
-  JSString* jsSrcString;
-  jsSrcString = JSVAL_TO_STRING(rVal);
-
-  char* srcString = JS_EncodeString(cx, jsSrcString);
-  if (srcString == NULL) {
-    return { JS_FALSE, "failed to encode string when prepping to run coffee file.\n"};
-  }
-
-  predicateResult result = executeScriptFromSrc(path, &srcString, strlen(srcString) - sizeof(char), cx, global);
-  free(buffer);
-  return result;
-}
-
-predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global) {
-  printf("executing %s from source...\n", path);
-  /* Execute a script */
-  JSObject *scriptObject;
-  jsval rval;
-
-  /* Compile a script file into a script object */
-  scriptObject = JS_CompileScript(cx, global, *src, length, path, 1);
-  if (!scriptObject) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to compile %s\n", path);
-    return {JS_FALSE, buffer};
-  }
-
-  if (JS_AddObjectRoot(cx, &scriptObject) != JS_TRUE) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to add root object for %s\n", path);
-    return {JS_FALSE, buffer};
-  }
-
-  /* Execute script object */
-  if (JS_ExecuteScript(cx, global, scriptObject, &rval) != JS_TRUE) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to execute %s\n", path);
-    return {JS_FALSE, buffer};
-  }
-
-  // done with script..
-  if (JS_RemoveObjectRoot(cx, &scriptObject) != JS_TRUE) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to remove root object for %s\n", path);
-    return {JS_FALSE, buffer};
-  }
-
-  printf("done executing %s from source...\n", path);
-  return {JS_TRUE, ""};
-}
-
-void teardownJsEnvironment(JSRuntime* rt, JSContext* cx)
-{
-  printf("Destroy context...\n");
+void teardownContext(JSContext* cx) {
+  printf("Destroy JSContext...\n");
   JS_DestroyContext(cx);
-  printf("Destroy runtime...\n");
+}
+void teardownRuntime(JSRuntime* rt)
+{
+  printf("Destroy JSRuntime...\n");
   JS_DestroyRuntime(rt);
-  printf("js shutdown...\n");
+}
+
+void shutdownSpidermonkey() {
+  printf("Shutting down SpiderMonkey...\n");
   JS_ShutDown();
 }
 
@@ -372,24 +271,104 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
     };
 }
 
-sugsConfig execConfig(jsEnv jsEnv)
+sugsConfig execConfig(JSContext* cx, JSObject* global)
 {
   predicateResult result;
   // The introduction of user code
   if (fileExists("config.js")) {
-    result = executeScript("config.js", jsEnv.cx, jsEnv.global);
+    result = executeScript("config.js", cx, global);
     if(result.result == JS_FALSE) {
       printf(result.message);
       exit(EXIT_FAILURE);
     }
   }
   else {
-    result = executeCoffeeScript("config.coffee", jsEnv.cx, jsEnv.global);
+    result = executeCoffeeScript("config.coffee", cx, global);
     if(result.result == JS_FALSE) {
       printf(result.message);
       exit(EXIT_FAILURE);
     }
   }
 
-  return getCurrentConfig(jsEnv.cx, jsEnv.global);
+  return getCurrentConfig(cx, global);
+}
+
+
+workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config)
+{
+  printf("gonna execute %s %d\n", config.moduleEntryPoint, config.entryPointIsCoffee);
+
+  if (fileExists(config.moduleEntryPoint)) {
+    if (config.entryPointIsCoffee == JS_TRUE) {
+      printf("entry point is .coffee: %s\n", config.moduleEntryPoint);
+      executeCoffeeScript(config.moduleEntryPoint, cx, global);
+    }
+    else {
+      printf("entry point is .js\n");
+      executeScript(config.moduleEntryPoint, cx, global);
+    }
+  }
+  else {
+    printf("UNABLE TO FIND %s\n", config.moduleEntryPoint);
+    exit(EXIT_FAILURE);
+  }
+  printf("after executing config...?\n");
+  jsval workersVal;
+  if(!JS_GetProperty(cx, global, "__workers", &workersVal)) {
+    printf("getWorkerInfo: failed to pull workers out of global obj..\n");
+    exit(EXIT_FAILURE);
+  }
+  JSObject* workersObj = JSVAL_TO_OBJECT(workersVal);
+
+  jsval backendsVal;
+  if(!JS_GetProperty(cx, workersObj, "backends", &backendsVal)) {
+    printf("getWorkerInfo: failed to pull backends out of global obj..\n");
+    exit(EXIT_FAILURE);
+  }
+  JSObject* backendsObj = JSVAL_TO_OBJECT(backendsVal);
+
+  jsuint backendWorkersLength = 0;
+  if(!JS_GetArrayLength(cx, backendsObj, &backendWorkersLength)) {
+    printf("getWorkerInfo: unable to get array length of backends obj");
+    exit(EXIT_FAILURE);
+  }
+
+  printf("number of backend workers: %d\n", backendWorkersLength);
+  workerInfo* backendWorkers = new workerInfo[backendWorkersLength];
+  for(int ctr = 0; ctr < backendWorkersLength; ctr++) {
+    jsval backendScriptVal;
+    if(!JS_GetElement(cx, backendsObj, ctr, &backendScriptVal)) {
+      printf("can't pull element out of backendObj array\n");
+      exit(EXIT_FAILURE);
+    }
+    JSString* backendScript = JSVAL_TO_STRING(backendScriptVal);
+    bool isCoffee = doesFilenameEndWithDotCoffee(JS_EncodeString(cx, backendScript));
+    workerInfo wi = {
+      JS_EncodeString(cx, backendScript),
+      isCoffee
+    };
+    printf("BACKEND SCRIPT: %s\n", wi.entryPoint);
+    backendWorkers[ctr] = wi;
+  }
+
+  jsval frontendVal;
+  if(!JS_GetProperty(cx, workersObj, "frontend", &frontendVal)) {
+    printf("getWorkerInfo: failed to pull frontends out of global obj..\n");
+    exit(EXIT_FAILURE);
+  }
+  JSString* frontendStr = JSVAL_TO_STRING(frontendVal);
+
+  bool isCoffee = doesFilenameEndWithDotCoffee(JS_EncodeString(cx, frontendStr));
+  workerInfo frontendWorker = {
+    JS_EncodeString(cx, frontendStr),
+    isCoffee
+  };
+
+  workerInfos wi =  {
+    backendWorkers,
+    backendWorkersLength,
+    frontendWorker
+  };
+  printf("FRONTEND SCRIPT: %s\n", wi.frontendWorker.entryPoint);
+  return wi;
 }

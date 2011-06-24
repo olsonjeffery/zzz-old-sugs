@@ -36,15 +36,17 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "common.hpp"
-#include "gfx/jsgraphics.hpp"
-#include "jsinput.hpp"
+#include "scripting.hpp"
+#include "../../gfx/jsgraphics.hpp"
+#include "../../jsinput.hpp"
 
-jsEnv initJsEnvironment();
-void teardownJsEnvironment(JSRuntime* rt, JSContext* cx);
-predicateResult executeScript(const char* path, JSContext* cx, JSObject* global);
-predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* global);
-predicateResult execStartupCallbacks(jsEnv jsEnv);
-sugsConfig execConfig(jsEnv jsEnv);
+JSRuntime* initRuntime(uint32 maxBytes);
+jsEnv initContext(JSRuntime* rt);
+void teardownContext(JSContext* cx);
+void teardownRuntime(JSRuntime* rt);
+void shutdownSpidermonkey();
+
+sugsConfig execConfig(JSContext* cx, JSObject* global);
+workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config);
 
 #endif
