@@ -2,7 +2,6 @@
 
 static JSBool
 native_rectangle_factory(JSContext* cx, uintN argc, jsval* vp) {
-  printf("calling native_Rectangle_factory\n");
 
   JSObject* rectParams;
   JSObject* colorParams;

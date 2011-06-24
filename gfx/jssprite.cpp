@@ -2,7 +2,6 @@
 
 static JSBool
 native_sprite_factory(JSContext* cx, uintN argc, jsval* vp) {
-  printf("calling native_sprite_factory\n");
 
   JSString* text;
   if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &text)) {

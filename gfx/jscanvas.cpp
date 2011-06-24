@@ -46,13 +46,27 @@ JSBool reformer_native_canvas_draw(JSContext* cx, uintN argc, jsval* vp)
   JS_SET_RVAL(cx, vp, JSVAL_VOID);
   return JS_TRUE;
 }
+static void
+classdef_canvas_finalize(JSContext* cx, JSObject* sp) {
+  /*sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, sp);
+  printf("About to try and delete an sf::RenderWindow...\n");
+  delete window;*/
+}
+static JSClass
+native_canvas_classdef = {
+  "NativeCanvas",
+  JSCLASS_HAS_PRIVATE,
+  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+  JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, classdef_canvas_finalize
+};
+
 static JSFunctionSpec canvas_native_functions[] = {
   JS_FS("__native_draw", reformer_native_canvas_draw, 2, 0),
   JS_FS_END
 };
 
 JSObject* newCanvasFrom(sf::RenderWindow* window, JSContext* cx) {
-  JSObject* canvas = JS_NewObject(cx, NULL, NULL, NULL);
+  JSObject* canvas = JS_NewObject(cx, &native_canvas_classdef, NULL, NULL);
 
   // DEFINE FUNCS FOR CANVAS!!!
   JS_DefineFunctions(cx, canvas, canvas_native_functions);

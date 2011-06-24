@@ -172,8 +172,22 @@ JSObject* newKeysFinderObject(JSContext* cx) {
   return JS_NewObject(cx, &keyFinderClassDef, NULL, NULL);
 }
 
+static void
+classdef_input_finalize(JSContext* cx, JSObject* sp) {
+  /*sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, sp);
+  printf("About to try and delete an sf::RenderWindow...\n");
+  delete window;*/
+}
+static JSClass
+native_input_classdef = {
+  "NativeInput",
+  JSCLASS_HAS_PRIVATE,
+  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+  JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, classdef_input_finalize
+};
+
 JSObject* newInputFrom(sf::RenderWindow* window, JSContext* cx) {
-  JSObject* input = JS_NewObject(cx, NULL, NULL, NULL);
+  JSObject* input = JS_NewObject(cx, &native_input_classdef, NULL, NULL);
   if (JS_SetPrivate(cx, input, window) != JS_TRUE) {
     JS_ReportError(cx, "Failed to bind RenderWindow to new NativeInput");
     return NULL;

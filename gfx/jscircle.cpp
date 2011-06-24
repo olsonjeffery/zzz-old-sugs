@@ -30,7 +30,6 @@
 
 static JSBool
 native_circle_factory(JSContext* cx, uintN argc, jsval* vp) {
-  printf("calling native_Circle_factory\n");
 
   jsdouble radius;
   JSObject* colorParams;
