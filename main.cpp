@@ -31,11 +31,41 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "jssetup.hpp"
+#include "worker/configurator.hpp"
+#include "worker/frontend.hpp"
+#include "worker/backend.hpp"
+
 #include "gfx/sfmlsetup.hpp"
 #include "gfx/jsgraphics.hpp"
 #include "jsinput.hpp"
 #include "medialibrary.hpp"
+
+void getConfig(JSRuntime* rt, sugsConfig* config, workerInfos* workers) {
+  jsEnv jsEnv = initContext(rt);
+  ConfiguratorWorker configurator(rt);
+  configurator.initLibraries();
+  *config = configurator.getConfig();
+  printf("about to parse out workers...\n");
+  *workers = configurator.getWorkerInfos();
+}
+
+bool appIsClosed = false;
+void newBackendWorker(void* wpP) {
+  workerPayload* payload = (workerPayload*)wpP;
+  JSRuntime* rt = initRuntime(1024L * 1024L * 1024L);
+  BackendWorker* worker = new BackendWorker(rt, payload->wi, payload->config);
+  worker->initLibraries();
+  while(!appIsClosed) {
+    //printf("doing backend work...\n");
+    //printf("before doing work..\n");
+    worker->doWork();
+    //printf("before sleep/after work..\n");
+    sf::Sleep(12);
+    //printf("after sleep\n");
+  }
+  delete worker;
+  teardownRuntime(rt);
+}
 
 int main() {
 
@@ -43,88 +73,49 @@ int main() {
     ALL THE SETUP STUFF
   **********************/
   predicateResult result;
-  jsEnv jsEnv = initJsEnvironment();
 
-  // Load up our core dependencies
-  result = executeScript("extlibs/js/underscore.js", jsEnv.cx, jsEnv.global);
-  if(result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
+  printf("setting up runtime and fetching config...\n");
+  JSRuntime* rt = initRuntime(1024L * 1024L * 1024L);
+  sugsConfig config;
+  workerInfos workers;
+  getConfig(rt, &config, &workers);
+
+  printf("intializing the worker pool...\n");
+  FrontendWorker* frontend = new FrontendWorker(rt, config, workers.frontendWorker);
+  frontend->initLibraries();
+
+  sf::Thread* backendThreads[workers.backendsCount];
+  for(int ctr = 0; ctr < workers.backendsCount; ctr++) {
+    workerPayload* wpP = new workerPayload;
+    workerPayload wp = {workers.backendWorkers[ctr], config};
+    *wpP = wp;
+    backendThreads[ctr] = new sf::Thread(&newBackendWorker, wpP);
+    backendThreads[ctr]->Launch();
   }
-  result = executeScript("extlibs/js/coffee-script.js", jsEnv.cx, jsEnv.global);
-  if(result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
-  }
-  result = executeCoffeeScript("sugs.coffee", jsEnv.cx, jsEnv.global);
-  if(result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
-  }
-
-  sugsConfig config = execConfig(jsEnv);
-
-  // init graphics
-  graphicsEnv gfxEnv = initGraphics(jsEnv.cx, config);
-  eventEnv evEnv = {
-    newInputFrom(gfxEnv.window, jsEnv.cx)
-  };
-
-  printf("gonna execute %s %d\n", config.moduleEntryPoint, config.entryPointIsCoffee);
-
-  if (config.entryPointIsCoffee == JS_TRUE) {
-    printf("entry point is .coffee\n");
-    executeCoffeeScript(config.moduleEntryPoint, jsEnv.cx, jsEnv.global);
-  }
-  else {
-    printf("entry point is .js\n");
-    executeScript(config.moduleEntryPoint, jsEnv.cx, jsEnv.global);
-  }
-
-    // some misc pre-startup things
-  MediaLibrary::RegisterDefaultFont();
-
-  // run $.startup() in user code
-  result = execStartupCallbacks(jsEnv);
-  if (result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
-  }
-
   /*****************
     MAIN GAME LOOP
   *****************/
   printf("entering main game loop\n");
 
-  int msElapsed = 0;
-  while(gfxEnv.window->IsOpened()) {
-    sf::Event Event;
+  while(!frontend->isWindowClosed()) {
+    frontend->doWork();
+  }
 
-    msElapsed = gfxEnv.window->GetFrameTime();
-    // check for window close/quit event..
-    while(gfxEnv.window->PollEvent(Event)) {
-      if (Event.Type == sf::Event::Closed) {
-        gfxEnv.window->Close();
-      }
-    }
+  // signal to the backend threads that it's time to go home
+  appIsClosed = true;
 
-    // BEGINNING OF THE DRAW/RENDER LOOP
-    gfxEnv.window->Clear();
-
-    // run $.mainLoop() and $.render() callbacks in
-    // user code
-    callIntoJsRender(jsEnv, gfxEnv, evEnv, msElapsed);
-
-    gfxEnv.window->Display();
-    // END OF DRAW/RENDER LOOP
+  for(int ctr = 0; ctr < workers.backendsCount; ctr++) {
+    backendThreads[ctr]->Wait();
+    delete backendThreads[ctr];
   }
 
   /*************
     TEAR DOWN
   *************/
-  teardownGraphics(gfxEnv.window, gfxEnv.canvas, jsEnv.cx);
+  delete frontend;
 
-  teardownJsEnvironment(jsEnv.rt, jsEnv.cx);
+  delete workers.backendWorkers;
 
+  shutdownSpidermonkey();
   return EXIT_SUCCESS;
 }
