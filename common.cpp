@@ -85,3 +85,39 @@ bool fileExists(const char * filename) {
   }
   return false;
 }
+
+bool doesFilenameEndWithSuffix(const char* filename, const char* desiredSuffix) {
+bool result = JS_FALSE;
+  size_t fLen = strlen(filename);
+  size_t suffixLength = strlen(desiredSuffix);
+  if (fLen > suffixLength) {
+    char suffix[suffixLength];
+    int sufCtr = 0;
+    for(int ctr = fLen - suffixLength;ctr < fLen;ctr++) {
+      suffix[sufCtr] = filename[ctr];
+      sufCtr++;
+    }
+    if (strcmp(desiredSuffix, suffix) == 0) {
+      result = JS_TRUE;
+      printf("%s ends with '%s' .. SUFFIX: '%s'\n", filename, desiredSuffix, suffix);
+    }
+    else {
+      result = JS_FALSE;
+      printf("%s DOES NOT end with '%s' .. SUFFIX: '%s'\n", filename, desiredSuffix, suffix);
+    }
+  }
+  else {
+    printf("never tested if %s ends with '%s' .. assumed it doesn't\n", desiredSuffix, filename);
+  }
+
+  return result;
+}
+
+bool doesFilenameEndWithDotCoffee(const char* filename) {
+  return doesFilenameEndWithSuffix(filename, ".coffee");
+}
+
+clock_t getCurrentMilliseconds() {
+  clock_t uptime = clock() / (CLOCKS_PER_SEC / 1000);
+  return uptime;
+}

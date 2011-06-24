@@ -35,6 +35,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <fstream>
+#include <time.h>
 
 typedef struct {
   JSIntn result;
@@ -65,9 +66,27 @@ typedef struct {
   JSBool entryPointIsCoffee;
 } sugsConfig;
 
+typedef struct {
+  char* entryPoint;
+  JSBool isCoffee;
+} workerInfo;
+
+typedef struct {
+  workerInfo* backendWorkers;
+  int backendsCount;
+  workerInfo frontendWorker;
+} workerInfos;
+
+typedef struct {
+  workerInfo wi;
+  sugsConfig config;
+} workerPayload;
+
 /* util functions */
-void readEntireFile(const char* path, char** buffer, int* length);
+void readEntireFile(const char* path, char** outBuffer, int* outLength);
 bool fileExists(const char * filename);
+bool doesFilenameEndWithDotCoffee(const char* filename);
+clock_t getCurrentMilliseconds();
 
 #define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
 
