@@ -31,7 +31,6 @@ global = this
 global.pathEndsInDotCoffee = (path) ->
   path.match(/\.coffee$/)
 
-
 global.loadNoPrefix = (path) ->
   if global.pathEndsInDotCoffee path
     __native_load_coffee global, path
@@ -64,11 +63,13 @@ global.doStartup = ->
 #
 # This is, pretty much, the main hook into the user code's side
 # of the main game loop
-global.renderSprites = (nativeCanvas, nativeInput, msElapsed) ->
+global.runRender = (nativeCanvas, nativeInput, msElapsed) ->
   canvas = new Canvas(nativeCanvas)
   input = new Input(nativeInput)
-  _.each mainLoopCallbacks, (cb) -> cb msElapsed
   _.each renderCallbacks, (cb) -> cb input, canvas, msElapsed
+
+global.runMainLoop = (msElapsed) ->
+  _.each mainLoopCallbacks, (cb) -> cb msElapsed
 
 # global event registrar/util interface
 configHasRan = false
@@ -91,7 +92,7 @@ global.$ = {
       puts "moduleDir: #{moduleDir}"
 
       # find our module script and add it to the list of scripts to be loaded
-      moduleEntryPoint = if __native_fileExists(moduleDir+"module.js") then "module.js" else "module.coffee"
+      moduleEntryPoint = if __native_fileExists(moduleDir+"module.js") then "moduleConfig.js" else "moduleConfig.coffee"
 
       global.sugsConfig =
         screenWidth: conf.screen.width
@@ -102,6 +103,12 @@ global.$ = {
         entryPointIsCoffee: if (global.pathEndsInDotCoffee moduleEntryPoint) then true else false
     else
       throw "only one call to $.config is allowed to per app"
+
+  moduleConfig: (conf) ->
+    global.__workers =
+      backends: _.map(conf.backends, (b) -> "#{global.sugsConfig.moduleDir}#{b}")
+      frontend: "#{global.sugsConfig.moduleDir}#{conf.frontend}"
+    puts conf.backends.toString()
 
   # $.startup() -- callbacks registered in this function are called
   # after the graphics system is initialized, but before the render
@@ -124,6 +131,14 @@ global.$ = {
   render: (callback) ->
     renderCallbacks.push callback
 }
+
+entryPointsInContext = []
+global.showEntryPoints = ->
+  puts "###############"
+  puts "ENTRY POINTS IN CONTEXT: #{entryPointsInContext.join(', ')}"
+  puts "###############"
+global.addEntryPoint = (ep) ->
+  entryPointsInContext.push ep
 
 # core js libraries to load
 loadNoPrefix "jslib/types.coffee"
