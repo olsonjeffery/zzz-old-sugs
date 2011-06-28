@@ -1,0 +1,184 @@
+# depslib dependency file v1.0
+1308526318 source:/home/jeff/src/sugs/medialibrary.cpp
+	"medialibrary.hpp"
+
+1308526273 /home/jeff/src/sugs/medialibrary.hpp
+	<SFML/Graphics.hpp>
+	<stdio.h>
+
+1308806703 source:/home/jeff/src/sugs/common.cpp
+	"common.hpp"
+
+1308944556 /home/jeff/src/sugs/common.hpp
+	<stdio.h>
+	<stdlib.h>
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+	<iostream>
+	<fstream>
+	<time.h>
+
+1308855742 source:/home/jeff/src/sugs/gfx/jscanvas.cpp
+	"jscanvas.hpp"
+
+1308526433 /home/jeff/src/sugs/gfx/jscanvas.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+
+1308865912 source:/home/jeff/src/sugs/gfx/jscircle.cpp
+	"jsrect.hpp"
+
+1308526423 /home/jeff/src/sugs/gfx/jsrect.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+	"../common.hpp"
+	"jsdrawable.hpp"
+
+1308526437 /home/jeff/src/sugs/gfx/jsdrawable.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+	"../common.hpp"
+
+1308328768 source:/home/jeff/src/sugs/gfx/jsdrawable.cpp
+	"jsdrawable.hpp"
+
+1308807034 source:/home/jeff/src/sugs/gfx/jsgraphics.cpp
+	"jsgraphics.hpp"
+
+1308807090 /home/jeff/src/sugs/gfx/jsgraphics.hpp
+	<math.h>
+	<jsapi.h>
+	"../medialibrary.hpp"
+	"../common.hpp"
+	"jssprite.hpp"
+	"jsrect.hpp"
+	"jscircle.hpp"
+	"jstext.hpp"
+
+1308526428 /home/jeff/src/sugs/gfx/jssprite.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+	"../medialibrary.hpp"
+	"jsdrawable.hpp"
+
+1308526442 /home/jeff/src/sugs/gfx/jscircle.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+	"../common.hpp"
+	"jsdrawable.hpp"
+
+1308526418 /home/jeff/src/sugs/gfx/jstext.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+	"../common.hpp"
+	"jsdrawable.hpp"
+	"../medialibrary.hpp"
+
+1308865907 source:/home/jeff/src/sugs/gfx/jsrect.cpp
+	"jsrect.hpp"
+
+1308865907 source:/home/jeff/src/sugs/gfx/jssprite.cpp
+	"jssprite.hpp"
+
+1308179839 source:/home/jeff/src/sugs/gfx/sfmlsetup.cpp
+	"sfmlsetup.hpp"
+
+1308526414 /home/jeff/src/sugs/gfx/sfmlsetup.hpp
+	<SFML/Graphics.hpp>
+	<stdio.h>
+	<jsapi.h>
+	"../common.hpp"
+	"jscanvas.hpp"
+
+1308855742 source:/home/jeff/src/sugs/jsinput.cpp
+	"jsinput.hpp"
+
+1308526289 /home/jeff/src/sugs/jsinput.hpp
+	<SFML/Graphics.hpp>
+	<jsapi.h>
+
+1308526339 source:/home/jeff/src/sugs/jssetup.cpp
+	"jssetup.hpp"
+
+1308526265 /home/jeff/src/sugs/jssetup.hpp
+	<jsapi.h>
+	<stdlib.h>
+	<stdio.h>
+	<unistd.h>
+	<string.h>
+	"common.hpp"
+	"gfx/jsgraphics.hpp"
+	"jsinput.hpp"
+
+1308944876 source:/home/jeff/src/sugs/main.cpp
+	<SFML/System.hpp>
+	<SFML/Window.hpp>
+	<iostream>
+	<stdio.h>
+	"worker/configurator.hpp"
+	"worker/frontend.hpp"
+	"worker/backend.hpp"
+	"gfx/sfmlsetup.hpp"
+	"gfx/jsgraphics.hpp"
+	"jsinput.hpp"
+	"medialibrary.hpp"
+
+1308525059 source:/home/jeff/src/sugs/gfx/jstext.cpp
+	"jstext.hpp"
+
+1308867214 /home/jeff/src/sugs/worker/frontend.hpp
+	<jsapi.h>
+	<SFML/Graphics.hpp>
+	"worker.hpp"
+	"../common.hpp"
+	"../gfx/sfmlsetup.hpp"
+	"../jsinput.hpp"
+	"../medialibrary.hpp"
+
+1308866627 /home/jeff/src/sugs/worker/worker.hpp
+	<jsapi.h>
+	"spidermonkey/jssetup.hpp"
+	"../common.hpp"
+
+1308944876 /home/jeff/src/sugs/worker/spidermonkey/jssetup.hpp
+	<jsapi.h>
+	<stdlib.h>
+	<stdio.h>
+	<unistd.h>
+	<string.h>
+	"scripting.hpp"
+	"../../gfx/jsgraphics.hpp"
+	"../../jsinput.hpp"
+
+1308665204 /home/jeff/src/sugs/worker/spidermonkey/scripting.hpp
+	<jsapi.h>
+	"../../common.hpp"
+
+1308867234 /home/jeff/src/sugs/worker/backend.hpp
+	<jsapi.h>
+	"worker.hpp"
+	"../common.hpp"
+
+1308867065 source:/home/jeff/src/sugs/worker/backend.cpp
+	"backend.hpp"
+
+1308867065 source:/home/jeff/src/sugs/worker/frontend.cpp
+	"frontend.hpp"
+
+1308944876 source:/home/jeff/src/sugs/worker/spidermonkey/jssetup.cpp
+	"jssetup.hpp"
+
+1308694350 source:/home/jeff/src/sugs/worker/spidermonkey/scripting.cpp
+	"scripting.hpp"
+
+1308867004 source:/home/jeff/src/sugs/worker/worker.cpp
+	"worker.hpp"
+
+1308866137 /home/jeff/src/sugs/worker/configurator.hpp
+	<jsapi.h>
+	"worker.hpp"
+	"../common.hpp"
+
+1308763055 source:/home/jeff/src/sugs/worker/configurator.cpp
+	"configurator.hpp"
+

@@ -141,6 +141,6 @@ global.addEntryPoint = (ep) ->
   entryPointsInContext.push ep
 
 # core js libraries to load
-loadNoPrefix "jslib/types.coffee"
-loadNoPrefix "jslib/drawables.coffee"
-loadNoPrefix "jslib/messaging.coffee"
+loadNoPrefix "src/jslib/types.coffee"
+loadNoPrefix "src/jslib/drawables.coffee"
+loadNoPrefix "src/jslib/messaging.coffee"
