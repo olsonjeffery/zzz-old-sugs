@@ -30,22 +30,18 @@
 
 void BackendWorker::initLibraries() {
   // load core libs
-  printf("INSIDE BACKEND loadSugsLibraries()...\n");
   this->loadSugsLibraries();
   this->loadConfig(this->_config);
 
-  printf("RUNNING BACKEND ENTRY POINT: %s is coffee? %s\n", this->_worker.entryPoint, this->_worker.isCoffee == JS_TRUE ? "yes" : "no");
   predicateResult result;
   this->loadEntryPointScript(_worker.entryPoint, _worker.isCoffee);
 
-  printf("PROCSESING BACKEND STARTUP\n");
   // run $.startup() in user code
   result = execStartupCallbacks(this->_jsEnv);
   if (result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  printf("DONE PROCSESING BACKEND STARTUP\n");
 }
 
 void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
@@ -53,14 +49,10 @@ void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
 
   argv[0] = INT_TO_JSVAL(msElapsed);
   jsval rval;
-  //printf("before calling runMainLoop..\n");
   JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runMainLoop", 1, argv, &rval);
-  //printf("after calling runMainLoop..\n");
 }
 
 void BackendWorker::doWork() {
-  //clock_t currMs = getCurrentMilliseconds();
   clock_t msElapsed = 12;//currMs - this->_lastMs;
   callIntoJsMainLoop(this->_jsEnv, msElapsed);
-  //this->_lastMs = currMs;
 }

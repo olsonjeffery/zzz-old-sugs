@@ -56,12 +56,8 @@ void newBackendWorker(void* wpP) {
   BackendWorker* worker = new BackendWorker(rt, payload->wi, payload->config);
   worker->initLibraries();
   while(!appIsClosed) {
-    //printf("doing backend work...\n");
-    //printf("before doing work..\n");
     worker->doWork();
-    //printf("before sleep/after work..\n");
     sf::Sleep(12);
-    //printf("after sleep\n");
   }
   delete worker;
   teardownRuntime(rt);

@@ -4,8 +4,8 @@
 	<File name="common.cpp" open="0" top="0" tabpos="0">
 		<Cursor position="3753" topLine="103" />
 	</File>
-	<File name="common.hpp" open="1" top="0" tabpos="2">
-		<Cursor position="1755" topLine="45" />
+	<File name="common.hpp" open="0" top="0" tabpos="2">
+		<Cursor position="1815" topLine="24" />
 	</File>
 	<File name="gfx/jscanvas.cpp" open="0" top="0" tabpos="4">
 		<Cursor position="2459" topLine="41" />
@@ -62,7 +62,7 @@
 		<Cursor position="1760" topLine="1" />
 	</File>
 	<File name="main.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="2661" topLine="51" />
+		<Cursor position="2661" topLine="39" />
 	</File>
 	<File name="medialibrary.cpp" open="0" top="0" tabpos="9">
 		<Cursor position="2099" topLine="27" />
@@ -70,8 +70,8 @@
 	<File name="medialibrary.hpp" open="0" top="0" tabpos="10">
 		<Cursor position="1660" topLine="0" />
 	</File>
-	<File name="worker/backend.cpp" open="1" top="0" tabpos="5">
-		<Cursor position="2651" topLine="47" />
+	<File name="worker/backend.cpp" open="1" top="1" tabpos="5">
+		<Cursor position="2651" topLine="26" />
 	</File>
 	<File name="worker/backend.hpp" open="0" top="0" tabpos="0">
 		<Cursor position="2151" topLine="42" />
@@ -88,10 +88,10 @@
 	<File name="worker/frontend.hpp" open="0" top="0" tabpos="0">
 		<Cursor position="2483" topLine="46" />
 	</File>
-	<File name="worker/spidermonkey/jssetup.cpp" open="1" top="0" tabpos="4">
+	<File name="worker/spidermonkey/jssetup.cpp" open="0" top="0" tabpos="4">
 		<Cursor position="6302" topLine="182" />
 	</File>
-	<File name="worker/spidermonkey/jssetup.hpp" open="1" top="0" tabpos="3">
+	<File name="worker/spidermonkey/jssetup.hpp" open="0" top="0" tabpos="3">
 		<Cursor position="2094" topLine="33" />
 	</File>
 	<File name="worker/spidermonkey/scripting.cpp" open="0" top="0" tabpos="0">
@@ -100,8 +100,8 @@
 	<File name="worker/spidermonkey/scripting.hpp" open="0" top="0" tabpos="0">
 		<Cursor position="1984" topLine="20" />
 	</File>
-	<File name="worker/worker.cpp" open="1" top="1" tabpos="0">
-		<Cursor position="5633" topLine="106" />
+	<File name="worker/worker.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="2217" topLine="36" />
 	</File>
 	<File name="worker/worker.hpp" open="0" top="0" tabpos="0">
 		<Cursor position="2222" topLine="27" />
