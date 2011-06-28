@@ -75,7 +75,7 @@ JS_BEGIN_EXTERN_C
 #define JS_ALWAYS_FALSE(expr) JS_ASSERT(!(expr))
 
 # ifdef JS_THREADSAFE
-# define JS_THREADSAFE_ASSERT(expr) JS_ASSERT(expr)
+# define JS_THREADSAFE_ASSERT(expr) JS_ASSERT(expr) 
 # else
 # define JS_THREADSAFE_ASSERT(expr) ((void) 0)
 # endif
@@ -251,7 +251,7 @@ JS_END_EXTERN_C
 
 #ifdef __cplusplus
 
-/*
+/* 
  * User guide to memory management within SpiderMonkey:
  *
  * Quick tips:
@@ -272,7 +272,7 @@ JS_END_EXTERN_C
  *
  *   - Otherwise deallocate on a background thread using a JSContext:
  *       cx->{free_,delete_,array_delete}
- *
+ *  
  *   - If no JSContext is available, use a JSRuntime:
  *       rt->{free_,delete_,array_delete}
  *
@@ -283,7 +283,7 @@ JS_END_EXTERN_C
  *
  *   - Mixing and matching these allocators is allowed (you may free memory
  *     allocated by any allocator, with any deallocator).
- *
+ * 
  *   - Never, ever use normal C/C++ memory management:
  *       malloc, free, new, new[], delete, operator new, etc.
  *
@@ -294,7 +294,7 @@ JS_END_EXTERN_C
  *   - Classes which have private constructors or destructors should have
  *     JS_DECLARE_ALLOCATION_FRIENDS_FOR_PRIVATE_CONSTRUCTOR added to their
  *     declaration.
- *
+ * 
  * Details:
  *
  *   Using vanilla new/new[] is unsafe in SpiderMonkey because they throw on
@@ -338,7 +338,7 @@ JS_END_EXTERN_C
  * Given a class which should provide new_() methods, add
  * JS_DECLARE_NEW_METHODS (see JSContext for a usage example). This
  * adds new_()s with up to 12 parameters. Add more versions of new_ below if
- * you need more than 12 parameters.
+ * you need more than 12 parameters.  
  *
  * Note: Do not add a ; at the end of a use of JS_DECLARE_NEW_METHODS,
  * or the build will break.
