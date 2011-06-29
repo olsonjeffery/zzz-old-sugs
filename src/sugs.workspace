@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
-<CodeBlocks_workspace_file>
-	<Workspace title="sugs">
-		<Project filename="libsugs/libsugs.cbp" />
-		<Project filename="sugsexample/sugs.cbp" active="1">
-			<Depends filename="libsugs/libsugs.cbp" />
-		</Project>
-	</Workspace>
-</CodeBlocks_workspace_file>
