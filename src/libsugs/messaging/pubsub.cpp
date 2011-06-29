@@ -26,39 +26,4 @@
  *
  */
 
-
-#ifndef __backend_worker_hpp__
-#define __backend_worker_hpp__
-
-#include <jsapi.h>
-
-#include "worker.hpp"
-#include "../common.hpp"
-
-class BackendWorker : public Worker {
-  public:
-    BackendWorker(JSRuntime* rt, workerInfo worker, sugsConfig config)
-    : Worker(rt)
-    {
-      this->_worker = worker;
-      this->_config = config;
-      this->_lastMs = getCurrentMilliseconds();
-    }
-
-    ~BackendWorker()
-    {
-      printf("backend dtor...\n");
-      jsval argv[0];
-      jsval rVal;
-      JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "showEntryPoints", 0, argv, &rVal);
-    }
-
-    virtual void initLibraries();
-    virtual void doWork();
-  private:
-    workerInfo _worker;
-    sugsConfig _config;
-    clock_t _lastMs;
-};
-
-#endif
+#include "pubsub.hpp"

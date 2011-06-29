@@ -26,68 +26,40 @@
  *
  */
 
-#ifndef __common_hpp__
-#define __common_hpp__
 
-#include <stdio.h>
-#include <stdlib.h>
+#ifndef __backend_worker_hpp__
+#define __backend_worker_hpp__
+
 #include <jsapi.h>
-#include <SFML/Graphics.hpp>
-#include <iostream>
-#include <fstream>
-#include <time.h>
 
-typedef struct {
-  JSIntn result;
-  char* message;
-} predicateResult;
+#include "worker.hpp"
+#include "../common.hpp"
 
-typedef struct {
-  JSRuntime* rt;
-  JSContext* cx;
-  JSObject* global;
-} jsEnv;
+class BackendWorker : public Worker {
+  public:
+    BackendWorker(JSRuntime* rt, workerInfo worker, sugsConfig config)
+    : Worker(rt)
+    {
+      std::string f = "F";
+      this->_worker = worker;
+      this->_config = config;
+      this->_lastMs = getCurrentMilliseconds();
+    }
 
-typedef struct {
-  sf::RenderWindow* window;
-  JSObject* canvas;
-} graphicsEnv;
+    ~BackendWorker()
+    {
+      printf("backend dtor...\n");
+      jsval argv[0];
+      jsval rVal;
+      JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "showEntryPoints", 0, argv, &rVal);
+    }
 
-typedef struct {
-  JSObject* input;
-} eventEnv;
-
-typedef struct {
-  char* moduleDir;
-  char* moduleEntryPoint;
-  int screenWidth;
-  int screenHeight;
-  int colorDepth;
-  JSBool entryPointIsCoffee;
-} sugsConfig;
-
-typedef struct {
-  char* entryPoint;
-  JSBool isCoffee;
-} workerInfo;
-
-typedef struct {
-  workerInfo* backendWorkers;
-  int backendsCount;
-  workerInfo frontendWorker;
-} workerInfos;
-
-typedef struct {
-  workerInfo wi;
-  sugsConfig config;
-} workerPayload;
-
-/* util functions */
-void readEntireFile(const char* path, char** outBuffer, int* outLength);
-bool fileExists(const char * filename);
-bool doesFilenameEndWithDotCoffee(const char* filename);
-clock_t getCurrentMilliseconds();
-
-#define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
+    virtual void initLibraries();
+    virtual void doWork();
+  private:
+    workerInfo _worker;
+    sugsConfig _config;
+    clock_t _lastMs;
+};
 
 #endif

@@ -31,14 +31,14 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "worker/configurator.hpp"
-#include "worker/frontend.hpp"
-#include "worker/backend.hpp"
+#include "../libsugs/worker/configurator.hpp"
+#include "../libsugs/worker/frontend.hpp"
+#include "../libsugs/worker/backend.hpp"
 
-#include "gfx/sfmlsetup.hpp"
-#include "gfx/jsgraphics.hpp"
-#include "jsinput.hpp"
-#include "medialibrary.hpp"
+#include "../libsugs/gfx/sfmlsetup.hpp"
+#include "../libsugs/medialibrary.hpp"
+
+#include "../libsugs/messaging/inprocmessenger.hpp"
 
 void getConfig(JSRuntime* rt, sugsConfig* config, workerInfos* workers) {
   jsEnv jsEnv = initContext(rt);
@@ -69,6 +69,9 @@ int main() {
     ALL THE SETUP STUFF
   **********************/
   predicateResult result;
+
+  // initialize the in-process messenger facility
+  InProcMessenger::initialize();
 
   printf("setting up runtime and fetching config...\n");
   JSRuntime* rt = initRuntime(1024L * 1024L * 1024L);

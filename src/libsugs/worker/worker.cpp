@@ -43,7 +43,7 @@ void Worker::loadSugsLibraries() {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  result = executeCoffeeScript("src/sugs.coffee", this->_jsEnv.cx, this->_jsEnv.global);
+  result = executeCoffeeScript("src/libsugs/sugs.coffee", this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
