@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
-	<ActiveTarget name="linux64Debug" />
+	<ActiveTarget name="linux64Release" />
+	<File name="worker/frontend.hpp" open="1" top="0" tabpos="2">
+		<Cursor position="2642" topLine="35" />
+	</File>
+	<File name="worker/worker.cpp" open="1" top="0" tabpos="3">
+		<Cursor position="2176" topLine="26" />
+	</File>
 </CodeBlocks_layout_file>

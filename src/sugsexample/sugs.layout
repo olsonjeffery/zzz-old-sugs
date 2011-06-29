@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="linux64Release" />
-	<File name="main.cpp" open="1" top="0" tabpos="0">
-		<Cursor position="2647" topLine="44" />
+	<File name="main.cpp" open="1" top="1" tabpos="0">
+		<Cursor position="2636" topLine="42" />
 	</File>
 </CodeBlocks_layout_file>
