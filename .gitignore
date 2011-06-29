@@ -1,6 +1,7 @@
 bin
 obj
 *swp
-/sugs.layout
-/sugs.depend
+*.layout
+*.depend
 *.cbTemp
+
