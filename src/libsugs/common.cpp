@@ -121,3 +121,10 @@ clock_t getCurrentMilliseconds() {
   clock_t uptime = clock() / (CLOCKS_PER_SEC / 1000);
   return uptime;
 }
+
+std::string getCurrentWorkingDir() {
+  char buffer[FILENAME_MAX];
+  getcwd(buffer, sizeof(buffer));
+  std::string retVal(buffer);
+  return retVal;
+}

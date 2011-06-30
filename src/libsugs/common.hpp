@@ -89,6 +89,7 @@ void readEntireFile(const char* path, char** outBuffer, int* outLength);
 bool fileExists(const char * filename);
 bool doesFilenameEndWithDotCoffee(const char* filename);
 clock_t getCurrentMilliseconds();
+std::string getCurrentWorkingDir();
 
 #define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
 
