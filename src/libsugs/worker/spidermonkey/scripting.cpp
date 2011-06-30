@@ -29,9 +29,45 @@
 #include "scripting.hpp"
 
 /* prototypes */
-predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global);
+predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global) {
+  printf("executing %s from source!!!\n", path);
+  /* Execute a script */
+  JSObject *scriptObject;
+  jsval rval;
 
-predicateResult executeScript(const char* path, JSContext* cx, JSObject* global) {
+  /* Compile a script file into a script object */
+  scriptObject = JS_CompileScript(cx, global, *src, length, path, 1);
+  if (!scriptObject) {
+    char buffer[2056];
+    sprintf(buffer, "Failed to compile %s\n", path);
+    return {JS_FALSE, buffer};
+  }
+
+  if (JS_AddObjectRoot(cx, &scriptObject) != JS_TRUE) {
+    char buffer[2056];
+    sprintf(buffer, "Failed to add root object for %s\n", path);
+    return {JS_FALSE, buffer};
+  }
+
+  /* Execute script object */
+  if (JS_ExecuteScript(cx, global, scriptObject, &rval) != JS_TRUE) {
+    char buffer[2056];
+    sprintf(buffer, "Failed to execute %s\n", path);
+    return {JS_FALSE, buffer};
+  }
+
+  // done with script..
+  if (JS_RemoveObjectRoot(cx, &scriptObject) != JS_TRUE) {
+    char buffer[2056];
+    sprintf(buffer, "Failed to remove root object for %s\n", path);
+    return {JS_FALSE, buffer};
+  }
+
+  printf("done executing %s from source...\n", path);
+  return {JS_TRUE, ""};
+}
+
+predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObject* global) {
   char* srcBuffer;
   int length;
   if (!fileExists(path)) {
@@ -46,7 +82,7 @@ predicateResult executeScript(const char* path, JSContext* cx, JSObject* global)
   return result;
 }
 
-predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* global) {
+predicateResult executeFullPathCoffeeScript(const char* path, JSContext* cx, JSObject* global) {
   char* buffer;
   int length;
   if (!fileExists(path)) {
@@ -96,40 +132,34 @@ predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* g
   return result;
 }
 
-predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global) {
-  printf("executing %s from source!!!\n", path);
-  /* Execute a script */
-  JSObject *scriptObject;
-  jsval rval;
-
-  /* Compile a script file into a script object */
-  scriptObject = JS_CompileScript(cx, global, *src, length, path, 1);
-  if (!scriptObject) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to compile %s\n", path);
-    return {JS_FALSE, buffer};
+predicateResult findAndExecuteScript(const char* relScriptLoc, pathStrings paths, JSContext* cx, JSObject* global)
+{
+  bool foundScript = false;
+  predicateResult result;
+  std::string scriptFragment(relScriptLoc);
+  printf("paths length: %d\n", paths.length);
+  for(int ctr = 0; foundScript == false && ctr < paths.length;ctr++)
+  {
+    printf("gonna parse out path.....\n");
+    std::string pathPrefix = paths.paths[ctr];
+    printf("the dork.. %s\n", pathPrefix.c_str());
+    std::string fullPath = pathPrefix + scriptFragment;
+    const char* fullPathCStr = fullPath.c_str();
+    printf("Looking in %s for %s\n", pathPrefix.c_str(), fullPathCStr);
+    if(fileExists(fullPathCStr)) {
+      foundScript = true;
+      if (doesFilenameEndWithDotCoffee(fullPathCStr)) {
+        result = executeFullPathCoffeeScript(fullPathCStr, cx, global);
+      }
+      else {
+        result = executeFullPathJavaScript(fullPathCStr, cx, global);
+      }
+    }
   }
-
-  if (JS_AddObjectRoot(cx, &scriptObject) != JS_TRUE) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to add root object for %s\n", path);
-    return {JS_FALSE, buffer};
+  if (foundScript == false) {
+    char buffer[1028];
+    sprintf(buffer, "findAndExecuteScript: FAILed to locate script '%s' in available paths...\n", relScriptLoc);
+    result = {JS_FALSE, buffer};
   }
-
-  /* Execute script object */
-  if (JS_ExecuteScript(cx, global, scriptObject, &rval) != JS_TRUE) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to execute %s\n", path);
-    return {JS_FALSE, buffer};
-  }
-
-  // done with script..
-  if (JS_RemoveObjectRoot(cx, &scriptObject) != JS_TRUE) {
-    char buffer[2056];
-    sprintf(buffer, "Failed to remove root object for %s\n", path);
-    return {JS_FALSE, buffer};
-  }
-
-  printf("done executing %s from source...\n", path);
-  return {JS_TRUE, ""};
+  return result;
 }

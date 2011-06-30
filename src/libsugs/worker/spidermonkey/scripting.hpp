@@ -33,8 +33,9 @@
 
 #include "../../common.hpp"
 
-predicateResult executeScript(const char* path, JSContext* cx, JSObject* global);
-predicateResult executeCoffeeScript(const char* path, JSContext* cx, JSObject* global);
+predicateResult findAndExecuteScript(const char* path, pathStrings paths, JSContext* cx, JSObject* global);
+predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObject* global);
+predicateResult executeFullPathCoffeeScript(const char* path, JSContext* cx, JSObject* global);
 predicateResult execStartupCallbacks(jsEnv jsEnv);
 
 #endif
