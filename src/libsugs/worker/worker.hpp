@@ -50,7 +50,7 @@ class Worker
     virtual void teardown();
     virtual void doWork();
   protected:
-    void loadSugsLibraries();
+    void loadSugsLibraries(pathStrings paths);
     void loadConfig(sugsConfig config);
     void loadEntryPointScript(const char* path, bool isCoffee);
     jsEnv _jsEnv;

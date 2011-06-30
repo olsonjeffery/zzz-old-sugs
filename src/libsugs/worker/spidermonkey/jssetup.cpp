@@ -58,7 +58,7 @@ JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
 
   char* path = JS_EncodeString(cx, text);
 
-  predicateResult result = executeScript(path, cx, global);
+  predicateResult result = executeFullPathJavaScript(path, cx, global);
   if (result.result == JS_FALSE) {
     JS_ReportError(cx, "reformer_native_executeScript -- error running js script '%s': %s", path, result.message);
     return JS_FALSE;
@@ -80,7 +80,7 @@ JSBool reformer_native_executeCoffeeScript(JSContext* cx, uintN argc, jsval* vp)
 
   char* path = JS_EncodeString(cx, text);
 
-  predicateResult result = executeCoffeeScript(path, cx, global);
+  predicateResult result = executeFullPathCoffeeScript(path, cx, global);
   if (result.result == JS_FALSE) {
     JS_ReportError(cx, "reformer_native_executeCoffeeScript -- error running coffee script '%s': %s", path, result.message);
     return JS_FALSE;
@@ -211,7 +211,7 @@ predicateResult execStartupCallbacks(jsEnv jsEnv) {
 
 sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
     jsval scVal;
-    if(!JS_GetProperty(cx, global, "sugsConfig", &scVal)) {
+    if(!JS_GetProperty(cx, global, "config", &scVal)) {
         printf("getCurrentConfig: failed to fetch config from global.sugsConfig\n");
         exit(EXIT_FAILURE);
     }
@@ -238,13 +238,40 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
     }
     double colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
 
-    jsval moduleDirVal;
-    if(!JS_GetProperty(cx, sugsConfig, "moduleDir", &moduleDirVal)) {
-        printf("getCurrentConfig: failure to pull moduleDir from global.sugsConfig\n");
+    jsval pathsVal;
+    if(!JS_GetProperty(cx, sugsConfig, "paths", &pathsVal)) {
+        printf("getCurrentConfig: failure to pull paths from global.sugsConfig\n");
         exit(EXIT_FAILURE);
     }
-    JSString* moduleDirObj = JSVAL_TO_STRING(moduleDirVal);
-    char* moduleDir = JS_EncodeString(cx, moduleDirObj);
+    JSObject* pathsObj = JSVAL_TO_OBJECT(pathsVal);
+
+    jsuint pathsLength;
+    if(!JS_GetArrayLength(cx, pathsObj, &pathsLength)) {
+      printf("getCurrentConfig: failure to pull paths length from paths obj in global.sugsConfig\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("number of paths: %d\n", pathsLength);
+
+    pathStrings paths;
+    paths.length = pathsLength;
+    paths.paths = new std::string[pathsLength];
+    std::string cwdPrefix = getCurrentWorkingDir();
+    std::string sep = "/"; // FIXME: need platform portable solution
+    for(jsint ctr = 0;ctr < pathsLength;ctr++) {
+      jsval entryVal;
+      if (!JS_GetElement(cx, pathsObj, ctr, &entryVal)) {
+        printf("getCurrentConfig: failure to pull entryVal from pathsObj.. ctr pos: %d\n", ctr);
+        exit(EXIT_FAILURE);
+      }
+      JSString* entryStr = JSVAL_TO_STRING(entryVal);
+      std::string entryString(JS_EncodeString(cx, entryStr));
+
+      paths.paths[ctr] = cwdPrefix + sep + entryString;
+      printf("stored %s as a lookup path...\n", paths.paths[ctr].c_str());
+    }
+
+    printf("done parsing out paths...\n");
 
     jsval moduleEntryPointVal;
     if(!JS_GetProperty(cx, sugsConfig, "moduleEntryPoint", &moduleEntryPointVal)) {
@@ -254,20 +281,13 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
     JSString* moduleEntryPointObj = JSVAL_TO_STRING(moduleEntryPointVal);
     char* moduleEntryPoint = JS_EncodeString(cx, moduleEntryPointObj);
 
-    jsval isCoffeeVal;
-    if(!JS_GetProperty(cx, sugsConfig, "entryPointIsCoffee", &isCoffeeVal)) {
-        printf("couldn't get isCoffee from config\n");
-        exit(EXIT_FAILURE);
-    }
-    JSBool entryPointIsCoffee = JSVAL_TO_BOOLEAN(isCoffeeVal);
-
+    printf("successfully parsed config...\n");
     return {
-        moduleDir,
+        paths,
         moduleEntryPoint,
         width,
         height,
         colorDepth,
-        entryPointIsCoffee
     };
 }
 
@@ -276,14 +296,7 @@ sugsConfig execConfig(JSContext* cx, JSObject* global)
   predicateResult result;
   // The introduction of user code
   if (fileExists("config.js")) {
-    result = executeScript("config.js", cx, global);
-    if(result.result == JS_FALSE) {
-      printf(result.message);
-      exit(EXIT_FAILURE);
-    }
-  }
-  else {
-    result = executeCoffeeScript("config.coffee", cx, global);
+    result = executeFullPathJavaScript("config.js", cx, global);
     if(result.result == JS_FALSE) {
       printf(result.message);
       exit(EXIT_FAILURE);
@@ -296,16 +309,16 @@ sugsConfig execConfig(JSContext* cx, JSObject* global)
 
 workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config)
 {
-  printf("gonna execute %s %d\n", config.moduleEntryPoint, config.entryPointIsCoffee);
+  printf("gonna execute %s\n", config.moduleEntryPoint);
 
   if (fileExists(config.moduleEntryPoint)) {
-    if (config.entryPointIsCoffee == JS_TRUE) {
+    if (doesFilenameEndWithDotCoffee(config.moduleEntryPoint) == JS_TRUE) {
       printf("entry point is .coffee: %s\n", config.moduleEntryPoint);
-      executeCoffeeScript(config.moduleEntryPoint, cx, global);
+      executeFullPathCoffeeScript(config.moduleEntryPoint, cx, global);
     }
     else {
       printf("entry point is .js\n");
-      executeScript(config.moduleEntryPoint, cx, global);
+      executeFullPathJavaScript(config.moduleEntryPoint, cx, global);
     }
   }
   else {

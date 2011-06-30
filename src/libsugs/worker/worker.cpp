@@ -30,20 +30,20 @@
 
 void Worker::initLibraries() {}
 
-void Worker::loadSugsLibraries() {
+void Worker::loadSugsLibraries(pathStrings paths) {
   predicateResult result;
   // Load up our core dependencies
-  result = executeScript("extlibs/js/underscore.js", this->_jsEnv.cx, this->_jsEnv.global);
+  result = findAndExecuteScript("underscore.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  result = executeScript("extlibs/js/coffee-script.js", this->_jsEnv.cx, this->_jsEnv.global);
+  result = findAndExecuteScript("coffee-script.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  result = executeCoffeeScript("src/libsugs/sugs.coffee", this->_jsEnv.cx, this->_jsEnv.global);
+  result = findAndExecuteScript("sugs.coffee", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
@@ -70,17 +70,20 @@ void Worker::loadConfig(sugsConfig config) {
     printf("Failed to convert native sugsConfig.colorDepth and store in sugsConfig JSObject\n");
     exit(EXIT_FAILURE);
   }
-  jsval entryPointIsCoffeeVal = BOOLEAN_TO_JSVAL(config.entryPointIsCoffee);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "entryPointIsCoffee", &entryPointIsCoffeeVal)) {
-    printf("Failed to convert native sugsConfig.entryPointIsCoffee and store in sugsConfig JSObject\n");
+
+  jsval pathVals[config.paths.length];
+  for(int ctr = 0; ctr < config.paths.length;ctr++) {
+    const char* cStr = config.paths.paths[ctr].c_str();
+    JSString* pathStr = JS_NewStringCopyN(this->_jsEnv.cx, cStr, strlen(cStr));
+    pathVals[ctr] =STRING_TO_JSVAL(pathStr);
+  }
+  JSObject* pathsArrObj = JS_NewArrayObject(this->_jsEnv.cx, config.paths.length, pathVals);
+  jsval pathsArrVal = OBJECT_TO_JSVAL(pathsArrObj);
+  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "paths", &pathsArrVal)) {
+    printf("Failed to convert native sugsConfig.paths and store in sugsConfig JSObject\n");
     exit(EXIT_FAILURE);
   }
-  JSString* moduleDirStr = JS_NewStringCopyN(this->_jsEnv.cx, config.moduleDir, strlen(config.moduleDir));
-  jsval moduleDirVal = STRING_TO_JSVAL(moduleDirStr);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "moduleDir", &moduleDirVal)) {
-    printf("Failed to convert native sugsConfig.moduleDir and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
+
   JSString* moduleEntryPointStr = JS_NewStringCopyN(this->_jsEnv.cx, config.moduleEntryPoint, strlen(config.moduleEntryPoint));
   jsval moduleEntryPointVal = STRING_TO_JSVAL(moduleEntryPointStr);
   if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "moduleEntryPoint", &moduleEntryPointVal)) {
@@ -93,6 +96,7 @@ void Worker::loadConfig(sugsConfig config) {
     printf("Failed to convert native sugsConfig and load into global object\n");
     exit(EXIT_FAILURE);
   }
+  printf("sugsConfig added to global\n");
 }
 
 void Worker::doWork() { }
@@ -104,14 +108,14 @@ void Worker::teardown() {
 void Worker::loadEntryPointScript(const char* entryPoint, bool isCoffee) {
   predicateResult result;
   if (isCoffee) {
-    result = executeCoffeeScript(entryPoint, this->_jsEnv.cx, this->_jsEnv.global);
+    result = executeFullPathCoffeeScript(entryPoint, this->_jsEnv.cx, this->_jsEnv.global);
     if(result.result == JS_FALSE) {
       printf(result.message);
       exit(EXIT_FAILURE);
     }
   }
   else {
-    result = executeScript(entryPoint, this->_jsEnv.cx, this->_jsEnv.global);
+    result = executeFullPathJavaScript(entryPoint, this->_jsEnv.cx, this->_jsEnv.global);
     if(result.result == JS_FALSE) {
       printf(result.message);
       exit(EXIT_FAILURE);

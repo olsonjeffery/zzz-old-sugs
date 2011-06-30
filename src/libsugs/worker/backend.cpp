@@ -30,8 +30,9 @@
 
 void BackendWorker::initLibraries() {
   // load core libs
-  this->loadSugsLibraries();
   this->loadConfig(this->_config);
+  this->loadSugsLibraries(this->_config.paths);
+
 
   predicateResult result;
   this->loadEntryPointScript(_worker.entryPoint, _worker.isCoffee);

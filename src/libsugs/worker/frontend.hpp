@@ -45,6 +45,7 @@ class FrontendWorker : public Worker {
     : Worker(rt)
     {
       this->_config = config;
+      printf("initializing graphics.. sw: %d\n", config.screenWidth);
       // init graphics
       this->_gfxEnv = initGraphics(this->_jsEnv.cx, this->_config);
       this->_evEnv = {

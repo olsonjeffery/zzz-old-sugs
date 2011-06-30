@@ -31,13 +31,12 @@
 void FrontendWorker::initLibraries() {
   //load core libs
   printf("inside frontend loadSugsLibraries()...\n");
-  this->loadSugsLibraries();
+  this->loadConfig(this->_config);
+  this->loadSugsLibraries(this->_config.paths);
 
   // init sfml bindings for the frontend
   registerGraphicsNatives(this->_jsEnv.cx, this->_jsEnv.global);
   registerInputNatives(this->_jsEnv.cx, this->_jsEnv.global);
-
-  this->loadConfig(this->_config);
 
   printf("gonna try to hit it up...%s\n", (this->_worker.isCoffee == JS_TRUE ? "yep!" : "no..."));
 

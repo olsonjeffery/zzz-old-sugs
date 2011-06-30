@@ -36,6 +36,7 @@
 #include <iostream>
 #include <fstream>
 #include <time.h>
+#include <string>
 
 #include "common/rng.hpp"
 
@@ -60,12 +61,16 @@ typedef struct {
 } eventEnv;
 
 typedef struct {
-  char* moduleDir;
+  std::string* paths;
+  int length;
+} pathStrings;
+
+typedef struct {
+  pathStrings paths;
   char* moduleEntryPoint;
   int screenWidth;
   int screenHeight;
   int colorDepth;
-  JSBool entryPointIsCoffee;
 } sugsConfig;
 
 typedef struct {

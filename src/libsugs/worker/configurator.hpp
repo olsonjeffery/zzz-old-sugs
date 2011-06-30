@@ -38,7 +38,9 @@ class ConfiguratorWorker : public Worker
   public:
     ConfiguratorWorker(JSRuntime* rt)
     : Worker(rt)
-    { }
+    {
+      this->parseConfigFile();
+    }
 
     ~ConfiguratorWorker()
     {
@@ -48,8 +50,10 @@ class ConfiguratorWorker : public Worker
     workerInfos getWorkerInfos();
     virtual void initLibraries();
   private:
+    void parseConfigFile();
     sugsConfig _config;
     workerInfos _workers;
+    std::string _pathToExtLibs;
 };
 
 #endif

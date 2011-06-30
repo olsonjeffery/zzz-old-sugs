@@ -504,10 +504,10 @@
 1309279808 source:/home/jeff/src/sugs/src/worker/worker.cpp
 	"worker.hpp"
 
-1308806703 source:/home/jeff/src/sugs/src/libsugs/common.cpp
+1309410679 source:/home/jeff/src/sugs/src/libsugs/common.cpp
 	"common.hpp"
 
-1309354926 /home/jeff/src/sugs/src/libsugs/common.hpp
+1309410659 /home/jeff/src/sugs/src/libsugs/common.hpp
 	<stdio.h>
 	<stdlib.h>
 	<jsapi.h>
@@ -515,6 +515,7 @@
 	<iostream>
 	<fstream>
 	<time.h>
+	<string>
 	"common/rng.hpp"
 
 1309356431 /home/jeff/src/sugs/src/libsugs/common/rng.hpp
@@ -594,7 +595,7 @@
 1308525059 source:/home/jeff/src/sugs/src/libsugs/gfx/jstext.cpp
 	"jstext.hpp"
 
-1308179839 source:/home/jeff/src/sugs/src/libsugs/gfx/sfmlsetup.cpp
+1309413135 source:/home/jeff/src/sugs/src/libsugs/gfx/sfmlsetup.cpp
 	"sfmlsetup.hpp"
 
 1308526414 /home/jeff/src/sugs/src/libsugs/gfx/sfmlsetup.hpp
@@ -631,7 +632,7 @@
 1309363554 source:/home/jeff/src/sugs/src/libsugs/messaging/pubsub.cpp
 	"pubsub.hpp"
 
-1309282043 source:/home/jeff/src/sugs/src/libsugs/worker/backend.cpp
+1309412107 source:/home/jeff/src/sugs/src/libsugs/worker/backend.cpp
 	"backend.hpp"
 
 1309283682 /home/jeff/src/sugs/src/libsugs/worker/backend.hpp
@@ -639,7 +640,7 @@
 	"worker.hpp"
 	"../common.hpp"
 
-1308866627 /home/jeff/src/sugs/src/libsugs/worker/worker.hpp
+1309388887 /home/jeff/src/sugs/src/libsugs/worker/worker.hpp
 	<jsapi.h>
 	"spidermonkey/jssetup.hpp"
 	"../common.hpp"
@@ -654,22 +655,22 @@
 	"../../gfx/jsgraphics.hpp"
 	"../../jsinput.hpp"
 
-1308665204 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.hpp
+1309388361 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.hpp
 	<jsapi.h>
 	"../../common.hpp"
 
-1308763055 source:/home/jeff/src/sugs/src/libsugs/worker/configurator.cpp
+1309412212 source:/home/jeff/src/sugs/src/libsugs/worker/configurator.cpp
 	"configurator.hpp"
 
-1308866137 /home/jeff/src/sugs/src/libsugs/worker/configurator.hpp
+1309412059 /home/jeff/src/sugs/src/libsugs/worker/configurator.hpp
 	<jsapi.h>
 	"worker.hpp"
 	"../common.hpp"
 
-1308867065 source:/home/jeff/src/sugs/src/libsugs/worker/frontend.cpp
+1309412107 source:/home/jeff/src/sugs/src/libsugs/worker/frontend.cpp
 	"frontend.hpp"
 
-1308867214 /home/jeff/src/sugs/src/libsugs/worker/frontend.hpp
+1309413237 /home/jeff/src/sugs/src/libsugs/worker/frontend.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 	"worker.hpp"
@@ -678,13 +679,13 @@
 	"../jsinput.hpp"
 	"../medialibrary.hpp"
 
-1308944876 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
+1309410979 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
 	"jssetup.hpp"
 
-1308694350 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
+1309410191 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
 	"scripting.hpp"
 
-1309380805 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
+1309412336 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
 	"worker.hpp"
 
 1309269245 /home/jeff/src/sugs/extlibs/linux64Debug/include/js/jsapi.h

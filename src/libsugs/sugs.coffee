@@ -31,16 +31,22 @@ global = this
 global.pathEndsInDotCoffee = (path) ->
   path.match(/\.coffee$/)
 
-global.loadNoPrefix = (path) ->
-  if global.pathEndsInDotCoffee path
-    __native_load_coffee global, path
-  else
-    global.__native_load global, path
-  undefined
+resolveScriptPath = (path) ->
+  result = null
+  for p in global.sugsConfig.paths
+    fullPath = "#{p}/#{path}"
+    if __native_fileExists fullPath
+      result = fullPath
+  result
 
 # load(path) -- load an external javascript file
 global.load = (path) ->
-  loadNoPrefix(global.sugsConfig.moduleDir + path)
+  fullPath = resolveScriptPath path
+  if fullPath != null
+    if global.pathEndsInDotCoffee fullPath
+      __native_load_coffee global, fullPath
+    else
+      __native_load global, fullPath
 
 # callbacks registered via $.startup()
 startupCallbacks = []
@@ -84,30 +90,41 @@ global.$ = {
       # Pluck out the moduleDir and build a prefix dir for loading of
       # assets, etc in our module
       cwd = global.__native_getcwd()
-      moduleDir = cwd + '/'+conf.moduleDir
-      moduleDir = moduleDir.replace('\\','/')
-      lastChar = moduleDir[moduleDir.length - 1]
-      if lastChar != '/'
-        moduleDir += '/'
-      puts "moduleDir: #{moduleDir}"
+      paths = []
+      puts "doing paths..."
+      for v in conf.paths
+        moduleDir = cwd + '/'+v
+        moduleDir = moduleDir.replace('\\','/')
+        lastChar = moduleDir[moduleDir.length - 1]
+        if lastChar != '/'
+          moduleDir += '/'
+        puts "path found: #{moduleDir}"
+        paths.push moduleDir
+        puts "adding path... #{path}"
 
-      # find our module script and add it to the list of scripts to be loaded
-      moduleEntryPoint = if __native_fileExists(moduleDir+"module.js") then "moduleConfig.js" else "moduleConfig.coffee"
+      foundEntryPoint = false
+      moduleEntryPoint = '-1'
+      for moduleDir in paths
+        if not foundEntryPoint
+          moduleEntryPoint = if __native_fileExists(moduleDir+"module.js") then moduleDir+"moduleConfig.js" else moduleDir+"moduleConfig.coffee"
+          if __native_fileExists moduleEntryPoint
+            foundEntryPoint = true
+      if moduleEntryPoint = '-1'
+        throw "barffff couldn't find entry point in paths..."
 
       global.sugsConfig =
         screenWidth: conf.screen.width
         screenHeight: conf.screen.height
         colorDepth: conf.screen.colorDepth
-        moduleDir: moduleDir
-        moduleEntryPoint: moduleDir+moduleEntryPoint
-        entryPointIsCoffee: if (global.pathEndsInDotCoffee moduleEntryPoint) then true else false
+        moduleEntryPoint: moduleEntryPoint
+        paths: paths
     else
       throw "only one call to $.config is allowed to per app"
 
   moduleConfig: (conf) ->
     global.__workers =
-      backends: _.map(conf.backends, (b) -> "#{global.sugsConfig.moduleDir}#{b}")
-      frontend: "#{global.sugsConfig.moduleDir}#{conf.frontend}"
+      backends: _.map(conf.backends, (b) -> resolveScriptPath b)
+      frontend: resolveScriptPath conf.frontend
     puts conf.backends.toString()
 
   # $.startup() -- callbacks registered in this function are called
@@ -141,6 +158,6 @@ global.addEntryPoint = (ep) ->
   entryPointsInContext.push ep
 
 # core js libraries to load
-loadNoPrefix "src/libsugs/jslib/types.coffee"
-loadNoPrefix "src/libsugs/jslib/drawables.coffee"
-loadNoPrefix "src/libsugs/jslib/messaging.coffee"
+load "types.coffee"
+load "drawables.coffee"
+load "messaging.coffee"

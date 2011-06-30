@@ -1,11 +1,15 @@
 #include "configurator.hpp"
 
+void ConfiguratorWorker::parseConfigFile() {
+  this->_config = execConfig(this->_jsEnv.cx, this->_jsEnv.global);
+}
+
 void ConfiguratorWorker::initLibraries() {
-  this->loadSugsLibraries();
+  this->loadConfig(this->_config);
+  this->loadSugsLibraries(this->_config.paths);
 }
 
 sugsConfig ConfiguratorWorker::getConfig() {
-  this->_config = execConfig(this->_jsEnv.cx, this->_jsEnv.global);
   return this->_config;
 }
 
