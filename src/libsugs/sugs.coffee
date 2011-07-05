@@ -82,45 +82,6 @@ configHasRan = false
 sugsConfig = null
 
 global.$ = {
-  # $.config -- a handler that is invoked with an object hash
-  # from config.js .. consult config.js for docs on config params
-  config: (conf) ->
-    if not configHasRan
-      configHasRan = true
-      # Pluck out the moduleDir and build a prefix dir for loading of
-      # assets, etc in our module
-      cwd = global.__native_getcwd()
-      paths = []
-      puts "doing paths..."
-      for v in conf.paths
-        moduleDir = cwd + '/'+v
-        moduleDir = moduleDir.replace('\\','/')
-        lastChar = moduleDir[moduleDir.length - 1]
-        if lastChar != '/'
-          moduleDir += '/'
-        puts "path found: #{moduleDir}"
-        paths.push moduleDir
-        puts "adding path... #{path}"
-
-      foundEntryPoint = false
-      moduleEntryPoint = '-1'
-      for moduleDir in paths
-        if not foundEntryPoint
-          moduleEntryPoint = if __native_fileExists(moduleDir+"module.js") then moduleDir+"moduleConfig.js" else moduleDir+"moduleConfig.coffee"
-          if __native_fileExists moduleEntryPoint
-            foundEntryPoint = true
-      if moduleEntryPoint = '-1'
-        throw "barffff couldn't find entry point in paths..."
-
-      global.sugsConfig =
-        screenWidth: conf.screen.width
-        screenHeight: conf.screen.height
-        colorDepth: conf.screen.colorDepth
-        moduleEntryPoint: moduleEntryPoint
-        paths: paths
-    else
-      throw "only one call to $.config is allowed to per app"
-
   moduleConfig: (conf) ->
     global.__workers =
       backends: _.map(conf.backends, (b) -> resolveScriptPath b)

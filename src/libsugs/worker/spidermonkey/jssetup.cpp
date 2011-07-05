@@ -280,11 +280,19 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
     }
     JSString* moduleEntryPointObj = JSVAL_TO_STRING(moduleEntryPointVal);
     char* moduleEntryPoint = JS_EncodeString(cx, moduleEntryPointObj);
+    jsval moduleDirVal;
+    if(!JS_GetProperty(cx, sugsConfig, "moduleDir", &moduleDirVal)) {
+        printf("getCurrentConfig: failure to pull moduleDir from global.sugsConfig\n");
+        exit(EXIT_FAILURE);
+    }
+    JSString* moduleDirObj = JSVAL_TO_STRING(moduleDirVal);
+    char* moduleDir = JS_EncodeString(cx, moduleDirObj);
 
     printf("successfully parsed config...\n");
     return {
         paths,
         moduleEntryPoint,
+        moduleDir,
         width,
         height,
         colorDepth,

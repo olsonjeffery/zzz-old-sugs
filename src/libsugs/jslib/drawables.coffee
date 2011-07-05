@@ -51,7 +51,7 @@ class Drawable
 # Represents a static pixel image
 class global.Sprite extends Drawable
   constructor: (imgPath) ->
-    @nativeDrawable = __native_factory_sprite global.sugsConfig.moduleDir + imgPath
+    @nativeDrawable = __native_factory_sprite imgPath
 
 # the following are various shape-based primitives
 class global.Rectangle extends Drawable

@@ -200,6 +200,12 @@ void Worker::loadConfig(sugsConfig config) {
     printf("Failed to convert native sugsConfig.moduleEntryPoint and store in sugsConfig JSObject\n");
     exit(EXIT_FAILURE);
   }
+  JSString* moduleDirStr = JS_NewStringCopyN(this->_jsEnv.cx, config.moduleDir, strlen(config.moduleDir));
+  jsval moduleDirVal = STRING_TO_JSVAL(moduleDirStr);
+  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "moduleDir", &moduleDirVal)) {
+    printf("Failed to convert native sugsConfig.moduleDir and store in sugsConfig JSObject\n");
+    exit(EXIT_FAILURE);
+  }
 
   const char* agentIdCStr = this->_agentId.c_str();
   JSString* myAgentIdStr = JS_NewStringCopyN(this->_jsEnv.cx, agentIdCStr, strlen(agentIdCStr));
