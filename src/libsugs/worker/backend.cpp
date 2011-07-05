@@ -35,7 +35,7 @@ void BackendWorker::initLibraries() {
 
 
   predicateResult result;
-  this->loadEntryPointScript(_worker.entryPoint, _worker.isCoffee);
+  this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
 
   // run $.startup() in user code
   result = execStartupCallbacks(this->_jsEnv);
@@ -54,6 +54,7 @@ void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
 }
 
 void BackendWorker::doWork() {
+  this->processPendingMessages();
   clock_t msElapsed = 12;//currMs - this->_lastMs;
   callIntoJsMainLoop(this->_jsEnv, msElapsed);
 }

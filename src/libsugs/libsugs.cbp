@@ -58,6 +58,8 @@
 		</Build>
 		<Unit filename="common.cpp" />
 		<Unit filename="common.hpp" />
+		<Unit filename="common/jsutil.cpp" />
+		<Unit filename="common/jsutil.hpp" />
 		<Unit filename="common/rng.cpp" />
 		<Unit filename="common/rng.hpp" />
 		<Unit filename="gfx/jscanvas.cpp" />
@@ -80,8 +82,8 @@
 		<Unit filename="jsinput.hpp" />
 		<Unit filename="medialibrary.cpp" />
 		<Unit filename="medialibrary.hpp" />
-		<Unit filename="messaging/inprocmessenger.cpp" />
 		<Unit filename="messaging/inprocmessenger.hpp" />
+		<Unit filename="messaging/messageexchange.cpp" />
 		<Unit filename="messaging/pubsub.cpp" />
 		<Unit filename="messaging/pubsub.hpp" />
 		<Unit filename="worker/backend.cpp" />

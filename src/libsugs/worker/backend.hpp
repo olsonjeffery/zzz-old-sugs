@@ -37,11 +37,10 @@
 
 class BackendWorker : public Worker {
   public:
-    BackendWorker(JSRuntime* rt, workerInfo worker, sugsConfig config)
-    : Worker(rt)
+    BackendWorker(JSRuntime* rt, sugsConfig config, std::string entryPoint, MessageExchange* msgEx)
+    : Worker(rt, msgEx, "backend")
     {
-      std::string f = "F";
-      this->_worker = worker;
+      this->_entryPoint = entryPoint;
       this->_config = config;
       this->_lastMs = getCurrentMilliseconds();
     }
@@ -57,7 +56,7 @@ class BackendWorker : public Worker {
     virtual void initLibraries();
     virtual void doWork();
   private:
-    workerInfo _worker;
+    std::string _entryPoint;
     sugsConfig _config;
     clock_t _lastMs;
 };

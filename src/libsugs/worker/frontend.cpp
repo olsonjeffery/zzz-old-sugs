@@ -38,10 +38,8 @@ void FrontendWorker::initLibraries() {
   registerGraphicsNatives(this->_jsEnv.cx, this->_jsEnv.global);
   registerInputNatives(this->_jsEnv.cx, this->_jsEnv.global);
 
-  printf("gonna try to hit it up...%s\n", (this->_worker.isCoffee == JS_TRUE ? "yep!" : "no..."));
-
-  printf("load frontend entry point: %s\n", this->_worker.entryPoint);
-  this->loadEntryPointScript(_worker.entryPoint, _worker.isCoffee);
+  printf("load frontend entry point: %s\n", this->_entryPoint.c_str());
+  this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
   printf("after frontend entry point...\n");
 
   predicateResult result;
@@ -65,6 +63,8 @@ void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv, int msEla
 
 int msElapsed = 0;
 void FrontendWorker::doWork() {
+  this->processPendingMessages();
+
   sf::Event Event;
 
   msElapsed = this->_gfxEnv.window->GetFrameTime();

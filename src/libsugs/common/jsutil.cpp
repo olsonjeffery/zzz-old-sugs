@@ -26,78 +26,32 @@
  *
  */
 
-#ifndef __common_hpp__
-#define __common_hpp__
+#include "jsutil.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <jsapi.h>
-#include <SFML/Graphics.hpp>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <string>
+static JSClass
+defaultClassDefWithPrivateMember = {
+  "NativeDefaultClass",
+  JSCLASS_HAS_PRIVATE,
+  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+  JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub
+};
 
-#include "common/rng.hpp"
-#include "common/jsutil.hpp"
-#include "messaging/messageexchange.hpp"
+JSClass* sugs::common::jsutil::getDefaultClassDef() {
+  return &defaultClassDefWithPrivateMember;
+}
 
-typedef struct {
-  JSIntn result;
-  char* message;
-} predicateResult;
+jsval sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(JSContext* cx, JSObject* global, const char* propName) {
+  jsval sugsConfigVal;
+  if(!JS_GetProperty(cx, global, "sugsConfig", &sugsConfigVal)) {
+    printf("unable to pull sugsConfig from global obj\n");
+    exit(EXIT_FAILURE);
+  }
+  JSObject* sugsConfigObj = JSVAL_TO_OBJECT(sugsConfigVal);
 
-typedef struct {
-  JSRuntime* rt;
-  JSContext* cx;
-  JSObject* global;
-} jsEnv;
-
-typedef struct {
-  sf::RenderWindow* window;
-  JSObject* canvas;
-} graphicsEnv;
-
-typedef struct {
-  JSObject* input;
-} eventEnv;
-
-typedef struct {
-  std::string* paths;
-  int length;
-} pathStrings;
-
-typedef struct {
-  pathStrings paths;
-  char* moduleEntryPoint;
-  int screenWidth;
-  int screenHeight;
-  int colorDepth;
-} sugsConfig;
-
-typedef struct {
-  char* entryPoint;
-} workerInfo;
-
-typedef struct {
-  workerInfo* backendWorkers;
-  int backendsCount;
-  workerInfo frontendWorker;
-} workerInfos;
-
-typedef struct {
-  std::string entryPoint;
-  sugsConfig config;
-  void* msgEx;
-} workerPayload;
-
-/* util functions */
-void readEntireFile(const char* path, char** outBuffer, int* outLength);
-bool fileExists(const char * filename);
-bool doesFilenameEndWithDotCoffee(const char* filename);
-clock_t getCurrentMilliseconds();
-std::string getCurrentWorkingDir();
-
-#define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
-
-#endif
+  jsval propVal;
+  if(!JS_GetProperty(cx, sugsConfigObj, propName, &propVal)) {
+    printf("unable to pull prop '%s' from sugsConfig obj\n");
+    exit(EXIT_FAILURE);
+  }
+  return propVal;
+}

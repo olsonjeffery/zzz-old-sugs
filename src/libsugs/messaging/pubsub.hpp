@@ -26,49 +26,27 @@
  *
  */
 
- #ifndef __pubsub_hpp__
- #define __pubsub_hpp__
+#ifndef __pubsub_hpp__
+#define __pubsub_hpp__
 
- #include <string>
- #include <map>
- #include <jsapi.h>
+#include <string>
+#include <map>
+#include <list>
+#include <jsapi.h>
 
- class PubSubMsg {
+class PubSubMsg {
   public:
-    PubSubMsg(std::string sendingAgentId, JSObject* data, int sendDate) {
+    PubSubMsg(std::string sendingAgentId, std::string msgId, std::string jsonData) {
       this->_sendingAgentId = sendingAgentId;
-      this->_data = data;
-      this->_sendDate = sendDate;
+      this->_msgId = msgId;
+      this->_jsonData = jsonData;
     }
+    std::string getMsgId();
+    std::string getJsonData();
   private:
     std::string _sendingAgentId;
-    JSObject* _data;
-    int _sendDate;
+    std::string _msgId;
+    std::string _jsonData;
 };
 
-class PubSubHandler {
-  public:
-    PubSubHandler(jsval callback) {
-      this->_callback = callback;
-    }
-    void process(PubSubMsg data);
-  private:
-    jsval _callback;
-};
-
-class PubSubHandlerCollection
-{
-  public:
-    PubSubHandlerCollection() {
-      this->_handlers;
-    }
-    ~PubSubHandlerCollection() {
-    }
-
-    bool isSubscribedTo(std::string subscriptionName);
-    void addSubscription(std::string subscriptionName, PubSubHandler handler);
-  private:
-    std::map<std::string, PubSubHandler> _handlers;
-};
-
- #endif
+#endif

@@ -33,13 +33,18 @@
 
 #include "spidermonkey/jssetup.hpp"
 #include "../common.hpp"
+#include "../messaging/messageexchange.hpp"
 
 class Worker
 {
   public:
-    Worker(JSRuntime* rt)
+    Worker(JSRuntime* rt, MessageExchange* msgEx, std::string prefix)
     {
       this->_jsEnv = initContext(rt);
+      if (msgEx != NULL) {
+        this->_msgEx = msgEx;
+        this->_agentId = this->_msgEx->registerNewAgent(prefix);
+      }
     }
     ~Worker() {
       printf("worker dtor\n");
@@ -49,11 +54,16 @@ class Worker
     virtual void initLibraries();
     virtual void teardown();
     virtual void doWork();
+
+    MessageExchange* getMessageExchange();
   protected:
     void loadSugsLibraries(pathStrings paths);
     void loadConfig(sugsConfig config);
-    void loadEntryPointScript(const char* path, bool isCoffee);
+    void loadEntryPointScript(const char* path, pathStrings paths);
+    void processPendingMessages();
     jsEnv _jsEnv;
+    MessageExchange* _msgEx;
+    std::string _agentId;
 };
 
 #endif

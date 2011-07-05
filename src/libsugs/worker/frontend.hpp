@@ -41,8 +41,8 @@
 
 class FrontendWorker : public Worker {
   public:
-    FrontendWorker(JSRuntime* rt, sugsConfig config, workerInfo worker)
-    : Worker(rt)
+    FrontendWorker(JSRuntime* rt, sugsConfig config, std::string entryPoint, MessageExchange* msgEx)
+    : Worker(rt, msgEx, "frontend")
     {
       this->_config = config;
       printf("initializing graphics.. sw: %d\n", config.screenWidth);
@@ -52,7 +52,7 @@ class FrontendWorker : public Worker {
         newInputFrom(this->_gfxEnv.window, this->_jsEnv.cx)
       };
 
-      this->_worker = worker;
+      this->_entryPoint = entryPoint;
       this->_isClosed = false;
       // set up graphics libs
       MediaLibrary::RegisterDefaultFont();
@@ -75,7 +75,7 @@ class FrontendWorker : public Worker {
     graphicsEnv _gfxEnv;
     eventEnv _evEnv;
     sugsConfig _config;
-    workerInfo _worker;
+    std::string _entryPoint;
 
     bool _isClosed;
 };

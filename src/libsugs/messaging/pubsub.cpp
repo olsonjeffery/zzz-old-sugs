@@ -27,3 +27,13 @@
  */
 
 #include "pubsub.hpp"
+
+std::string PubSubMsg::getMsgId()
+{
+  return this->_msgId;
+}
+
+std::string PubSubMsg::getJsonData()
+{
+  return this->_jsonData;
+}

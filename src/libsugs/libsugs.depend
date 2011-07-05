@@ -507,7 +507,7 @@
 1309410679 source:/home/jeff/src/sugs/src/libsugs/common.cpp
 	"common.hpp"
 
-1309410659 /home/jeff/src/sugs/src/libsugs/common.hpp
+1309545840 /home/jeff/src/sugs/src/libsugs/common.hpp
 	<stdio.h>
 	<stdlib.h>
 	<jsapi.h>
@@ -517,6 +517,8 @@
 	<time.h>
 	<string>
 	"common/rng.hpp"
+	"common/jsutil.hpp"
+	"messaging/messageexchange.hpp"
 
 1309356431 /home/jeff/src/sugs/src/libsugs/common/rng.hpp
 	<time.h>
@@ -618,32 +620,35 @@
 1309363955 source:/home/jeff/src/sugs/src/libsugs/messaging/inprocmessenger.cpp
 	"inprocmessenger.hpp"
 
-1309363727 /home/jeff/src/sugs/src/libsugs/messaging/inprocmessenger.hpp
+1309442283 /home/jeff/src/sugs/src/libsugs/messaging/inprocmessenger.hpp
 	<string>
 	<map>
 	<jsapi.h>
+	"../common.hpp"
 	"pubsub.hpp"
 
-1309363734 /home/jeff/src/sugs/src/libsugs/messaging/pubsub.hpp
+1309823645 /home/jeff/src/sugs/src/libsugs/messaging/pubsub.hpp
 	<string>
 	<map>
+	<list>
 	<jsapi.h>
 
-1309363554 source:/home/jeff/src/sugs/src/libsugs/messaging/pubsub.cpp
+1309823667 source:/home/jeff/src/sugs/src/libsugs/messaging/pubsub.cpp
 	"pubsub.hpp"
 
-1309412107 source:/home/jeff/src/sugs/src/libsugs/worker/backend.cpp
+1309771040 source:/home/jeff/src/sugs/src/libsugs/worker/backend.cpp
 	"backend.hpp"
 
-1309283682 /home/jeff/src/sugs/src/libsugs/worker/backend.hpp
+1309459423 /home/jeff/src/sugs/src/libsugs/worker/backend.hpp
 	<jsapi.h>
 	"worker.hpp"
 	"../common.hpp"
 
-1309388887 /home/jeff/src/sugs/src/libsugs/worker/worker.hpp
+1309770500 /home/jeff/src/sugs/src/libsugs/worker/worker.hpp
 	<jsapi.h>
 	"spidermonkey/jssetup.hpp"
 	"../common.hpp"
+	"../messaging/messageexchange.hpp"
 
 1308944876 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.hpp
 	<jsapi.h>
@@ -662,15 +667,15 @@
 1309412212 source:/home/jeff/src/sugs/src/libsugs/worker/configurator.cpp
 	"configurator.hpp"
 
-1309412059 /home/jeff/src/sugs/src/libsugs/worker/configurator.hpp
+1309459428 /home/jeff/src/sugs/src/libsugs/worker/configurator.hpp
 	<jsapi.h>
 	"worker.hpp"
 	"../common.hpp"
 
-1309412107 source:/home/jeff/src/sugs/src/libsugs/worker/frontend.cpp
+1309771048 source:/home/jeff/src/sugs/src/libsugs/worker/frontend.cpp
 	"frontend.hpp"
 
-1309413237 /home/jeff/src/sugs/src/libsugs/worker/frontend.hpp
+1309459438 /home/jeff/src/sugs/src/libsugs/worker/frontend.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 	"worker.hpp"
@@ -679,13 +684,13 @@
 	"../jsinput.hpp"
 	"../medialibrary.hpp"
 
-1309410979 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
+1309443011 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
 	"jssetup.hpp"
 
 1309410191 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
 	"scripting.hpp"
 
-1309412336 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
+1309770620 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
 	"worker.hpp"
 
 1309269245 /home/jeff/src/sugs/extlibs/linux64Debug/include/js/jsapi.h
@@ -1009,4 +1014,21 @@
 	<SFML/Graphics/Font.hpp>
 	<SFML/Graphics/Rect.hpp>
 	<string>
+
+1309771940 source:/home/jeff/src/sugs/src/libsugs/messaging/messageexchange.cpp
+	"messageexchange.hpp"
+
+1309768782 /home/jeff/src/sugs/src/libsugs/messaging/messageexchange.hpp
+	<string>
+	<map>
+	<jsapi.h>
+	<SFML/System.hpp>
+	"../common.hpp"
+	"pubsub.hpp"
+
+1309550381 /home/jeff/src/sugs/src/libsugs/common/jsutil.hpp
+	<jsapi.h>
+
+1309557563 source:/home/jeff/src/sugs/src/libsugs/common/jsutil.cpp
+	"jsutil.hpp"
 

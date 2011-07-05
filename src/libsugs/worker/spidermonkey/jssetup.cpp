@@ -355,10 +355,8 @@ workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config)
       exit(EXIT_FAILURE);
     }
     JSString* backendScript = JSVAL_TO_STRING(backendScriptVal);
-    bool isCoffee = doesFilenameEndWithDotCoffee(JS_EncodeString(cx, backendScript));
     workerInfo wi = {
       JS_EncodeString(cx, backendScript),
-      isCoffee
     };
     printf("BACKEND SCRIPT: %s\n", wi.entryPoint);
     backendWorkers[ctr] = wi;
@@ -371,10 +369,8 @@ workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config)
   }
   JSString* frontendStr = JSVAL_TO_STRING(frontendVal);
 
-  bool isCoffee = doesFilenameEndWithDotCoffee(JS_EncodeString(cx, frontendStr));
   workerInfo frontendWorker = {
     JS_EncodeString(cx, frontendStr),
-    isCoffee
   };
 
   workerInfos wi =  {

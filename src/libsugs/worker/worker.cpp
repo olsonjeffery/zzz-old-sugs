@@ -30,6 +30,100 @@
 
 void Worker::initLibraries() {}
 
+static JSBool
+native_subscribe(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* global = JS_GetGlobalObject(cx);
+  JSString* msgIdStr;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &msgIdStr)) {
+    JS_ReportError(cx, "native_subscribe: failed to convert arguments");
+    return JS_FALSE;
+  }
+
+  char* msgIdCStr = JS_EncodeString(cx, msgIdStr);
+  std::string msgId(msgIdCStr);
+
+  JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
+  Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
+  MessageExchange* msgEx = worker->getMessageExchange();
+
+  JSString* agentIdStr = JSVAL_TO_STRING(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "myAgentId"));
+  std::string myAgentId(JS_EncodeString(cx, agentIdStr));
+
+  msgEx->addSubscription(myAgentId, msgId);
+
+  JS_SET_RVAL(cx, vp, NULL);
+  return JS_TRUE;
+}
+
+static JSBool
+native_publish_broadcast(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* global = JS_GetGlobalObject(cx);
+
+  JSString* msgIdStr;
+  JSString* jsonDataStr;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "SS", &msgIdStr, &jsonDataStr)) {
+    JS_ReportError(cx, "native_publish_broadcast: failed to convert arguments");
+    return JS_FALSE;
+  }
+  std::string msgId(JS_EncodeString(cx, msgIdStr));
+  std::string jsonData(JS_EncodeString(cx, jsonDataStr));
+
+  JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
+  Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
+  JSString* agentIdStr = JSVAL_TO_STRING(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "myAgentId"));
+  std::string myAgentId(JS_EncodeString(cx, agentIdStr));
+
+  worker->getMessageExchange()->publish(myAgentId, msgId, jsonData);
+
+  JS_SET_RVAL(cx, vp, NULL);
+  return JS_TRUE;
+}
+
+static JSBool
+native_publish_single_target(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* global = JS_GetGlobalObject(cx);
+
+  JSString* targetStr;
+  JSString* msgIdStr;
+  JSString* jsonDataStr;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "SSS", &targetStr, &msgIdStr, &jsonDataStr)) {
+    JS_ReportError(cx, "native_publish_broadcast: failed to convert arguments");
+    return JS_FALSE;
+  }
+  std::string target(JS_EncodeString(cx, targetStr));
+  std::string msgId(JS_EncodeString(cx, msgIdStr));
+  std::string jsonData(JS_EncodeString(cx, jsonDataStr));
+
+  JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
+  Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
+  JSString* agentIdStr = JSVAL_TO_STRING(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "myAgentId"));
+  std::string myAgentId(JS_EncodeString(cx, agentIdStr));
+
+  worker->getMessageExchange()->publish(target, myAgentId, msgId, jsonData);
+
+  JS_SET_RVAL(cx, vp, NULL);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec messagingFunctionSpec[] = {
+  JS_FS("__native_subscribe", native_subscribe, 1, 0),
+  JS_FS("__native_publish_broadcast", native_publish_broadcast, 2, 0),
+  JS_FS("__native_publish_single_target", native_publish_single_target, 3, 0),
+  JS_FS_END
+};
+
+void bindMessageExchangeFunctions(JSContext* cx, JSObject* global) {
+  printf("binding message exchange funcions..\n");
+  JS_DefineFunctions(cx, global, messagingFunctionSpec);
+}
+
+MessageExchange* Worker::getMessageExchange() {
+  return this->_msgEx;
+}
+
 void Worker::loadSugsLibraries(pathStrings paths) {
   predicateResult result;
   // Load up our core dependencies
@@ -48,7 +142,23 @@ void Worker::loadSugsLibraries(pathStrings paths) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  printf(">>> finishing Worker::loadSugsLibraries()\n");
+
+  bindMessageExchangeFunctions(this->_jsEnv.cx, this->_jsEnv.global);
+
+  printf(">>> finishing Worker::loadSugsLibraries()!\n");
+}
+
+void bindWorkerToConfig(JSContext* cx, JSObject* sugsConfig, Worker* workerP) {
+  JSObject* workerWrapperObj = JS_NewObject(cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  if(!JS_SetPrivate(cx, workerWrapperObj,workerP)) {
+    printf("bindWorkerToConfig: unable to bind Worker pointer to wrapper obj\n");
+    exit(EXIT_FAILURE);
+  }
+  jsval wrapperVal = OBJECT_TO_JSVAL(workerWrapperObj);
+  if(!JS_SetProperty(cx, sugsConfig, "workerRef", &wrapperVal)) {
+    printf("bindWorkerToConfig: unable to add Worker wrapper to sugsConfig\n");
+    exit(EXIT_FAILURE);
+  }
 }
 
 void Worker::loadConfig(sugsConfig config) {
@@ -91,6 +201,16 @@ void Worker::loadConfig(sugsConfig config) {
     exit(EXIT_FAILURE);
   }
 
+  const char* agentIdCStr = this->_agentId.c_str();
+  JSString* myAgentIdStr = JS_NewStringCopyN(this->_jsEnv.cx, agentIdCStr, strlen(agentIdCStr));
+  jsval myAgentIdVal = STRING_TO_JSVAL(myAgentIdStr);
+  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "myAgentId", &myAgentIdVal)) {
+    printf("Failed to convert worker's _agentId and store in sugsConfig JSObject\n");
+    exit(EXIT_FAILURE);
+  }
+
+  bindWorkerToConfig(this->_jsEnv.cx, sugsConfigObj, this);
+
   jsval sugsConfigVal = OBJECT_TO_JSVAL(sugsConfigObj);
   if(!JS_SetProperty(this->_jsEnv.cx, this->_jsEnv.global, "sugsConfig", &sugsConfigVal)) {
     printf("Failed to convert native sugsConfig and load into global object\n");
@@ -105,26 +225,36 @@ void Worker::teardown() {
   teardownContext(this->_jsEnv.cx);
 }
 
-void Worker::loadEntryPointScript(const char* entryPoint, bool isCoffee) {
+void Worker::loadEntryPointScript(const char* entryPoint, pathStrings paths) {
   predicateResult result;
-  if (isCoffee) {
-    result = executeFullPathCoffeeScript(entryPoint, this->_jsEnv.cx, this->_jsEnv.global);
-    if(result.result == JS_FALSE) {
-      printf(result.message);
-      exit(EXIT_FAILURE);
-    }
+  result = findAndExecuteScript(entryPoint, paths, this->_jsEnv.cx, this->_jsEnv.global);
+  if(result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
   }
-  else {
-    result = executeFullPathJavaScript(entryPoint, this->_jsEnv.cx, this->_jsEnv.global);
-    if(result.result == JS_FALSE) {
-      printf(result.message);
-      exit(EXIT_FAILURE);
-    }
-  }
+
   JSString* epStr = JS_NewStringCopyN(this->_jsEnv.cx, entryPoint, strlen(entryPoint));
   jsval epVal = STRING_TO_JSVAL(epStr);
   jsval argv[1];
   argv[0] = epVal;
   jsval rVal;
   JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "addEntryPoint", 1, argv, &rVal);
+}
+
+void Worker::processPendingMessages()
+{
+  while(this->_msgEx->messagesPendingFor(this->_agentId))
+  {
+    PubSubMsg msg = this->_msgEx->unshiftNextMsgFor(this->_agentId);
+    const char* msgIdCStr = msg.getMsgId().c_str();
+    JSString* msgIdStr = JS_NewStringCopyN(this->_jsEnv.cx, msgIdCStr, strlen(msgIdCStr));
+    const char* jsonDataCStr = msg.getJsonData().c_str();
+    JSString* jsonDataStr = JS_NewStringCopyN(this->_jsEnv.cx, jsonDataCStr, strlen(jsonDataCStr));
+    jsval argv[2];
+    argv[0] = STRING_TO_JSVAL(msgIdStr);
+    argv[1] = STRING_TO_JSVAL(jsonDataStr);
+    jsval rVal;
+    //printf("NEW MSG: %s in %s\n", msgIdCStr, this->_agentId.c_str());
+    JS_CallFunctionName(this->_jsEnv.cx, this->_jsEnv.global, "__processIncomingMessage", 2, argv, &rVal);
+  }
 }

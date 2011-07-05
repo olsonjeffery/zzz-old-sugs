@@ -37,7 +37,7 @@ class ConfiguratorWorker : public Worker
 {
   public:
     ConfiguratorWorker(JSRuntime* rt)
-    : Worker(rt)
+    : Worker(rt, NULL, "")
     {
       this->parseConfigFile();
     }
