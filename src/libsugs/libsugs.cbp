@@ -82,8 +82,8 @@
 		<Unit filename="jsinput.hpp" />
 		<Unit filename="medialibrary.cpp" />
 		<Unit filename="medialibrary.hpp" />
-		<Unit filename="messaging/inprocmessenger.hpp" />
 		<Unit filename="messaging/messageexchange.cpp" />
+		<Unit filename="messaging/messageexchange.hpp" />
 		<Unit filename="messaging/pubsub.cpp" />
 		<Unit filename="messaging/pubsub.hpp" />
 		<Unit filename="worker/backend.cpp" />
