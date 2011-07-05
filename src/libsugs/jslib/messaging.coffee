@@ -29,20 +29,21 @@ or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
 global = this
 
 unresolvedMessages = []
-msgHandlers = {}
+localMsgHandlers = {}
+msgExMsgHandlers = {}
 
 pushIntoUnresolved = (msgId, msg) ->
   unresolvedMessages.push {msgId: msgId, msg: msg}
 
 preStartup = true
 global.__triggerUnresolvedMessages = ->
-  initialKeyCount = _.keys(msgHandlers).length
+  initialKeyCount = _.keys(localMsgHandlers).length
   initialUnresolved = unresolvedMessages
   unresolvedMessages = []
   resolveMessages = (pendingMessages, currentKeyCount) ->
     _.each pendingMessages, (msgInfo) ->
       $.trigger msgInfo.msgId, msgInfo.msg
-    newKeyCount =  _.keys(msgHandlers).length
+    newKeyCount =  _.keys(localMsgHandlers).length
     if currentKeyCount == newKeyCount
       if unresolvedMessages.length > 0
         throw "Unable to resolve all pre-startup message $.triggers!"
@@ -54,16 +55,46 @@ global.__triggerUnresolvedMessages = ->
   preStartup = false
 
 global.$.trigger = (msgId, msg) ->
-  matched = if typeof msgHandlers[msgId] == "undefined" then false else true
+  matched = if typeof localMsgHandlers[msgId] == "undefined" then false else true
   if not matched
     if preStartup
         pushIntoUnresolved msgId, msg
     else
       throw "Unresolved msgId #{msgId} $.trigger'd after startup"
   else
-      _.each msgHandlers[msgId], (cb) -> cb msg
+    _.each localMsgHandlers[msgId], (cb) -> cb msg
 
 global.$.bind = (msgId, callback) ->
-  if typeof msgHandlers[msgId] == "undefined"
-    msgHandlers[msgId] = []
-  msgHandlers[msgId].push callback
+  if typeof localMsgHandlers[msgId] == "undefined"
+    localMsgHandlers[msgId] = []
+  localMsgHandlers[msgId].push callback
+
+global.$.subscribe = (msgId, callback) ->
+  if typeof msgExMsgHandlers[msgId] == "undefined"
+    msgExMsgHandlers[msgId] = []
+  msgExMsgHandlers[msgId].push callback
+  global.__native_subscribe msgId
+
+global.$.publish = (targetAgentId, msgId, msg) ->
+  if typeof msg == "undefined" #called with only two args.. msgId = msg payload
+    data =
+      msg: msgId
+      meta:
+        sender: global.sugsConfig.myAgentId
+        msgId: targetAgentId
+    global.__native_publish_broadcast targetAgentId, JSON.stringify data
+  else
+    data =
+      msg: msg
+      meta:
+        sender: global.sugsConfig.myAgentId
+        msgId: msgId
+    global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data
+
+global.__processIncomingMessage = (msgId, jsonData) ->
+  if typeof msgExMsgHandlers[msgId] == "undefined"
+    throw "No handlers for msg ex registered handler of #{msgId}"
+  else
+    data = JSON.parse jsonData
+    _.each msgExMsgHandlers[msgId], (cb) ->
+      cb.call data, data.msg
