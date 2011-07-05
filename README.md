@@ -2,6 +2,7 @@
 `sugs` is a JavaScript *platform* (ala [node.js](http://nodejs.org), [narwhal](http://nawwhaljs.org), the browser, etc) that targets multiuser, rich media applications.
 
 It emphasizes:
+
 * [CoffeeScript](http://coffee-script.org) as a first class languae
   (JavaScript is also supported).
 * A shared-nothing, "worker"-based runtime environment where each worker is an
@@ -13,6 +14,7 @@ It emphasizes:
 * Bindings for 2D graphics using the SFML library.
 
 Things that should be added to the above list soon:
+
 * Message passing transparently scaled to support network-based
   communication between multiple `sugs` processes (either local or
 remote).
