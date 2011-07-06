@@ -4,14 +4,14 @@
 	<Project>
 		<Option title="libsugs" />
 		<Option pch_mode="2" />
-		<Option compiler="gcc" />
+		<Option compiler="gccrec__gnu_gcc_compiler" />
 		<Build>
 			<Target title="linux64Debug">
 				<Option output="../../bin/libsugs/linux64Debug/libsugs" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/linux64Debug/" />
 				<Option type="2" />
-				<Option compiler="gcc" />
+				<Option compiler="gccrec__gnu_gcc_compiler" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-Wall" />
@@ -35,7 +35,7 @@
 				<Option working_dir="" />
 				<Option object_output="obj/linux64Release/" />
 				<Option type="2" />
-				<Option compiler="gcc" />
+				<Option compiler="gccrec__gnu_gcc_compiler" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
