@@ -157,8 +157,44 @@ JSBool reformer_native_input_isKeyDown(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+JSBool reformer_native_input_getMousePos(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* This;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &This))
+  {
+    JS_ReportError(cx, "reformer_native_input_getMousePos: unable to parse args");
+    return JS_FALSE;
+  }
+  sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, This);
+  if(window == NULL)
+  {
+    JS_ReportError(cx, "reformer_native_input_getMousePos: unable to pull RenderWindow from This's private prop");
+    return JS_FALSE;
+  }
+  JSObject* mPosObj = JS_NewObject(cx, NULL, NULL, NULL);
+
+  jsval xPosVal = INT_TO_JSVAL(window->GetInput().GetMouseX());
+  jsval yPosVal = INT_TO_JSVAL(window->GetInput().GetMouseY());
+
+  if(!JS_SetProperty(cx, mPosObj, "x", &xPosVal))
+  {
+    JS_ReportError(cx, "reformer_native_input_getMousePos: unable to set x prop for return object");
+    return JS_FALSE;
+  }
+  if(!JS_SetProperty(cx, mPosObj, "y", &yPosVal))
+  {
+    JS_ReportError(cx, "reformer_native_input_getMousePos: unable to set y prop for return object");
+    return JS_FALSE;
+  }
+
+  jsval rVal = OBJECT_TO_JSVAL(mPosObj);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec input_native_functions[] = {
   JS_FS("__native_isKeyDown", reformer_native_input_isKeyDown, 2, 0),
+  JS_FS("__native_getMousePos", reformer_native_input_getMousePos, 1, 0),
   JS_FS_END
 };
 
