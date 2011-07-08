@@ -86,6 +86,15 @@ classdef_keyfinder_resolver(JSContext *cx, JSObject *obj, jsid id) {
   else if (strcmp(propName, "Num0") == 0) {
     keyObj = getKeyObjectFor(cx, sf::Key::Num0);
   }
+  else if (strcmp(propName, "W") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::W);
+  }
+  else if (strcmp(propName, "S") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::S);
+  }
+  else if (strcmp(propName, "Space") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Space);
+  }
   else {
     JS_ReportError(cx, "Unable to find matching key for %s", propName);
     return JS_FALSE;
