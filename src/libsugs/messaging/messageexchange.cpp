@@ -44,6 +44,11 @@ std::string MessageExchange::registerNewAgent(std::string prefix) {
     this->_messageBox[agentId] = std::list<PubSubMsg>();
   }
   this->_messageBoxLock.Unlock();
+  this->_orphanedMessagesForAgentLock.Lock();
+  {
+    this->_orphanedMessagesForAgent[agentId] = std::map<std::string, std::list<PubSubMsg> >();
+  }
+  this->_orphanedMessagesForAgentLock.Unlock();
 
   return agentId;
 }
@@ -92,6 +97,16 @@ bool MessageExchange::hasOrphanedMsgId(std::string msgId) {
   _orphanedMessagesLock.Unlock();
   return result;
 }
+bool MessageExchange::agentHasOrphanedMsgId(std::string agentId, std::string msgId) {
+  bool result = false;
+  _orphanedMessagesForAgentLock.Lock();
+  {
+    result = !(this->_orphanedMessagesForAgent[agentId].find(msgId) == this->_orphanedMessagesForAgent[agentId].end());
+  }
+  _orphanedMessagesForAgentLock.Unlock();
+  return result;
+}
+
 void MessageExchange::addSubscription(std::string agentId, std::string subscriptionName)
 {
   if (this->hasAgent(agentId))
@@ -136,6 +151,32 @@ void MessageExchange::addSubscription(std::string agentId, std::string subscript
       }
       this->_messageBoxLock.Unlock();
     }
+    if (this->agentHasOrphanedMsgId(agentId, subscriptionName))
+    {
+      std::list<PubSubMsg>* orphans;
+      std::list<PubSubMsg> pendingMessages;
+      this->_orphanedMessagesForAgentLock.Lock();
+      {
+        while(!this->_orphanedMessagesForAgent[agentId][subscriptionName].empty())
+        {
+          orphans = &(this->_orphanedMessagesForAgent[agentId][subscriptionName]);
+          PubSubMsg msg = orphans->front();
+          orphans->pop_front();
+          pendingMessages.push_back(msg);
+        }
+      }
+      this->_orphanedMessagesForAgentLock.Unlock();
+      this->_messageBoxLock.Lock();
+      {
+        std::list<PubSubMsg>::iterator it;
+        for(it = pendingMessages.begin(); it != pendingMessages.end(); it++)
+        {
+          PubSubMsg msg = *it;
+          this->_messageBox[agentId].push_back(msg);
+        }
+      }
+      this->_messageBoxLock.Unlock();
+    }
   }
 }
 
@@ -168,8 +209,9 @@ void MessageExchange::publish(std::string targetAgentId, std::string senderAgent
   }
   else {
     // agent isn't subscribed to msg.. fail?
-    printf("agent %s isn't subscribed to %s .. bailing!\n", targetAgentId.c_str(), msgId.c_str());
-    exit(EXIT_FAILURE);
+    //printf("agent %s isn't subscribed to %s .. bailing!\n", targetAgentId.c_str(), msgId.c_str());
+    //exit(EXIT_FAILURE);
+    this->pushToOrphanQueueForAgent(targetAgentId, senderAgentId, msgId, jsonData);
   }
 }
 
@@ -184,6 +226,19 @@ void MessageExchange::pushToOrphanQueue(std::string senderAgentId, std::string m
     this->_orphanedMessages[msgId].push_back(msg);
   }
   this->_orphanedMessagesLock.Unlock();
+}
+
+void MessageExchange::pushToOrphanQueueForAgent(std::string targetAgentId, std::string senderAgentId, std::string msgId, std::string jsonData) {
+  bool orphanedMsgIdExists = this->agentHasOrphanedMsgId(targetAgentId, msgId);
+  this->_orphanedMessagesForAgentLock.Lock();
+  {
+    if (!orphanedMsgIdExists) {
+      this->_orphanedMessagesForAgent[targetAgentId][msgId] = std::list<PubSubMsg>();
+    }
+    PubSubMsg msg(senderAgentId, msgId, jsonData);
+    this->_orphanedMessagesForAgent[targetAgentId][msgId].push_back(msg);
+  }
+  this->_orphanedMessagesForAgentLock.Unlock();
 }
 
 bool MessageExchange::messagesPendingFor(std::string agentId)

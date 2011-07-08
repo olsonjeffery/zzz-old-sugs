@@ -507,7 +507,7 @@
 1309410679 source:/home/jeff/src/sugs/src/libsugs/common.cpp
 	"common.hpp"
 
-1309545840 /home/jeff/src/sugs/src/libsugs/common.hpp
+1309826235 /home/jeff/src/sugs/src/libsugs/common.hpp
 	<stdio.h>
 	<stdlib.h>
 	<jsapi.h>
@@ -607,7 +607,7 @@
 	"../common.hpp"
 	"jscanvas.hpp"
 
-1308855742 source:/home/jeff/src/sugs/src/libsugs/jsinput.cpp
+1309961843 source:/home/jeff/src/sugs/src/libsugs/jsinput.cpp
 	"jsinput.hpp"
 
 1308526289 /home/jeff/src/sugs/src/libsugs/jsinput.hpp
@@ -684,13 +684,13 @@
 	"../jsinput.hpp"
 	"../medialibrary.hpp"
 
-1309443011 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
+1309876431 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
 	"jssetup.hpp"
 
 1309410191 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
 	"scripting.hpp"
 
-1309770620 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
+1309826105 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
 	"worker.hpp"
 
 1309269245 /home/jeff/src/sugs/extlibs/linux64Debug/include/js/jsapi.h
@@ -1018,7 +1018,7 @@
 1309771940 source:/home/jeff/src/sugs/src/libsugs/messaging/messageexchange.cpp
 	"messageexchange.hpp"
 
-1309768782 /home/jeff/src/sugs/src/libsugs/messaging/messageexchange.hpp
+1310151063 /home/jeff/src/sugs/src/libsugs/messaging/messageexchange.hpp
 	<string>
 	<map>
 	<jsapi.h>
