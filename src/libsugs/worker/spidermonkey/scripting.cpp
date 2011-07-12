@@ -64,7 +64,7 @@ predicateResult executeScriptFromSrc(const char* path, char** src, int length, J
   }
 
   printf("done executing %s from source...\n", path);
-  return {JS_TRUE, ""};
+  return {JS_TRUE, "", rval};
 }
 
 predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObject* global) {

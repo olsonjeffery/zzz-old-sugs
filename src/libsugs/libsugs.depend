@@ -507,7 +507,7 @@
 1309410679 source:/home/jeff/src/sugs/src/libsugs/common.cpp
 	"common.hpp"
 
-1309826235 /home/jeff/src/sugs/src/libsugs/common.hpp
+1310367293 /home/jeff/src/sugs/src/libsugs/common.hpp
 	<stdio.h>
 	<stdlib.h>
 	<jsapi.h>
@@ -607,7 +607,7 @@
 	"../common.hpp"
 	"jscanvas.hpp"
 
-1309961843 source:/home/jeff/src/sugs/src/libsugs/jsinput.cpp
+1310164407 source:/home/jeff/src/sugs/src/libsugs/jsinput.cpp
 	"jsinput.hpp"
 
 1308526289 /home/jeff/src/sugs/src/libsugs/jsinput.hpp
@@ -660,7 +660,7 @@
 	"../../gfx/jsgraphics.hpp"
 	"../../jsinput.hpp"
 
-1309388361 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.hpp
+1310366169 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.hpp
 	<jsapi.h>
 	"../../common.hpp"
 
@@ -684,10 +684,10 @@
 	"../jsinput.hpp"
 	"../medialibrary.hpp"
 
-1309876431 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
+1310394673 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
 	"jssetup.hpp"
 
-1309410191 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
+1310403896 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
 	"scripting.hpp"
 
 1309826105 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
@@ -1015,10 +1015,10 @@
 	<SFML/Graphics/Rect.hpp>
 	<string>
 
-1309771940 source:/home/jeff/src/sugs/src/libsugs/messaging/messageexchange.cpp
+1310151195 source:/home/jeff/src/sugs/src/libsugs/messaging/messageexchange.cpp
 	"messageexchange.hpp"
 
-1310151063 /home/jeff/src/sugs/src/libsugs/messaging/messageexchange.hpp
+1310151119 /home/jeff/src/sugs/src/libsugs/messaging/messageexchange.hpp
 	<string>
 	<map>
 	<jsapi.h>

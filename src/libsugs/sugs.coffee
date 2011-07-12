@@ -30,23 +30,46 @@ global = this
 
 global.pathEndsInDotCoffee = (path) ->
   path.match(/\.coffee$/)
+global.pathEndsInDotJs = (path) ->
+  path.match(/\.js$/)
 
 resolveScriptPath = (path) ->
   result = null
-  for p in global.sugsConfig.paths
-    fullPath = "#{p}/#{path}"
-    if __native_fileExists fullPath
-      result = fullPath
+  if global.pathEndsInDotCoffee(path) or global.pathEndsInDotJs(path)
+    for p in global.sugsConfig.paths
+      fullPath = "#{p}/#{path}"
+      if __native_fileExists fullPath
+        result = fullPath
+  else
+    jsPath = path + ".js"
+    result = resolveScriptPath jsPath
+    if result == null
+      coffeePath = path + ".coffee"
+      result = resolveScriptPath coffeePath
   result
 
+scriptLoadCache = {}
 # load(path) -- load an external javascript file
-global.load = (path) ->
+global.require = (path) ->
+  result = null
   fullPath = resolveScriptPath path
-  if fullPath != null
-    if global.pathEndsInDotCoffee fullPath
-      __native_load_coffee global, fullPath
+  if typeof scriptLoadCache[fullPath] == "undefined"
+    if fullPath != null
+      if global.pathEndsInDotCoffee fullPath
+        result = __native_require_coffee global, fullPath
+      else if global.pathEndsInDotJs fullPath
+        result = __native_require global, fullPath
+      else
+        throw "provided path must end in either .coffee or .js, dude! '#{path}'"
     else
-      __native_load global, fullPath
+      throw "unable to resolve path '#{path}'!"
+    scriptLoadCache[fullPath] = result
+  else
+    result = scriptLoadCache[fullPath]
+  result
+
+msgEx = require 'messaging'
+types = require 'types'
 
 # callbacks registered via $.startup()
 startupCallbacks = []
@@ -70,8 +93,8 @@ global.doStartup = ->
 # This is, pretty much, the main hook into the user code's side
 # of the main game loop
 global.runRender = (nativeCanvas, nativeInput, msElapsed) ->
-  canvas = new Canvas(nativeCanvas)
-  input = new Input(nativeInput)
+  canvas = new types.Canvas(nativeCanvas)
+  input = new types.Input(nativeInput)
   _.each renderCallbacks, (cb) -> cb input, canvas, msElapsed
 
 global.runMainLoop = (msElapsed) ->
@@ -117,8 +140,3 @@ global.showEntryPoints = ->
   puts "###############"
 global.addEntryPoint = (ep) ->
   entryPointsInContext.push ep
-
-# core js libraries to load
-load "types.coffee"
-load "drawables.coffee"
-load "messaging.coffee"

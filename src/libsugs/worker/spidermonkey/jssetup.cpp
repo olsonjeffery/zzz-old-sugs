@@ -64,7 +64,7 @@ JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
     return JS_FALSE;
   }
 
-  JS_SET_RVAL(cx, vp, JSVAL_VOID);  /* return undefined */
+  JS_SET_RVAL(cx, vp, result.optionalRetVal);  /* return undefined */
   return JS_TRUE;
 }
 JSBool reformer_native_executeCoffeeScript(JSContext* cx, uintN argc, jsval* vp)
@@ -86,7 +86,7 @@ JSBool reformer_native_executeCoffeeScript(JSContext* cx, uintN argc, jsval* vp)
     return JS_FALSE;
   }
 
-  JS_SET_RVAL(cx, vp, JSVAL_VOID);  /* return undefined */
+  JS_SET_RVAL(cx, vp, result.optionalRetVal);  /* return undefined */
   return JS_TRUE;
 }
 JSBool reformer_native_getcwd(JSContext* cx, uintN argc, jsval* vp)
@@ -120,8 +120,8 @@ JSBool reformer_native_fileExists(JSContext* cx, uintN argc, jsval* vp)
 
 static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("puts", reformer_native_puts, 1, 0),
-  JS_FS("__native_load", reformer_native_executeScript, 2, 0),
-  JS_FS("__native_load_coffee", reformer_native_executeCoffeeScript, 2, 0),
+  JS_FS("__native_require", reformer_native_executeScript, 2, 0),
+  JS_FS("__native_require_coffee", reformer_native_executeCoffeeScript, 2, 0),
   JS_FS("__native_getcwd", reformer_native_getcwd, 0, 0),
   JS_FS("__native_fileExists", reformer_native_fileExists, 1, 0),
   JS_FS_END

@@ -45,6 +45,7 @@
 typedef struct {
   JSIntn result;
   char* message;
+  jsval optionalRetVal;
 } predicateResult;
 
 typedef struct {

@@ -25,28 +25,28 @@ The views and conclusions contained in the software and documentation are those 
 authors and should not be interpreted as representing official policies, either expressed
 or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
 ###
+return {
 
-global = this
+  # Canvas class -- The "display surface" that a user draws to during the
+  # render loop (callbacks registered to $.render() ). Instances of this
+  # class are *only* available during the render loop.
+  Canvas: class
+    constructor: (nativeCanvas) ->
+      @nativeCanvas = nativeCanvas
 
-# Canvas class -- The "display surface" that a user draws to during the
-# render loop (callbacks registered to $.render() ). Instances of this
-# class are *only* available during the render loop.
-class global.Canvas
-  constructor: (nativeCanvas) ->
-    @nativeCanvas = nativeCanvas
+    draw: (sprite) ->
+      @nativeCanvas.__native_draw @nativeCanvas, sprite.nativeDrawable
 
-  draw: (sprite) ->
-    @nativeCanvas.__native_draw @nativeCanvas, sprite.nativeDrawable
+  # Input class -- provides a means to poll for key/mouse button presses
+  # and mouse position. An instance is provided to callbacks registered
+  # in $.render(). Instances are *only* available during the render loop.
+  Input: class
+    constructor: (nativeInput) ->
+      @nativeInput = nativeInput
 
-# Input class -- provides a means to poll for key/mouse button presses
-# and mouse position. An instance is provided to callbacks registered
-# in $.render(). Instances are *only* available during the render loop.
-class global.Input
-  constructor: (nativeInput) ->
-    @nativeInput = nativeInput
+    isKeyDown: (key) ->
+      @nativeInput.__native_isKeyDown @nativeInput, key
 
-  isKeyDown: (key) ->
-    @nativeInput.__native_isKeyDown @nativeInput, key
-
-  getMousePos: ->
-    @nativeInput.__native_getMousePos(@nativeInput)
+    getMousePos: ->
+      @nativeInput.__native_getMousePos(@nativeInput)
+}

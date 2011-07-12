@@ -25,7 +25,6 @@ The views and conclusions contained in the software and documentation are those 
 authors and should not be interpreted as representing official policies, either expressed
 or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
 ###
-
 global = this
 
 unresolvedMessages = []
@@ -54,43 +53,6 @@ global.__triggerUnresolvedMessages = ->
   resolveMessages initialUnresolved, initialKeyCount
   preStartup = false
 
-global.$.trigger = (msgId, msg) ->
-  matched = if typeof localMsgHandlers[msgId] == "undefined" then false else true
-  if not matched
-    if preStartup
-        pushIntoUnresolved msgId, msg
-    else
-      throw "Unresolved msgId #{msgId} $.trigger'd after startup"
-  else
-    _.each localMsgHandlers[msgId], (cb) -> cb msg
-
-global.$.bind = (msgId, callback) ->
-  if typeof localMsgHandlers[msgId] == "undefined"
-    localMsgHandlers[msgId] = []
-  localMsgHandlers[msgId].push callback
-
-global.$.subscribe = (msgId, callback) ->
-  if typeof msgExMsgHandlers[msgId] == "undefined"
-    msgExMsgHandlers[msgId] = []
-  msgExMsgHandlers[msgId].push callback
-  global.__native_subscribe msgId
-
-global.$.publish = (targetAgentId, msgId, msg) ->
-  if typeof msg == "undefined" #called with only two args.. msgId = msg payload
-    data =
-      msg: msgId
-      meta:
-        sender: global.sugsConfig.myAgentId
-        msgId: targetAgentId
-    global.__native_publish_broadcast targetAgentId, JSON.stringify data
-  else
-    data =
-      msg: msg
-      meta:
-        sender: global.sugsConfig.myAgentId
-        msgId: msgId
-    global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data
-
 global.__processIncomingMessage = (msgId, jsonData) ->
   if typeof msgExMsgHandlers[msgId] == "undefined"
     throw "No handlers for msg ex registered handler of #{msgId}"
@@ -98,3 +60,43 @@ global.__processIncomingMessage = (msgId, jsonData) ->
     data = JSON.parse jsonData
     _.each msgExMsgHandlers[msgId], (cb) ->
       cb.call data, data.msg
+
+exports =
+  trigger : (msgId, msg) ->
+    matched = if typeof localMsgHandlers[msgId] == "undefined" then false else true
+    if not matched
+      if preStartup
+          pushIntoUnresolved msgId, msg
+      else
+        throw "Unresolved msgId #{msgId} $.trigger'd after startup"
+    else
+      _.each localMsgHandlers[msgId], (cb) -> cb msg
+
+  bind : (msgId, callback) ->
+    if typeof localMsgHandlers[msgId] == "undefined"
+      localMsgHandlers[msgId] = []
+    localMsgHandlers[msgId].push callback
+
+  subscribe : (msgId, callback) ->
+    if typeof msgExMsgHandlers[msgId] == "undefined"
+      msgExMsgHandlers[msgId] = []
+    msgExMsgHandlers[msgId].push callback
+    global.__native_subscribe msgId
+
+  publish : (targetAgentId, msgId, msg) ->
+    if typeof msg == "undefined" #called with only two args.. msgId = msg payload
+      data =
+        msg: msgId
+        meta:
+          sender: global.sugsConfig.myAgentId
+          msgId: targetAgentId
+      global.__native_publish_broadcast targetAgentId, JSON.stringify data
+    else
+      data =
+        msg: msg
+        meta:
+          sender: global.sugsConfig.myAgentId
+          msgId: msgId
+      global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data
+
+return exports
