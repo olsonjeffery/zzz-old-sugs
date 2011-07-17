@@ -52,7 +52,7 @@ predicateResult executeScriptFromSrc(const char* path, char** src, int length, J
   /* Execute script object */
   if (JS_ExecuteScript(cx, global, scriptObject, &rval) != JS_TRUE) {
     char buffer[2056];
-    sprintf(buffer, "Failed to execute %s\n", path);
+    sprintf(buffer, "Failed to execute %s..\n", path);
     return {JS_FALSE, buffer};
   }
 

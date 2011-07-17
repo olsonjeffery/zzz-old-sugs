@@ -124,7 +124,7 @@ void MessageExchange::addSubscription(std::string agentId, std::string subscript
       this->_subscriptionsByEvent[subscriptionName][agentId] = true;
     }
     _subscriptionLock.Unlock();
-    printf("messaging: subscribing msgId %s for %s\n", subscriptionName.c_str(), agentId.c_str());
+    //printf("messaging: subscribing msgId %s for %s\n", subscriptionName.c_str(), agentId.c_str());
     if(this->hasOrphanedMsgId(subscriptionName))
     {
       std::list<PubSubMsg>* orphans;

@@ -636,7 +636,7 @@
 1309823667 source:/home/jeff/src/sugs/src/libsugs/messaging/pubsub.cpp
 	"pubsub.hpp"
 
-1309771040 source:/home/jeff/src/sugs/src/libsugs/worker/backend.cpp
+1310769142 source:/home/jeff/src/sugs/src/libsugs/worker/backend.cpp
 	"backend.hpp"
 
 1309459423 /home/jeff/src/sugs/src/libsugs/worker/backend.hpp
@@ -672,7 +672,7 @@
 	"worker.hpp"
 	"../common.hpp"
 
-1309771048 source:/home/jeff/src/sugs/src/libsugs/worker/frontend.cpp
+1310769142 source:/home/jeff/src/sugs/src/libsugs/worker/frontend.cpp
 	"frontend.hpp"
 
 1309459438 /home/jeff/src/sugs/src/libsugs/worker/frontend.hpp
@@ -684,10 +684,10 @@
 	"../jsinput.hpp"
 	"../medialibrary.hpp"
 
-1310394673 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
+1310508837 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
 	"jssetup.hpp"
 
-1310403896 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
+1310508888 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
 	"scripting.hpp"
 
 1309826105 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
@@ -1015,7 +1015,7 @@
 	<SFML/Graphics/Rect.hpp>
 	<string>
 
-1310151195 source:/home/jeff/src/sugs/src/libsugs/messaging/messageexchange.cpp
+1310745477 source:/home/jeff/src/sugs/src/libsugs/messaging/messageexchange.cpp
 	"messageexchange.hpp"
 
 1310151119 /home/jeff/src/sugs/src/libsugs/messaging/messageexchange.hpp

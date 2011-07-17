@@ -60,7 +60,7 @@ JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
 
   predicateResult result = executeFullPathJavaScript(path, cx, global);
   if (result.result == JS_FALSE) {
-    JS_ReportError(cx, "reformer_native_executeScript -- error running js script '%s': %s", path, result.message);
+    //JS_ReportError(cx, "reformer_native_executeScript -- error running js script '%s': %s", path, result.message);
     return JS_FALSE;
   }
 
@@ -82,7 +82,7 @@ JSBool reformer_native_executeCoffeeScript(JSContext* cx, uintN argc, jsval* vp)
 
   predicateResult result = executeFullPathCoffeeScript(path, cx, global);
   if (result.result == JS_FALSE) {
-    JS_ReportError(cx, "reformer_native_executeCoffeeScript -- error running coffee script '%s': %s", path, result.message);
+    //JS_ReportError(cx, "reformer_native_executeCoffeeScript -- error running coffee script '%s': %s", path, result.message);
     return JS_FALSE;
   }
 
