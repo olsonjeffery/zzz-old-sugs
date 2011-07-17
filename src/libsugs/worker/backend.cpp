@@ -57,4 +57,5 @@ void BackendWorker::doWork() {
   this->processPendingMessages();
   clock_t msElapsed = 12;//currMs - this->_lastMs;
   callIntoJsMainLoop(this->_jsEnv, msElapsed);
+  JS_MaybeGC(this->_jsEnv.cx);
 }

@@ -85,6 +85,7 @@ void FrontendWorker::doWork() {
 
   this->_gfxEnv.window->Display();
   // END OF DRAW/RENDER LOOP
+  JS_MaybeGC(this->_jsEnv.cx);
 }
 
 bool FrontendWorker::isWindowClosed() {
