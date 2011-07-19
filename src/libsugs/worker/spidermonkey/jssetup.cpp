@@ -118,12 +118,31 @@ JSBool reformer_native_fileExists(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+JSBool reformer_native_threadSleep(JSContext* cx, uintN argc, jsval* vp)
+{
+  jsuint ms;
+
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "u", &ms)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "reformer_native_threadSleep: couldn't parse ms arg");
+      return JS_FALSE;
+  }
+
+  //printf("sleeping for %d\n", ms);
+  sf::Sleep(ms);
+
+  jsval rVal = JSVAL_VOID;
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("puts", reformer_native_puts, 1, 0),
   JS_FS("__native_require", reformer_native_executeScript, 2, 0),
   JS_FS("__native_require_coffee", reformer_native_executeCoffeeScript, 2, 0),
   JS_FS("__native_getcwd", reformer_native_getcwd, 0, 0),
   JS_FS("__native_fileExists", reformer_native_fileExists, 1, 0),
+  JS_FS("__native_thread_sleep", reformer_native_threadSleep, 1, 0),
   JS_FS_END
 };
 
