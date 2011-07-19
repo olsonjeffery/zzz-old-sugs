@@ -74,7 +74,7 @@ types = require 'types'
 # callbacks registered via $.startup()
 startupCallbacks = []
 # callbacks registered via $.mainLoop()
-mainLoopCallbacks = []
+mainLoopCallback = null
 # callbacks registered via $.render()
 renderCallbacks = []
 
@@ -92,13 +92,25 @@ global.doStartup = ->
 #
 # This is, pretty much, the main hook into the user code's side
 # of the main game loop
+timePassed = 0
+lastTickForFps = {}
 global.runRender = (nativeCanvas, nativeInput, msElapsed) ->
   canvas = new types.Canvas(nativeCanvas)
   input = new types.Input(nativeInput)
   _.each renderCallbacks, (cb) -> cb input, canvas, msElapsed
 
 global.runMainLoop = (msElapsed) ->
-  _.each mainLoopCallbacks, (cb) -> cb msElapsed
+  timePassed += msElapsed
+  gap = mainLoopCallback[0]
+  lastTime = lastTickForFps[gap]
+  sleepTime = (lastTime + gap) - timePassed
+  #puts "sleepTime: #{sleepTime} gap: #{gap} lastTime: #{lastTime} timePassed: #{timePassed}"
+  if sleepTime > 0
+    global.__native_thread_sleep sleepTime
+    msElapsed += sleepTime
+  lastTickForFps[gap] = timePassed
+  cb = mainLoopCallback[1]
+  cb msElapsed
 
 # global event registrar/util interface
 configHasRan = false
@@ -111,7 +123,7 @@ global.$ = {
       frontend: resolveScriptPath conf.frontend
     puts conf.backends.toString()
 
-  # $.startup() -- callbacks registered in this function are called
+  # $.startup() -- callbacks msElapsed, registered in this function are called
   # after the graphics system is initialized, but before the render
   # loop begins. Maybe do some sprite/graphics pre-loading here (but
   # there's no canvas to draw to at this point)
@@ -120,8 +132,10 @@ global.$ = {
 
   # $.mainLoop() -- callbacks registered here are called with the input
   # object before the $.render(). Intended for game logic.
-  mainLoop: (callback) ->
-    mainLoopCallbacks.push callback
+  mainLoop: (fps, callback) ->
+    gap = 1000 / fps
+    lastTickForFps[gap] = 0
+    mainLoopCallback = [ gap, callback ]
 
   # $.render() -- callbacks registered with this function will be called
   # once at the beginning of every render loop. The display is Clear()'d
