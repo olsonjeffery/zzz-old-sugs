@@ -33,6 +33,7 @@ void BackendWorker::initLibraries() {
   this->loadConfig(this->_config);
   this->loadSugsLibraries(this->_config.paths);
 
+  this->loadComponents(this->_config);
 
   predicateResult result;
   this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
@@ -53,8 +54,10 @@ void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
   JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runMainLoop", 1, argv, &rval);
 }
 
+int currMs = 0;
 void BackendWorker::doWork() {
+  currMs = getCurrentMilliseconds();
   this->processPendingMessages();
-  clock_t msElapsed = 12;//currMs - this->_lastMs;
-  callIntoJsMainLoop(this->_jsEnv, msElapsed);
+  callIntoJsMainLoop(this->_jsEnv, currMs - this->_lastMs);
+  this->_lastMs = currMs;
 }
