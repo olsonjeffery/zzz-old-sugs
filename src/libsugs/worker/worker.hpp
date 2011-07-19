@@ -29,8 +29,11 @@
 #ifndef __worker_hpp__
 #define __worker_hpp__
 
+#include <list>
+
 #include <jsapi.h>
 
+#include "../ext/component.h"
 #include "spidermonkey/jssetup.hpp"
 #include "../common.hpp"
 #include "../messaging/messageexchange.hpp"
@@ -51,12 +54,14 @@ class Worker
       teardownContext(this->_jsEnv.cx);
     }
 
+    void addComponent(sugs::ext::Component* c);
     virtual void initLibraries();
     virtual void teardown();
     virtual void doWork();
 
     MessageExchange* getMessageExchange();
   protected:
+    void loadComponents(sugsConfig config);
     void loadSugsLibraries(pathStrings paths);
     void loadConfig(sugsConfig config);
     void loadEntryPointScript(const char* path, pathStrings paths);
@@ -64,6 +69,7 @@ class Worker
     jsEnv _jsEnv;
     MessageExchange* _msgEx;
     std::string _agentId;
+    std::list<sugs::ext::Component*> _components;
 };
 
 #endif

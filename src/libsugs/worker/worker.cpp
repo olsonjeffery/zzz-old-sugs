@@ -264,3 +264,20 @@ void Worker::processPendingMessages()
     JS_CallFunctionName(this->_jsEnv.cx, this->_jsEnv.global, "__processIncomingMessage", 2, argv, &rVal);
   }
 }
+
+void Worker::addComponent(sugs::ext::Component* c)
+{
+  this->_components.push_back(c);
+}
+
+void Worker::loadComponents(sugsConfig config)
+{
+  printf("LOADING COMPONENTS...\n");
+  std::list<sugs::ext::Component*>::iterator it;
+  for(it = this->_components.begin(); it != this->_components.end(); it++)
+  {
+    printf("FOUND COMPONENT TO LOAD..\n");
+    sugs::ext::Component* c = *it;
+    c->registerNativeFunctions(this->_jsEnv, config);
+  }
+}
