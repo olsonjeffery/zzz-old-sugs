@@ -4,14 +4,14 @@
 	<Project>
 		<Option title="libsugs" />
 		<Option pch_mode="2" />
-		<Option compiler="gccrec__gnu_gcc_compiler" />
+		<Option compiler="gcc" />
 		<Build>
 			<Target title="linux64Debug">
 				<Option output="../../bin/libsugs/linux64Debug/libsugs" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/linux64Debug/" />
 				<Option type="2" />
-				<Option compiler="gccrec__gnu_gcc_compiler" />
+				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-Wall" />
@@ -19,6 +19,7 @@
 					<Add option="-DSFML_DYNAMIC" />
 					<Add directory="../../extlibs/linux64Debug/include" />
 					<Add directory="../../extlibs/linux64Debug/include/js" />
+					<Add directory="../../extlibs/linux64Debug/include/chipmunk" />
 				</Compiler>
 				<Linker>
 					<Add option="-lsfml-graphics" />
@@ -26,6 +27,7 @@
 					<Add option="-lsfml-system" />
 					<Add option="-lmozjs" />
 					<Add option="-lnspr4" />
+					<Add option="-lchipmunk" />
 					<Add option="-lGL" />
 					<Add directory="../extlibs/linux64Debug/lib" />
 				</Linker>
@@ -35,7 +37,7 @@
 				<Option working_dir="" />
 				<Option object_output="obj/linux64Release/" />
 				<Option type="2" />
-				<Option compiler="gccrec__gnu_gcc_compiler" />
+				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
@@ -43,6 +45,7 @@
 					<Add option="-DSFML_DYNAMIC" />
 					<Add directory="../../extlibs/linux64Release/include" />
 					<Add directory="../../extlibs/linux64Release/include/js" />
+					<Add directory="../../extlibs/linux64Release/include/chipmunk" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -51,6 +54,7 @@
 					<Add option="-lsfml-system" />
 					<Add option="-lmozjs" />
 					<Add option="-lnspr4" />
+					<Add option="-lchipmunk" />
 					<Add option="-lGL" />
 					<Add directory="../../extlibs/linux64Release/lib" />
 				</Linker>
@@ -62,6 +66,8 @@
 		<Unit filename="common/jsutil.hpp" />
 		<Unit filename="common/rng.cpp" />
 		<Unit filename="common/rng.hpp" />
+		<Unit filename="ext/component.cpp" />
+		<Unit filename="ext/component.h" />
 		<Unit filename="gfx/jscanvas.cpp" />
 		<Unit filename="gfx/jscanvas.hpp" />
 		<Unit filename="gfx/jscircle.cpp" />
@@ -86,6 +92,8 @@
 		<Unit filename="messaging/messageexchange.hpp" />
 		<Unit filename="messaging/pubsub.cpp" />
 		<Unit filename="messaging/pubsub.hpp" />
+		<Unit filename="physics/sim.cpp" />
+		<Unit filename="physics/sim.h" />
 		<Unit filename="worker/backend.cpp" />
 		<Unit filename="worker/backend.hpp" />
 		<Unit filename="worker/configurator.cpp" />
