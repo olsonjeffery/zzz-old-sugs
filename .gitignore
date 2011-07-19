@@ -4,4 +4,4 @@ obj
 *.layout
 *.depend
 *.cbTemp
-
+.svn
