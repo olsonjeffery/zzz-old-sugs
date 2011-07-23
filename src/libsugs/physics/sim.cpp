@@ -28,8 +28,34 @@
 
  #include "sim.h"
 
+JSBool new_space(JSContext* cx, uintN argc, jsval* vp)
+{
+  jsuint gravX;
+  jsuint gravY;
+
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "uu", &gravX, &gravY)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "new_space: couldn't parse out grav args");
+      return JS_FALSE;
+  }
+
+  cpSpace* space = sugs::physics::createChipmunkSpaceFrom(gravX, gravY);
+
+  JSObject* spaceHolder = sugs::physics::newSpaceContainerObject(cx, space);
+
+  jsval rVal = OBJECT_TO_JSVAL(spaceHolder);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec reformer_chipmunk_native_functions[] = {
+  JS_FS("__native_chipmunk_new_space", new_space, 1, 0),
+  JS_FS_END
+};
+
 void sugs::physics::ChipmunkPhysicsComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
 {
+  JS_DefineFunctions(jsEnv.cx, jsEnv.global, reformer_chipmunk_native_functions);
   printf("REGISTERING PHYSICS!!!!\n");
   printf("REGISTERING PHYSICS!!!!\n");
   printf("REGISTERING PHYSICS!!!!\n");

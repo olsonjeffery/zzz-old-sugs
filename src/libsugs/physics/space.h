@@ -26,27 +26,20 @@
  *
  */
 
-#ifndef __physics_sim_h__
-#define __physics_sim_h__
+#ifndef __physics_space_h__
+#define __physics_space_h__
 
-#include <stdio.h>
+#include <jsapi.h>
 #include <chipmunk.h>
 
-#include "../common.hpp"
-#include "../ext/component.h"
+#include "circularbody.h"
 
-#include "space.h"
-
-namespace sugs{
+namespace sugs {
 namespace physics {
-class ChipmunkPhysicsComponent : public sugs::ext::Component
-{
-  public:
-    ChipmunkPhysicsComponent() {
-    }
 
-    virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-};
+cpSpace* createChipmunkSpaceFrom(int gravX, int gravY);
+JSObject* newSpaceContainerObject(JSContext* cx, cpSpace* space);
+
 }
 }
 

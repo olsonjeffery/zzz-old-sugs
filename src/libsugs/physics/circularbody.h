@@ -26,28 +26,20 @@
  *
  */
 
-#ifndef __physics_sim_h__
-#define __physics_sim_h__
+#ifndef __physics_circularbody_h__
+#define __physics_circularbody_h__
 
-#include <stdio.h>
+#include <math.h>
+
+#include <jsapi.h>
 #include <chipmunk.h>
-
-#include "../common.hpp"
-#include "../ext/component.h"
-
-#include "space.h"
 
 namespace sugs{
 namespace physics {
-class ChipmunkPhysicsComponent : public sugs::ext::Component
-{
-  public:
-    ChipmunkPhysicsComponent() {
-    }
 
-    virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-};
+JSObject* createNewCircularBodyFrom(JSContext* cx, cpSpace* space, cpFloat posX, cpFloat posY, cpFloat mass, cpFloat radius, cpFloat friction, int groupId, JSObject* outterJsObj);
+
 }
 }
 
-#endif
+ #endif

@@ -12,22 +12,22 @@
 	<time.h>
 	"common/rng.hpp"
 
-1309269245 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsapi.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsapi.h
 	<stddef.h>
 	<stdio.h>
 	"js-config.h"
 	"jspubtd.h"
 	"jsutil.h"
 
-1309272107 /home/jeff/src/sugs/extlibs/linux64Release/include/js/js-config.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/js-config.h
 
-1308852154 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jspubtd.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jspubtd.h
 	"jstypes.h"
 	"jscompat.h"
 	"jsval.h"
 	"jsproto.tbl"
 
-1308852155 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jstypes.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jstypes.h
 	<stddef.h>
 	"js-config.h"
 	"jscpucfg.h"
@@ -35,25 +35,25 @@
 	"jsinttypes.h"
 	"jsotypes.h"
 
-1309272112 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsautocfg.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsautocfg.h
 
-1308852154 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsinttypes.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsinttypes.h
 	"js-config.h"
 	<stdint.h>
 	<sys/types.h>
 	<stddef.h>
 
-1309269245 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsotypes.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsotypes.h
 	<sys/types.h>
 	<sys/inttypes.h>
 
-1308852154 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jscompat.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jscompat.h
 	"jstypes.h"
 
-1308852155 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsval.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsval.h
 	"jsutil.h"
 
-1308852155 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsutil.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsutil.h
 	"jstypes.h"
 	"mozilla/Util.h"
 	<stdlib.h>
@@ -61,18 +61,18 @@
 	<stdio.h>
 	"jscustomallocator.h"
 
-1309272851 /home/jeff/src/sugs/extlibs/linux64Release/include/js/mozilla/Util.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/mozilla/Util.h
 	"mozilla/Types.h"
 
-1309272851 /home/jeff/src/sugs/extlibs/linux64Release/include/js/mozilla/Types.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/mozilla/Types.h
 	"jstypes.h"
 
-1308852154 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsproto.tbl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsproto.tbl
 	"jsversion.h"
 
-1308852155 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsversion.h
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/js/jsversion.h
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics.hpp
 	<SFML/Window.hpp>
 	<SFML/Graphics/Color.hpp>
 	<SFML/Graphics/Font.hpp>
@@ -87,7 +87,7 @@
 	<SFML/Graphics/Text.hpp>
 	<SFML/Graphics/View.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window.hpp
 	<SFML/System.hpp>
 	<SFML/Window/Context.hpp>
 	<SFML/Window/ContextSettings.hpp>
@@ -97,7 +97,7 @@
 	<SFML/Window/Window.hpp>
 	<SFML/Window/WindowStyle.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System.hpp
 	<SFML/Config.hpp>
 	<SFML/System/Clock.hpp>
 	<SFML/System/Err.hpp>
@@ -112,53 +112,53 @@
 	<SFML/System/Vector2.hpp>
 	<SFML/System/Vector3.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Config.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Config.hpp
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Clock.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Clock.hpp
 	<SFML/Config.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Err.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Err.hpp
 	<SFML/Config.hpp>
 	<ostream>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Lock.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Lock.hpp
 	<SFML/System/NonCopyable.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/NonCopyable.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/NonCopyable.hpp
 	<SFML/Config.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Mutex.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Mutex.hpp
 	<SFML/Config.hpp>
 	<SFML/System/NonCopyable.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Sleep.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Sleep.hpp
 	<SFML/Config.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/String.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/String.hpp
 	<SFML/Config.hpp>
 	<locale>
 	<string>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Thread.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Thread.hpp
 	<SFML/Config.hpp>
 	<SFML/System/NonCopyable.hpp>
 	<cstdlib>
 	<SFML/System/Thread.inl>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Thread.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Thread.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/ThreadLocal.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/ThreadLocal.hpp
 	<SFML/Config.hpp>
 	<SFML/System/NonCopyable.hpp>
 	<cstdlib>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/ThreadLocalPtr.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/ThreadLocalPtr.hpp
 	<SFML/System/ThreadLocal.hpp>
 	<SFML/System/ThreadLocalPtr.inl>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/ThreadLocalPtr.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/ThreadLocalPtr.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Utf.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Utf.hpp
 	<SFML/Config.hpp>
 	<algorithm>
 	<locale>
@@ -166,42 +166,42 @@
 	<cstdlib>
 	<SFML/System/Utf.inl>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Utf.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Utf.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Vector2.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Vector2.hpp
 	<SFML/System/Vector2.inl>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Vector2.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Vector2.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Vector3.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Vector3.hpp
 	<SFML/System/Vector3.inl>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Vector3.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Vector3.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/Context.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/Context.hpp
 	<SFML/Config.hpp>
 	<SFML/Window/GlResource.hpp>
 	<SFML/Window/ContextSettings.hpp>
 	<SFML/System/NonCopyable.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/GlResource.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/GlResource.hpp
 	<SFML/Config.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/ContextSettings.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/ContextSettings.hpp
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/Event.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/Event.hpp
 	<SFML/Config.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/Input.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/Input.hpp
 	<SFML/Config.hpp>
 	<SFML/System/NonCopyable.hpp>
 	<SFML/Window/Event.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/VideoMode.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/VideoMode.hpp
 	<SFML/Config.hpp>
 	<vector>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/Window.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/Window.hpp
 	<SFML/Window/ContextSettings.hpp>
 	<SFML/Window/Input.hpp>
 	<SFML/Window/VideoMode.hpp>
@@ -212,15 +212,15 @@
 	<SFML/System/NonCopyable.hpp>
 	<string>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/WindowHandle.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/WindowHandle.hpp
 	<SFML/Config.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/WindowStyle.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Window/WindowStyle.hpp
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Color.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Color.hpp
 	<SFML/Config.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Font.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Font.hpp
 	<SFML/System/Resource.hpp>
 	<SFML/System/Vector2.hpp>
 	<SFML/System/String.hpp>
@@ -231,7 +231,7 @@
 	<string>
 	<vector>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Resource.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Resource.hpp
 	<SFML/System/Lock.hpp>
 	<SFML/System/Mutex.hpp>
 	<set>
@@ -239,22 +239,22 @@
 	<SFML/System/Resource.inl>
 	<SFML/System/ResourcePtr.inl>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Resource.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/Resource.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/ResourcePtr.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/System/ResourcePtr.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Glyph.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Glyph.hpp
 	<SFML/Config.hpp>
 	<SFML/Graphics/Rect.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Rect.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Rect.hpp
 	<SFML/System/Vector2.hpp>
 	<algorithm>
 	<SFML/Graphics/Rect.inl>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Rect.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Rect.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Image.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Image.hpp
 	<SFML/System/Resource.hpp>
 	<SFML/Window/GlResource.hpp>
 	<SFML/Graphics/Color.hpp>
@@ -262,7 +262,7 @@
 	<string>
 	<vector>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Renderer.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Renderer.hpp
 	<SFML/Config.hpp>
 	<SFML/System/NonCopyable.hpp>
 	<SFML/Window/GlResource.hpp>
@@ -270,44 +270,44 @@
 	<SFML/Graphics/Drawable.hpp>
 	<SFML/Graphics/Matrix3.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Drawable.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Drawable.hpp
 	<SFML/System/Vector2.hpp>
 	<SFML/Graphics/Color.hpp>
 	<SFML/Graphics/Matrix3.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Matrix3.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Matrix3.hpp
 	<SFML/Config.hpp>
 	<SFML/System/Vector2.hpp>
 	<SFML/Graphics/Rect.hpp>
 	<cmath>
 	<SFML/Graphics/Matrix3.inl>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Matrix3.inl
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Matrix3.inl
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/RenderImage.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/RenderImage.hpp
 	<SFML/Graphics/Image.hpp>
 	<SFML/Graphics/RenderTarget.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/RenderTarget.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/RenderTarget.hpp
 	<SFML/System/NonCopyable.hpp>
 	<SFML/Graphics/Color.hpp>
 	<SFML/Graphics/Rect.hpp>
 	<SFML/Graphics/Renderer.hpp>
 	<SFML/Graphics/View.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/View.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/View.hpp
 	<SFML/Config.hpp>
 	<SFML/Graphics/Rect.hpp>
 	<SFML/Graphics/Matrix3.hpp>
 	<SFML/System/Vector2.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/RenderWindow.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/RenderWindow.hpp
 	<SFML/Graphics/Image.hpp>
 	<SFML/Graphics/RenderTarget.hpp>
 	<SFML/Window/Window.hpp>
 	<string>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Shader.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Shader.hpp
 	<SFML/Config.hpp>
 	<SFML/Graphics/Image.hpp>
 	<SFML/Window/GlResource.hpp>
@@ -316,17 +316,17 @@
 	<map>
 	<string>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Shape.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Shape.hpp
 	<SFML/Graphics/Drawable.hpp>
 	<SFML/System/Vector2.hpp>
 	<vector>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Sprite.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Sprite.hpp
 	<SFML/System/Resource.hpp>
 	<SFML/Graphics/Drawable.hpp>
 	<SFML/Graphics/Rect.hpp>
 
-1309271978 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Text.hpp
+1310944669 /home/jeff/src/sugs/extlibs/linux64Release/include/SFML/Graphics/Text.hpp
 	<SFML/System/Resource.hpp>
 	<SFML/System/String.hpp>
 	<SFML/Graphics/Drawable.hpp>
@@ -504,10 +504,10 @@
 1309279808 source:/home/jeff/src/sugs/src/worker/worker.cpp
 	"worker.hpp"
 
-1309410679 source:/home/jeff/src/sugs/src/libsugs/common.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/common.cpp
 	"common.hpp"
 
-1310367293 /home/jeff/src/sugs/src/libsugs/common.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/common.hpp
 	<stdio.h>
 	<stdlib.h>
 	<jsapi.h>
@@ -520,42 +520,42 @@
 	"common/jsutil.hpp"
 	"messaging/messageexchange.hpp"
 
-1309356431 /home/jeff/src/sugs/src/libsugs/common/rng.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/common/rng.hpp
 	<time.h>
 	<stdio.h>
 	<stdlib.h>
 
-1309356377 source:/home/jeff/src/sugs/src/libsugs/common/rng.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/common/rng.cpp
 	"rng.hpp"
 
-1308855742 source:/home/jeff/src/sugs/src/libsugs/gfx/jscanvas.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/gfx/jscanvas.cpp
 	"jscanvas.hpp"
 
-1308526433 /home/jeff/src/sugs/src/libsugs/gfx/jscanvas.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/gfx/jscanvas.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 
-1308865912 source:/home/jeff/src/sugs/src/libsugs/gfx/jscircle.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/gfx/jscircle.cpp
 	"jsrect.hpp"
 
-1308526423 /home/jeff/src/sugs/src/libsugs/gfx/jsrect.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/gfx/jsrect.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 	"../common.hpp"
 	"jsdrawable.hpp"
 
-1308526437 /home/jeff/src/sugs/src/libsugs/gfx/jsdrawable.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/gfx/jsdrawable.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 	"../common.hpp"
 
-1308328768 source:/home/jeff/src/sugs/src/libsugs/gfx/jsdrawable.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/gfx/jsdrawable.cpp
 	"jsdrawable.hpp"
 
-1308807034 source:/home/jeff/src/sugs/src/libsugs/gfx/jsgraphics.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/gfx/jsgraphics.cpp
 	"jsgraphics.hpp"
 
-1308807090 /home/jeff/src/sugs/src/libsugs/gfx/jsgraphics.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/gfx/jsgraphics.hpp
 	<math.h>
 	<jsapi.h>
 	"../medialibrary.hpp"
@@ -565,56 +565,56 @@
 	"jscircle.hpp"
 	"jstext.hpp"
 
-1308526273 /home/jeff/src/sugs/src/libsugs/medialibrary.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/medialibrary.hpp
 	<SFML/Graphics.hpp>
 	<stdio.h>
 
-1308526428 /home/jeff/src/sugs/src/libsugs/gfx/jssprite.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/gfx/jssprite.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 	"../medialibrary.hpp"
 	"jsdrawable.hpp"
 
-1308526442 /home/jeff/src/sugs/src/libsugs/gfx/jscircle.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/gfx/jscircle.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 	"../common.hpp"
 	"jsdrawable.hpp"
 
-1308526418 /home/jeff/src/sugs/src/libsugs/gfx/jstext.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/gfx/jstext.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 	"../common.hpp"
 	"jsdrawable.hpp"
 	"../medialibrary.hpp"
 
-1308865907 source:/home/jeff/src/sugs/src/libsugs/gfx/jsrect.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/gfx/jsrect.cpp
 	"jsrect.hpp"
 
-1308865907 source:/home/jeff/src/sugs/src/libsugs/gfx/jssprite.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/gfx/jssprite.cpp
 	"jssprite.hpp"
 
-1308525059 source:/home/jeff/src/sugs/src/libsugs/gfx/jstext.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/gfx/jstext.cpp
 	"jstext.hpp"
 
-1309413135 source:/home/jeff/src/sugs/src/libsugs/gfx/sfmlsetup.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/gfx/sfmlsetup.cpp
 	"sfmlsetup.hpp"
 
-1308526414 /home/jeff/src/sugs/src/libsugs/gfx/sfmlsetup.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/gfx/sfmlsetup.hpp
 	<SFML/Graphics.hpp>
 	<stdio.h>
 	<jsapi.h>
 	"../common.hpp"
 	"jscanvas.hpp"
 
-1310164407 source:/home/jeff/src/sugs/src/libsugs/jsinput.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/jsinput.cpp
 	"jsinput.hpp"
 
-1308526289 /home/jeff/src/sugs/src/libsugs/jsinput.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/jsinput.hpp
 	<SFML/Graphics.hpp>
 	<jsapi.h>
 
-1308526318 source:/home/jeff/src/sugs/src/libsugs/medialibrary.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/medialibrary.cpp
 	"medialibrary.hpp"
 
 1309363955 source:/home/jeff/src/sugs/src/libsugs/messaging/inprocmessenger.cpp
@@ -627,30 +627,32 @@
 	"../common.hpp"
 	"pubsub.hpp"
 
-1309823645 /home/jeff/src/sugs/src/libsugs/messaging/pubsub.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/messaging/pubsub.hpp
 	<string>
 	<map>
 	<list>
 	<jsapi.h>
 
-1309823667 source:/home/jeff/src/sugs/src/libsugs/messaging/pubsub.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/messaging/pubsub.cpp
 	"pubsub.hpp"
 
-1310769142 source:/home/jeff/src/sugs/src/libsugs/worker/backend.cpp
+1311100468 source:/home/jeff/src/sugs/src/libsugs/worker/backend.cpp
 	"backend.hpp"
 
-1309459423 /home/jeff/src/sugs/src/libsugs/worker/backend.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/worker/backend.hpp
 	<jsapi.h>
 	"worker.hpp"
 	"../common.hpp"
 
-1309770500 /home/jeff/src/sugs/src/libsugs/worker/worker.hpp
+1311100468 /home/jeff/src/sugs/src/libsugs/worker/worker.hpp
+	<list>
 	<jsapi.h>
+	"../ext/component.h"
 	"spidermonkey/jssetup.hpp"
 	"../common.hpp"
 	"../messaging/messageexchange.hpp"
 
-1308944876 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.hpp
 	<jsapi.h>
 	<stdlib.h>
 	<stdio.h>
@@ -660,22 +662,22 @@
 	"../../gfx/jsgraphics.hpp"
 	"../../jsinput.hpp"
 
-1310366169 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.hpp
 	<jsapi.h>
 	"../../common.hpp"
 
-1309412212 source:/home/jeff/src/sugs/src/libsugs/worker/configurator.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/worker/configurator.cpp
 	"configurator.hpp"
 
-1309459428 /home/jeff/src/sugs/src/libsugs/worker/configurator.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/worker/configurator.hpp
 	<jsapi.h>
 	"worker.hpp"
 	"../common.hpp"
 
-1310769142 source:/home/jeff/src/sugs/src/libsugs/worker/frontend.cpp
+1310954243 source:/home/jeff/src/sugs/src/libsugs/worker/frontend.cpp
 	"frontend.hpp"
 
-1309459438 /home/jeff/src/sugs/src/libsugs/worker/frontend.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/worker/frontend.hpp
 	<jsapi.h>
 	<SFML/Graphics.hpp>
 	"worker.hpp"
@@ -684,13 +686,13 @@
 	"../jsinput.hpp"
 	"../medialibrary.hpp"
 
-1310508837 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
+1311100468 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/jssetup.cpp
 	"jssetup.hpp"
 
-1310508888 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
+1311100468 source:/home/jeff/src/sugs/src/libsugs/worker/spidermonkey/scripting.cpp
 	"scripting.hpp"
 
-1309826105 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
+1311100468 source:/home/jeff/src/sugs/src/libsugs/worker/worker.cpp
 	"worker.hpp"
 
 1309269245 /home/jeff/src/sugs/extlibs/linux64Debug/include/js/jsapi.h
@@ -1015,10 +1017,10 @@
 	<SFML/Graphics/Rect.hpp>
 	<string>
 
-1310745477 source:/home/jeff/src/sugs/src/libsugs/messaging/messageexchange.cpp
+1311100468 source:/home/jeff/src/sugs/src/libsugs/messaging/messageexchange.cpp
 	"messageexchange.hpp"
 
-1310151119 /home/jeff/src/sugs/src/libsugs/messaging/messageexchange.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/messaging/messageexchange.hpp
 	<string>
 	<map>
 	<jsapi.h>
@@ -1026,9 +1028,102 @@
 	"../common.hpp"
 	"pubsub.hpp"
 
-1309550381 /home/jeff/src/sugs/src/libsugs/common/jsutil.hpp
+1310944673 /home/jeff/src/sugs/src/libsugs/common/jsutil.hpp
 	<jsapi.h>
 
-1309557563 source:/home/jeff/src/sugs/src/libsugs/common/jsutil.cpp
+1310944673 source:/home/jeff/src/sugs/src/libsugs/common/jsutil.cpp
 	"jsutil.hpp"
+
+1311108151 source:/home/jeff/src/sugs/src/libsugs/ext/component.cpp
+	"component.h"
+
+1311100468 /home/jeff/src/sugs/src/libsugs/ext/component.h
+	"../common.hpp"
+
+1311124246 source:/home/jeff/src/sugs/src/libsugs/physics/sim.cpp
+	"sim.h"
+
+1311123509 /home/jeff/src/sugs/src/libsugs/physics/sim.h
+	<stdio.h>
+	<chipmunk.h>
+	"../common.hpp"
+	"../ext/component.h"
+	"space.h"
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/chipmunk.h
+	"chipmunk_types.h"
+	"cpVect.h"
+	"cpBB.h"
+	"cpSpatialIndex.h"
+	"cpBody.h"
+	"cpShape.h"
+	"cpPolyShape.h"
+	"cpArbiter.h"
+	"constraints/cpConstraint.h"
+	"cpSpace.h"
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/chipmunk_types.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/cpVect.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/cpBB.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/cpSpatialIndex.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/cpBody.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/cpShape.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/cpPolyShape.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/cpArbiter.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpConstraint.h
+	"cpPinJoint.h"
+	"cpSlideJoint.h"
+	"cpPivotJoint.h"
+	"cpGrooveJoint.h"
+	"cpDampedSpring.h"
+	"cpDampedRotarySpring.h"
+	"cpRotaryLimitJoint.h"
+	"cpRatchetJoint.h"
+	"cpGearJoint.h"
+	"cpSimpleMotor.h"
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpPinJoint.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpSlideJoint.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpPivotJoint.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpGrooveJoint.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpDampedSpring.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpDampedRotarySpring.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpRotaryLimitJoint.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpRatchetJoint.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpGearJoint.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/constraints/cpSimpleMotor.h
+
+1311108639 /home/jeff/src/sugs/extlibs/linux64Release/include/chipmunk/cpSpace.h
+
+1311201459 /home/jeff/src/sugs/src/libsugs/physics/space.h
+	<jsapi.h>
+	<chipmunk.h>
+	"circularbody.h"
+
+1311202272 /home/jeff/src/sugs/src/libsugs/physics/circularbody.h
+	<jsapi.h>
+	<chipmunk.h>
+
+1311201496 source:/home/jeff/src/sugs/src/libsugs/physics/circularbody.cpp
+	"circularbody.h"
+
+1311202272 source:/home/jeff/src/sugs/src/libsugs/physics/space.cpp
+	"space.h"
 

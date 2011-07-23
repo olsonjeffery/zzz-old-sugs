@@ -92,8 +92,12 @@
 		<Unit filename="messaging/messageexchange.hpp" />
 		<Unit filename="messaging/pubsub.cpp" />
 		<Unit filename="messaging/pubsub.hpp" />
+		<Unit filename="physics/circularbody.cpp" />
+		<Unit filename="physics/circularbody.h" />
 		<Unit filename="physics/sim.cpp" />
 		<Unit filename="physics/sim.h" />
+		<Unit filename="physics/space.cpp" />
+		<Unit filename="physics/space.h" />
 		<Unit filename="worker/backend.cpp" />
 		<Unit filename="worker/backend.hpp" />
 		<Unit filename="worker/configurator.cpp" />
