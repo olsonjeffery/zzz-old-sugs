@@ -171,7 +171,7 @@ circularBodyClassDef = {
 };
 
 JSObject*
-sugs::physics::createNewCircularBodyFrom(JSContext* cx, cpSpace* space, cpFloat xPos, cpFloat yPos, cpFloat mass, cpFloat radius, cpFloat friction, int groupId, JSObject* outterJsObj)
+sugs::physics::createNewCircularBodyFrom(JSContext* cx, cpSpace* space, cpFloat xPos, cpFloat yPos, cpFloat mass, cpFloat radius, cpFloat friction, unsigned int groupId, JSObject* outterJsObj)
 {
   cpFloat moment = cpMomentForCircle(mass, 0, radius, cpvzero);
   cpBody* circularBody = cpSpaceAddBody(space, cpBodyNew(mass, moment));

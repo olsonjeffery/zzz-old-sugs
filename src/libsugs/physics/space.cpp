@@ -59,7 +59,7 @@ space_newCircularBody(JSContext* cx, uintN argc, jsval* vp)
   jsuint groupId;
   JSObject* outterJsObj;
 
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "dddddo", &xPos, &yPos, &mass, &radius, &friction, &groupId, &outterJsObj)) {
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "ddddduo", &xPos, &yPos, &mass, &radius, &friction, &groupId, &outterJsObj)) {
       /* Throw a JavaScript exception. */
       JS_ReportError(cx, "space_newCircularBody: couldn't parse out args");
       return JS_FALSE;
