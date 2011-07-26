@@ -10,10 +10,10 @@ return {
     step: (stepTime) ->
       @_space.__native_step stepTime
 
-    newCircularBody: (xPos, yPos, mass, radius, friction, groupId) ->
+    newCircularBody: (xPos, yPos, mass, radius, friction, groupId, collType) ->
       body = new cbody.CircularBody()
 
-      innerBody = @_space.__native_newCircularBody xPos, yPos, mass, radius, friction, groupId, body
+      innerBody = @_space.__native_newCircularBody xPos, yPos, mass, radius, friction, groupId, collType, body
       body.setInnerBody innerBody
       body.setSpace @_space
       body

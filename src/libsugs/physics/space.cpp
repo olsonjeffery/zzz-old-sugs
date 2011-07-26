@@ -57,9 +57,10 @@ space_newCircularBody(JSContext* cx, uintN argc, jsval* vp)
   jsdouble mass;
   jsdouble friction;
   jsuint groupId;
+  jsuint collisionType;
   JSObject* outterJsObj;
 
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "ddddduo", &xPos, &yPos, &mass, &radius, &friction, &groupId, &outterJsObj)) {
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "ddddduuo", &xPos, &yPos, &mass, &radius, &friction, &groupId, &collisionType, &outterJsObj)) {
       /* Throw a JavaScript exception. */
       JS_ReportError(cx, "space_newCircularBody: couldn't parse out args");
       return JS_FALSE;
@@ -68,7 +69,7 @@ space_newCircularBody(JSContext* cx, uintN argc, jsval* vp)
 
   cpSpace* space = (cpSpace*)JS_GetPrivate(cx, spaceObj);
 
-  JSObject* bodyObj = sugs::physics::createNewCircularBodyFrom(cx, space, xPos, yPos, mass, radius, friction, groupId, outterJsObj);
+  JSObject* bodyObj = sugs::physics::createNewCircularBodyFrom(cx, space, xPos, yPos, mass, radius, friction, groupId, collisionType, outterJsObj);
 
   if (bodyObj == NULL)
   {
@@ -128,7 +129,7 @@ space_removeBody(JSContext* cx, uintN argc, jsval* vp)
 static JSFunctionSpec
 space_native_functions[] = {
   JS_FS("__native_step", space_step, 1, 0),
-  JS_FS("__native_newCircularBody", space_newCircularBody, 7, 0),
+  JS_FS("__native_newCircularBody", space_newCircularBody, 8, 0),
   JS_FS("__native_removeBody", space_removeBody, 1, 0),
   JS_FS_END
 };

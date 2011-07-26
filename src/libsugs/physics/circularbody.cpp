@@ -171,7 +171,7 @@ circularBodyClassDef = {
 };
 
 JSObject*
-sugs::physics::createNewCircularBodyFrom(JSContext* cx, cpSpace* space, cpFloat xPos, cpFloat yPos, cpFloat mass, cpFloat radius, cpFloat friction, unsigned int groupId, JSObject* outterJsObj)
+sugs::physics::createNewCircularBodyFrom(JSContext* cx, cpSpace* space, cpFloat xPos, cpFloat yPos, cpFloat mass, cpFloat radius, cpFloat friction, unsigned int groupId, unsigned int collisionType, JSObject* outterJsObj)
 {
   cpFloat moment = cpMomentForCircle(mass, 0, radius, cpvzero);
   cpBody* circularBody = cpSpaceAddBody(space, cpBodyNew(mass, moment));
@@ -179,6 +179,7 @@ sugs::physics::createNewCircularBodyFrom(JSContext* cx, cpSpace* space, cpFloat 
   cpShape* circularShape = cpSpaceAddShape(space, cpCircleShapeNew(circularBody, radius, cpvzero));
   cpShapeSetFriction(circularShape, friction);
   cpShapeSetGroup(circularShape, groupId);
+  cpShapeSetCollisionType(circularShape, collisionType);
 
   cpBodySetUserData(circularBody, outterJsObj);
 
