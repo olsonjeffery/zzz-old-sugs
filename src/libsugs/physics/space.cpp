@@ -149,6 +149,72 @@ spaceClassDef = {
   JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, classdef_space_finalize
 };
 
+static int
+defaultBeginHandler(cpArbiter *arb, struct cpSpace *space, void *data)
+{
+  sugs::physics::chipmonkeyData* cD = (sugs::physics::chipmonkeyData*)data;
+  jsval argv[2];
+  cpBody* bodyA;
+  cpBody* bodyB;
+  cpArbiterGetBodies(arb, &bodyA, &bodyB);
+  JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
+  JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
+  argv[0] = OBJECT_TO_JSVAL(bObjA);
+  argv[1] = OBJECT_TO_JSVAL(bObjB);
+  jsval rVal;
+  JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionBeginHandler", 2, argv, &rVal);
+  return JSVAL_TO_BOOLEAN(rVal);
+}
+
+static int
+defaultPreSolveHandler(cpArbiter *arb, struct cpSpace *space, void *data)
+{
+  sugs::physics::chipmonkeyData* cD = (sugs::physics::chipmonkeyData*)data;
+  jsval argv[2];
+  cpBody* bodyA;
+  cpBody* bodyB;
+  cpArbiterGetBodies(arb, &bodyA, &bodyB);
+  JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
+  JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
+  argv[0] = OBJECT_TO_JSVAL(bObjA);
+  argv[1] = OBJECT_TO_JSVAL(bObjB);
+  jsval rVal;
+  JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionPreSolveHandler", 2, argv, &rVal);
+  return JSVAL_TO_BOOLEAN(rVal);
+}
+
+static void
+defaultPostSolveHandler(cpArbiter *arb, cpSpace *space, void *data)
+{
+  sugs::physics::chipmonkeyData* cD = (sugs::physics::chipmonkeyData*)data;
+  jsval argv[2];
+  cpBody* bodyA;
+  cpBody* bodyB;
+  cpArbiterGetBodies(arb, &bodyA, &bodyB);
+  JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
+  JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
+  argv[0] = OBJECT_TO_JSVAL(bObjA);
+  argv[1] = OBJECT_TO_JSVAL(bObjB);
+  jsval rVal;
+  JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionPostSolveHandler", 2, argv, &rVal);
+}
+
+static void
+defaultSeparateHandler(cpArbiter *arb, cpSpace *space, void *data)
+{
+  sugs::physics::chipmonkeyData* cD = (sugs::physics::chipmonkeyData*)data;
+  jsval argv[2];
+  cpBody* bodyA;
+  cpBody* bodyB;
+  cpArbiterGetBodies(arb, &bodyA, &bodyB);
+  JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
+  JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
+  argv[0] = OBJECT_TO_JSVAL(bObjA);
+  argv[1] = OBJECT_TO_JSVAL(bObjB);
+  jsval rVal;
+  JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionSeparateHandler", 2, argv, &rVal);
+}
+
 /* public funcs */
 cpSpace*
 sugs::physics::createChipmunkSpaceFrom(int gravX, int gravY)
@@ -158,7 +224,7 @@ sugs::physics::createChipmunkSpaceFrom(int gravX, int gravY)
 }
 
 JSObject*
-sugs::physics::newSpaceContainerObject(JSContext* cx, cpSpace* space)
+sugs::physics::newSpaceContainerObject(JSContext* cx, cpSpace* space, JSObject* callingObj)
 {
   JSObject* spaceHolder = JS_NewObject(cx, &spaceClassDef, NULL, NULL);
   if (!JS_SetPrivate(cx, spaceHolder, (void*)space)) {
@@ -166,6 +232,11 @@ sugs::physics::newSpaceContainerObject(JSContext* cx, cpSpace* space)
       return JS_FALSE;
   }
   JS_DefineFunctions(cx, spaceHolder, space_native_functions);
+
+  sugs::physics::chipmonkeyData* data = new chipmonkeyData;
+  *data = {cx, callingObj};
+
+  cpSpaceSetDefaultCollisionHandler(space, defaultBeginHandler, defaultPreSolveHandler, defaultPostSolveHandler, defaultSeparateHandler, data);
 
   return spaceHolder;
 }

@@ -1,7 +1,7 @@
 msgEx = require 'messaging'
 return {
   CircularBody: class
-    constructor: ->
+    constructor: (@groupId, @collType) ->
       @imx = new msgEx.InternalMessageExchange()
 
     setInnerBody: (@_body) ->
@@ -25,7 +25,6 @@ return {
     setSpace: (@_space) ->
 
     applyDirectionalImpulse: (amt) ->
-      amt += .1
       @_body.__native_applyDirectionalImpulse amt
 
     hasHandlerFor: (name) ->
@@ -35,8 +34,8 @@ return {
       @imx.bind name, callback
 
     trigger: (name, msg) ->
-      @img.trigger name, msg
+      @imx.trigger name, msg
 
     safeTrigger: (name, msg) ->
-      @img.safeTrigger name, msg
+      @imx.safeTrigger name, msg
 }

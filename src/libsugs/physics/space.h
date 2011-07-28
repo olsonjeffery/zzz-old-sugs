@@ -37,8 +37,13 @@
 namespace sugs {
 namespace physics {
 
+typedef struct {
+  JSContext* cx;
+  JSObject* spaceObj;
+} chipmonkeyData;
+
 cpSpace* createChipmunkSpaceFrom(int gravX, int gravY);
-JSObject* newSpaceContainerObject(JSContext* cx, cpSpace* space);
+JSObject* newSpaceContainerObject(JSContext* cx, cpSpace* space, JSObject* callingSpace);
 
 }
 }

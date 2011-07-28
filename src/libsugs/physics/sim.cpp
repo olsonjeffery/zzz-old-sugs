@@ -32,8 +32,9 @@ JSBool new_space(JSContext* cx, uintN argc, jsval* vp)
 {
   jsuint gravX;
   jsuint gravY;
+  JSObject* spaceObj;
 
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "uu", &gravX, &gravY)) {
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "uuo", &gravX, &gravY, &spaceObj)) {
       /* Throw a JavaScript exception. */
       JS_ReportError(cx, "new_space: couldn't parse out grav args");
       return JS_FALSE;
@@ -41,7 +42,7 @@ JSBool new_space(JSContext* cx, uintN argc, jsval* vp)
 
   cpSpace* space = sugs::physics::createChipmunkSpaceFrom(gravX, gravY);
 
-  JSObject* spaceHolder = sugs::physics::newSpaceContainerObject(cx, space);
+  JSObject* spaceHolder = sugs::physics::newSpaceContainerObject(cx, space, spaceObj);
 
   jsval rVal = OBJECT_TO_JSVAL(spaceHolder);
   JS_SET_RVAL(cx, vp, rVal);
@@ -49,7 +50,7 @@ JSBool new_space(JSContext* cx, uintN argc, jsval* vp)
 }
 
 static JSFunctionSpec reformer_chipmunk_native_functions[] = {
-  JS_FS("__native_chipmunk_new_space", new_space, 1, 0),
+  JS_FS("__native_chipmunk_new_space", new_space, 2, 0),
   JS_FS_END
 };
 
