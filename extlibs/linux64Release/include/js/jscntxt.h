@@ -375,7 +375,8 @@ struct JSRuntime {
     uint32              protoHazardShape;
 
     /* Garbage collector state, used by jsgc.c. */
-    js::GCChunkSet      gcChunkSet;
+    js::GCChunkSet      gcUserChunkSet;
+    js::GCChunkSet      gcSystemChunkSet;
 
     js::RootedValueMap  gcRootsHash;
     js::GCLocks         gcLocksHash;
@@ -410,6 +411,12 @@ struct JSRuntime {
 
     /* Compartment that is currently involved in per-compartment GC */
     JSCompartment       *gcCurrentCompartment;
+
+    /*
+     * If this is non-NULL, all marked objects must belong to this compartment.
+     * This is used to look for compartment bugs.
+     */
+    JSCompartment       *gcCheckCompartment;
 
     /*
      * We can pack these flags as only the GC thread writes to them. Atomic
@@ -596,6 +603,12 @@ struct JSRuntime {
 #define JS_THREAD_DATA(cx)      (&(cx)->runtime->threadData)
 #endif
 
+  private:
+    JSPrincipals        *trustedPrincipals_;
+  public:
+    void setTrustedPrincipals(JSPrincipals *p) { trustedPrincipals_ = p; }
+    JSPrincipals *trustedPrincipals() const { return trustedPrincipals_; }
+
     /*
      * Object shape (property cache structural type) identifier generator.
      *
@@ -616,11 +629,6 @@ struct JSRuntime {
 
     JSWrapObjectCallback wrapObjectCallback;
     JSPreWrapCallback    preWrapObjectCallback;
-
-#ifdef JS_METHODJIT
-    /* This measures the size of JITScripts, native maps and IC structs. */
-    size_t               mjitDataSize;
-#endif
 
     /*
      * To ensure that cx->malloc does not cause a GC, we set this flag during
@@ -1135,7 +1143,7 @@ struct JSContext
     /* Random number generator state, used by jsmath.cpp. */
     int64               rngSeed;
 
-    /* Location to stash the iteration value between JSOP_MOREITER and JSOP_FOR*. */
+    /* Location to stash the iteration value between JSOP_MOREITER and JSOP_ITERNEXT. */
     js::Value           iterValue;
 
 #ifdef JS_TRACER
@@ -1938,37 +1946,6 @@ class AutoReleaseNullablePtr {
     ~AutoReleaseNullablePtr() { if (ptr) cx->free_(ptr); }
 };
 
-class AutoLocalNameArray {
-  public:
-    explicit AutoLocalNameArray(JSContext *cx, JSFunction *fun
-                                JS_GUARD_OBJECT_NOTIFIER_PARAM)
-      : context(cx),
-        mark(JS_ARENA_MARK(&cx->tempPool)),
-        names(fun->script()->bindings.getLocalNameArray(cx, &cx->tempPool)),
-        count(fun->script()->bindings.countLocalNames())
-    {
-        JS_GUARD_OBJECT_NOTIFIER_INIT;
-    }
-
-    ~AutoLocalNameArray() {
-        JS_ARENA_RELEASE(&context->tempPool, mark);
-    }
-
-    operator bool() const { return !!names; }
-
-    uint32 length() const { return count; }
-
-    const jsuword &operator [](unsigned i) const { return names[i]; }
-
-  private:
-    JSContext   *context;
-    void        *mark;
-    jsuword     *names;
-    uint32      count;
-
-    JS_DECL_USE_GUARD_OBJECT_NOTIFIER
-};
-
 template <class RefCountable>
 class AlreadyIncRefed
 {
@@ -2305,6 +2282,9 @@ js_GetScriptedCaller(JSContext *cx, js::StackFrame *fp);
 
 extern jsbytecode*
 js_GetCurrentBytecodePC(JSContext* cx);
+
+extern JSScript *
+js_GetCurrentScript(JSContext* cx);
 
 extern bool
 js_CurrentPCIsInImacro(JSContext *cx);

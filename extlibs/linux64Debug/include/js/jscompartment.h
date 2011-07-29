@@ -363,6 +363,25 @@ class DtoaCache {
 
 };
 
+struct ScriptFilenameEntry
+{
+    bool marked;
+    char filename[1];
+};
+
+struct ScriptFilenameHasher
+{
+    typedef const char *Lookup;
+    static HashNumber hash(const char *l) { return JS_HashString(l); }
+    static bool match(const ScriptFilenameEntry *e, const char *l) {
+        return strcmp(e->filename, l) == 0;
+    }
+};
+
+typedef HashSet<ScriptFilenameEntry *,
+                ScriptFilenameHasher,
+                SystemAllocPolicy> ScriptFilenameTable;
+
 } /* namespace js */
 
 struct JS_FRIEND_API(JSCompartment) {
@@ -378,6 +397,7 @@ struct JS_FRIEND_API(JSCompartment) {
     size_t                       gcLastBytes;
 
     bool                         hold;
+    bool                         isSystemCompartment;
 
 #ifdef JS_TRACER
   private:
@@ -472,6 +492,8 @@ struct JS_FRIEND_API(JSCompartment) {
     typedef js::Maybe<js::ToSourceCache> LazyToSourceCache;
     LazyToSourceCache            toSourceCache;
 
+    js::ScriptFilenameTable      scriptFilenameTable;
+
     JSCompartment(JSRuntime *rt);
     ~JSCompartment();
 
@@ -546,7 +568,7 @@ struct JS_FRIEND_API(JSCompartment) {
  * executing. cx must be a context on the current thread.
  */
 static inline bool
-JS_ON_TRACE(JSContext *cx)
+JS_ON_TRACE(const JSContext *cx)
 {
 #ifdef JS_TRACER
     if (JS_THREAD_DATA(cx)->onTraceCompartment)

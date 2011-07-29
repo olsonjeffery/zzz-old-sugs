@@ -55,16 +55,6 @@ extern JSBool
 js_Stringify(JSContext *cx, js::Value *vp, JSObject *replacer, js::Value space,
              js::StringBuffer &sb);
 
-extern JSBool js_TryJSON(JSContext *cx, js::Value *vp);
-
-/* Aargh, Windows. */
-#ifdef STRICT
-#undef STRICT
-#endif
-#ifdef LEGACY
-#undef LEGACY
-#endif
-
 /*
  * The type of JSON decoding to perform.  Strict decoding is to-the-spec;
  * legacy decoding accepts a few non-JSON syntaxes historically accepted by the

@@ -266,24 +266,15 @@ class Bindings {
     }
 
     /*
-     * Function and macros to work with local names as an array of words.
-     * getLocalNameArray returns the array, or null if we are out of memory.
-     * This function must be called only when hasLocalNames().
+     * This method returns the local variable, argument, etc. names used by a
+     * script.  This function must be called only when hasLocalNames().
      *
-     * The supplied pool is used to allocate the returned array, so the caller
-     * is obligated to mark and release to free it.
-     *
-     * The elements of the array with index less than nargs correspond to the
-     * the names of arguments. An index >= nargs addresses a var binding. Use
-     * JS_LOCAL_NAME_TO_ATOM to convert array's element to an atom pointer.
-     * This pointer can be null when the element is for an argument
+     * The elements of the vector with index less than nargs correspond to the
+     * the names of arguments. An index >= nargs addresses a var binding.
+     * The name at an element will be null when the element is for an argument
      * corresponding to a destructuring pattern.
-     *
-     * If nameWord does not name an argument, use JS_LOCAL_NAME_IS_CONST to
-     * check if nameWord corresponds to the const declaration.
      */
-    jsuword *
-    getLocalNameArray(JSContext *cx, JSArenaPool *pool);
+    bool getLocalNameArray(JSContext *cx, Vector<JSAtom *> *namesp);
 
     /*
      * Returns the slot where the sharp array is stored, or a value < 0 if no
@@ -353,9 +344,7 @@ class Bindings {
      * oldest (i.e., last or right-most to first or left-most in source order).
      *
      * Sometimes iteration order must be from oldest to youngest, however. For
-     * such cases, use js::Bindings::getLocalNameArray. The RAII class
-     * js::AutoLocalNameArray, defined in jscntxt.h, should be used where
-     * possible instead of direct calls to getLocalNameArray.
+     * such cases, use js::Bindings::getLocalNameArray.
      */
     const js::Shape *lastArgument() const;
     const js::Shape *lastVariable() const;
@@ -431,6 +420,11 @@ class JSPCCounters {
     }
 };
 
+static const uint32 JS_SCRIPT_COOKIE = 0xc00cee;
+
+static JSObject * const JS_NEW_SCRIPT = (JSObject *)0x12345678;
+static JSObject * const JS_CACHED_SCRIPT = (JSObject *)0x12341234;
+
 struct JSScript {
     /*
      * Two successively less primitive ways to make a new JSScript.  The first
@@ -454,6 +448,8 @@ struct JSScript {
     JSCList         links;      /* Links for compartment script list */
     jsbytecode      *code;      /* bytecodes and their immediate operands */
     uint32          length;     /* length of code vector */
+
+    uint32          cookie1;
 
   private:
     uint16          version;    /* JS version under which script was compiled */
@@ -509,6 +505,11 @@ struct JSScript {
     js::Bindings    bindings;   /* names of top-level variables in this script
                                    (and arguments if this is a function script) */
     JSPrincipals    *principals;/* principals for this script */
+
+    JSObject        *ownerObject;
+
+    void setOwnerObject(JSObject *owner);
+
     union {
         /*
          * A script object of class js_ScriptClass, to ensure the script is GC'd.
@@ -538,6 +539,8 @@ struct JSScript {
 
     /* array of execution counters for every JSOp in the script, by runmode */
     JSPCCounters    pcCounters;
+
+    uint32          cookie2;
 
   public:
 #ifdef JS_METHODJIT
@@ -575,6 +578,9 @@ struct JSScript {
             return JITScript_Invalid;
         return JITScript_Valid;
     }
+
+    // This method is implemented in MethodJIT.h.
+    JS_FRIEND_API(size_t) jitDataSize();/* Size of the JITScript and all sections */
 #endif
 
     JS_FRIEND_API(size_t) totalSize();  /* Size of the JSScript and all sections */
@@ -703,30 +709,11 @@ extern JS_FRIEND_DATA(js::Class) js_ScriptClass;
 extern JSObject *
 js_InitScriptClass(JSContext *cx, JSObject *obj);
 
-namespace js {
-
-extern bool
-InitRuntimeScriptState(JSRuntime *rt);
-
-/*
- * On JS_DestroyRuntime(rt), forcibly free script filename prefixes and any
- * script filename table entries that have not been GC'd.
- *
- * This allows script filename prefixes to outlive any context in rt.
- */
-extern void
-FreeRuntimeScriptState(JSRuntime *rt);
-
-} /* namespace js */
-
 extern void
 js_MarkScriptFilename(const char *filename);
 
 extern void
-js_MarkScriptFilenames(JSRuntime *rt);
-
-extern void
-js_SweepScriptFilenames(JSRuntime *rt);
+js_SweepScriptFilenames(JSCompartment *comp);
 
 /*
  * New-script-hook calling is factored from js_NewScriptFromCG so that it
@@ -748,7 +735,7 @@ extern void
 js_DestroyScript(JSContext *cx, JSScript *script);
 
 extern void
-js_DestroyScriptFromGC(JSContext *cx, JSScript *script);
+js_DestroyScriptFromGC(JSContext *cx, JSScript *script, JSObject *owner);
 
 /*
  * Script objects may be cached and reused, in which case their JSD-visible
@@ -759,8 +746,21 @@ js_DestroyScriptFromGC(JSContext *cx, JSScript *script);
 extern void
 js_DestroyCachedScript(JSContext *cx, JSScript *script);
 
+namespace js {
+
+/*
+ * This diagnostic function checks that a compartment's list of scripts
+ * contains only valid scripts. It also searches for the target script
+ * in the list. If expected is true, it asserts that the target script
+ * is found. If expected is false, it asserts that it's not found.
+ */
+void
+CheckCompartmentScripts(JSCompartment *comp);
+
+} /* namespace js */
+
 extern void
-js_TraceScript(JSTracer *trc, JSScript *script);
+js_TraceScript(JSTracer *trc, JSScript *script, JSObject *owner);
 
 extern JSObject *
 js_NewScriptObject(JSContext *cx, JSScript *script);
