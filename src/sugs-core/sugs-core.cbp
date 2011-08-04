@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="libsugs" />
+		<Option title="sugs-core" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="linux64Debug">
-				<Option output="../../bin/libsugs/linux64Debug/libsugs" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/linux64Debug/libsugs-core" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/linux64Debug/" />
 				<Option type="2" />
@@ -33,7 +33,7 @@
 				</Linker>
 			</Target>
 			<Target title="linux64Release">
-				<Option output="../../bin/libsugs/linux64Release/libsugs" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/linux64Release/libsugs-core" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="obj/linux64Release/" />
 				<Option type="2" />

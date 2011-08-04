@@ -26,32 +26,7 @@ authors and should not be interpreted as representing official policies, either 
 or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
 ###
 global = this
-
-unresolvedMessages = []
-localMsgHandlers = {}
 msgExMsgHandlers = {}
-
-pushIntoUnresolved = (msgId, msg) ->
-  unresolvedMessages.push {msgId: msgId, msg: msg}
-
-preStartup = true
-global.__triggerUnresolvedMessages = ->
-  initialKeyCount = _.keys(localMsgHandlers).length
-  initialUnresolved = unresolvedMessages
-  unresolvedMessages = []
-  resolveMessages = (pendingMessages, currentKeyCount) ->
-    _.each pendingMessages, (msgInfo) ->
-      $.trigger msgInfo.msgId, msgInfo.msg
-    newKeyCount =  _.keys(localMsgHandlers).length
-    if currentKeyCount == newKeyCount
-      if unresolvedMessages.length > 0
-        throw "Unable to resolve all pre-startup message $.triggers!"
-    else if unresolvedMessages.length > 0
-      stillUnresolved = unresolvedMessages
-      unresolvedMessages = []
-      resolveMessages stillUnresolved, newKeyCount
-  resolveMessages initialUnresolved, initialKeyCount
-  preStartup = false
 
 global.__processIncomingMessage = (msgId, jsonData) ->
   if typeof msgExMsgHandlers[msgId] == "undefined"
@@ -61,22 +36,7 @@ global.__processIncomingMessage = (msgId, jsonData) ->
     _.each msgExMsgHandlers[msgId], (cb) ->
       cb.call data, data.msg
 
-exports =
-  trigger : (msgId, msg) ->
-    matched = if typeof localMsgHandlers[msgId] == "undefined" then false else true
-    if not matched
-      if preStartup
-          pushIntoUnresolved msgId, msg
-      else
-        throw "Unresolved msgId #{msgId} $.trigger'd after startup"
-    else
-      _.each localMsgHandlers[msgId], (cb) -> cb msg
-
-  bind : (msgId, callback) ->
-    if typeof localMsgHandlers[msgId] == "undefined"
-      localMsgHandlers[msgId] = []
-    localMsgHandlers[msgId].push callback
-
+return {
   subscribe : (msgId, callback) ->
     if typeof msgExMsgHandlers[msgId] == "undefined"
       msgExMsgHandlers[msgId] = []
@@ -98,5 +58,4 @@ exports =
           sender: global.sugsConfig.myAgentId
           msgId: msgId
       global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data
-
-return exports
+}
