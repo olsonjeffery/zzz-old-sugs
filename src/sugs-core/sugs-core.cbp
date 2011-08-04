@@ -8,14 +8,15 @@
 		<Build>
 			<Target title="linux64Debug">
 				<Option output="bin/linux64Debug/libsugs-core" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="" />
+				<Option working_dir="bin/linux64Debug" />
 				<Option object_output="obj/linux64Debug/" />
-				<Option type="2" />
+				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add option="-fPIC" />
 					<Add option="-DSFML_DYNAMIC" />
 					<Add directory="../../extlibs/linux64Debug/include" />
 					<Add directory="../../extlibs/linux64Debug/include/js" />
@@ -29,19 +30,25 @@
 					<Add option="-lnspr4" />
 					<Add option="-lchipmunk" />
 					<Add option="-lGL" />
-					<Add directory="../extlibs/linux64Debug/lib" />
+					<Add directory="bin/linux64Debug" />
 				</Linker>
+				<ExtraCommands>
+					<Add before="mkdir -p bin/linux64Debug" />
+					<Add before="cp -Rf ../../extlibs/linux64Debug/lib/* bin/linux64Debug" />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 			<Target title="linux64Release">
 				<Option output="bin/linux64Release/libsugs-core" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="" />
+				<Option working_dir="bin/linux64Release" />
 				<Option object_output="obj/linux64Release/" />
-				<Option type="2" />
+				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-Wall" />
+					<Add option="-fPIC" />
 					<Add option="-DSFML_DYNAMIC" />
 					<Add directory="../../extlibs/linux64Release/include" />
 					<Add directory="../../extlibs/linux64Release/include/js" />
@@ -56,8 +63,13 @@
 					<Add option="-lnspr4" />
 					<Add option="-lchipmunk" />
 					<Add option="-lGL" />
-					<Add directory="../../extlibs/linux64Release/lib" />
+					<Add directory="bin/linux64Release" />
 				</Linker>
+				<ExtraCommands>
+					<Add before="mkdir -p bin/linux64Release" />
+					<Add before="cp -Rf ../../extlibs/linux64Release/lib/* bin/linux64Release" />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 		</Build>
 		<Unit filename="common.cpp" />
