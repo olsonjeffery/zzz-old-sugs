@@ -1,11 +1,13 @@
 cbody = require 'physics/circularbody'
 msgEx = require 'messaging'
+mixins = require 'mixins'
+patterns = require 'patterns'
 
 return {
   ChipmunkSpace: class
     constructor: (grav) ->
+      mixins.into this, patterns.ObjectEventHandlerMixin
       @_space = __native_chipmunk_new_space grav.x, grav.y, this
-      @imx = new msgEx.InternalMessageExchange()
 
     step: (stepTime) ->
       @_space.__native_step stepTime
@@ -20,18 +22,6 @@ return {
 
     removeBody: (body) ->
       @_space.__native_removeBody body._body
-
-    hasHandlerFor: (name) ->
-      @imx.hasHandlerFor name
-
-    bind: (name, callback) ->
-      @imx.bind name, callback
-
-    trigger: (name, msg) ->
-      @imx.trigger name, msg
-
-    safeTrigger: (name, msg) ->
-      @imx.safeTrigger name, msg
 
     _defaultCollisionBeginHandler: ->
       true

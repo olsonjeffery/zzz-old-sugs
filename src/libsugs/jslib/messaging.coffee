@@ -99,28 +99,4 @@ exports =
           msgId: msgId
       global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data
 
-  InternalMessageExchange: class
-    constructor: ->
-      @handlers = {}
-
-    trigger : (msgId, msg) ->
-      matched = @hasHandlerFor msgId
-      if not matched
-        throw "Unresolved event name #{msgId} trigger'd after startup"
-      else
-        _.each @handlers[msgId], (cb) -> cb msg
-
-    safeTrigger : (msgId, msg) ->
-      matched = @hasHandlerFor msgId
-      if matched
-        _.each @handlers[msgId], (cb) -> cb msg
-
-    bind : (msgId, callback) ->
-      if not @hasHandlerFor msgId
-        @handlers[msgId] = []
-      @handlers[msgId].push callback
-
-    hasHandlerFor: (msgId) ->
-      typeof @handlers[msgId] != "undefined"
-
 return exports

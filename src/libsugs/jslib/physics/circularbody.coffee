@@ -1,8 +1,10 @@
 msgEx = require 'messaging'
+mixins = require 'mixins'
+patterns = require 'patterns'
 return {
   CircularBody: class
     constructor: (@groupId, @collType) ->
-      @imx = new msgEx.InternalMessageExchange()
+      mixins.into this, patterns.ObjectEventHandlerMixin
 
     setInnerBody: (@_body) ->
 
@@ -26,16 +28,4 @@ return {
 
     applyDirectionalImpulse: (amt) ->
       @_body.__native_applyDirectionalImpulse amt
-
-    hasHandlerFor: (name) ->
-      @imx.hasHandlerFor name
-
-    bind: (name, callback) ->
-      @imx.bind name, callback
-
-    trigger: (name, msg) ->
-      @imx.trigger name, msg
-
-    safeTrigger: (name, msg) ->
-      @imx.safeTrigger name, msg
 }
