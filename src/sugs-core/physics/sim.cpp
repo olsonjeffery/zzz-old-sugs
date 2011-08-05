@@ -57,7 +57,4 @@ static JSFunctionSpec reformer_chipmunk_native_functions[] = {
 void sugs::physics::ChipmunkPhysicsComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
 {
   JS_DefineFunctions(jsEnv.cx, jsEnv.global, reformer_chipmunk_native_functions);
-  printf("REGISTERING PHYSICS!!!!\n");
-  printf("REGISTERING PHYSICS!!!!\n");
-  printf("REGISTERING PHYSICS!!!!\n");
 }

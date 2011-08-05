@@ -126,11 +126,151 @@ space_removeBody(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+static int
+customBeginHandler(cpArbiter *arb, struct cpSpace *space, void *data)
+{
+  sugs::physics::chipmonkeyData* cD = (sugs::physics::chipmonkeyData*)data;
+  jsval argv[5];
+  cpBody* bodyA;
+  cpBody* bodyB;
+  cpArbiterGetBodies(arb, &bodyA, &bodyB);
+  cpShape* shapeA;
+  cpShape* shapeB;
+  cpArbiterGetShapes(arb, &shapeA, &shapeB);
+  jsuint ctA = cpShapeGetCollisionType(shapeA);
+  jsuint ctB = cpShapeGetCollisionType(shapeB);
+  JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
+  JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
+  const char* callbackNameCStr = "onBegin";
+  JSString* callbackName = JS_NewStringCopyN(cD->cx, callbackNameCStr, strlen(callbackNameCStr));
+  argv[0] = INT_TO_JSVAL(ctA);
+  argv[1] = INT_TO_JSVAL(ctB);
+  argv[2] = STRING_TO_JSVAL(callbackName);
+  argv[3] = OBJECT_TO_JSVAL(bObjA);
+  argv[4] = OBJECT_TO_JSVAL(bObjB);
+  jsval rVal;
+  if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_callCustomHandlerFor", 5, argv, &rVal)) {
+    JS_ReportError(cD->cx, "Exception when executing custom call handler in onBegin..\n");
+  }
+  return JSVAL_TO_BOOLEAN(rVal);
+}
+
+static int
+customPreSolveHandler(cpArbiter *arb, struct cpSpace *space, void *data)
+{
+  sugs::physics::chipmonkeyData* cD = (sugs::physics::chipmonkeyData*)data;
+  jsval argv[5];
+  cpBody* bodyA;
+  cpBody* bodyB;
+  cpArbiterGetBodies(arb, &bodyA, &bodyB);
+  cpShape* shapeA;
+  cpShape* shapeB;
+  cpArbiterGetShapes(arb, &shapeA, &shapeB);
+  jsuint ctA = cpShapeGetCollisionType(shapeA);
+  jsuint ctB = cpShapeGetCollisionType(shapeB);
+  JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
+  JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
+  const char* callbackNameCStr = "onPreSolve";
+  JSString* callbackName = JS_NewStringCopyN(cD->cx, callbackNameCStr, strlen(callbackNameCStr));
+  argv[0] = INT_TO_JSVAL(ctA);
+  argv[1] = INT_TO_JSVAL(ctB);
+  argv[2] = STRING_TO_JSVAL(callbackName);
+  argv[3] = OBJECT_TO_JSVAL(bObjA);
+  argv[4] = OBJECT_TO_JSVAL(bObjB);
+  jsval rVal;
+  if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_callCustomHandlerFor", 5, argv, &rVal)) {
+    JS_ReportError(cD->cx, "Exception when executing custom call handler in onBegin..\n");
+  }
+  return JSVAL_TO_BOOLEAN(rVal);
+}
+
+static void
+customPostSolveHandler(cpArbiter *arb, cpSpace *space, void *data)
+{
+  sugs::physics::chipmonkeyData* cD = (sugs::physics::chipmonkeyData*)data;
+  jsval argv[5];
+  cpBody* bodyA;
+  cpBody* bodyB;
+  cpArbiterGetBodies(arb, &bodyA, &bodyB);
+  cpShape* shapeA;
+  cpShape* shapeB;
+  cpArbiterGetShapes(arb, &shapeA, &shapeB);
+  jsuint ctA = cpShapeGetCollisionType(shapeA);
+  jsuint ctB = cpShapeGetCollisionType(shapeB);
+  JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
+  JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
+  const char* callbackNameCStr = "onPostSolve";
+  JSString* callbackName = JS_NewStringCopyN(cD->cx, callbackNameCStr, strlen(callbackNameCStr));
+  argv[0] = INT_TO_JSVAL(ctA);
+  argv[1] = INT_TO_JSVAL(ctB);
+  argv[2] = STRING_TO_JSVAL(callbackName);
+  argv[3] = OBJECT_TO_JSVAL(bObjA);
+  argv[4] = OBJECT_TO_JSVAL(bObjB);
+  jsval rVal;
+  if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_callCustomHandlerFor", 5, argv, &rVal)) {
+    JS_ReportError(cD->cx, "Exception when executing custom call handler in onBegin..\n");
+  }
+}
+
+static void
+customSeparateHandler(cpArbiter *arb, cpSpace *space, void *data)
+{
+  sugs::physics::chipmonkeyData* cD = (sugs::physics::chipmonkeyData*)data;
+  jsval argv[5];
+  cpBody* bodyA;
+  cpBody* bodyB;
+  cpArbiterGetBodies(arb, &bodyA, &bodyB);
+  cpShape* shapeA;
+  cpShape* shapeB;
+  cpArbiterGetShapes(arb, &shapeA, &shapeB);
+  jsuint ctA = cpShapeGetCollisionType(shapeA);
+  jsuint ctB = cpShapeGetCollisionType(shapeB);
+  JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
+  JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
+  const char* callbackNameCStr = "onSeparate ";
+  JSString* callbackName = JS_NewStringCopyN(cD->cx, callbackNameCStr, strlen(callbackNameCStr));
+  argv[0] = INT_TO_JSVAL(ctA);
+  argv[1] = INT_TO_JSVAL(ctB);
+  argv[2] = STRING_TO_JSVAL(callbackName);
+  argv[3] = OBJECT_TO_JSVAL(bObjA);
+  argv[4] = OBJECT_TO_JSVAL(bObjB);
+  jsval rVal;
+  if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_callCustomHandlerFor", 5, argv, &rVal)) {
+    JS_ReportError(cD->cx, "Exception when executing custom call handler in onBegin..\n");
+  }
+}
+
+static JSBool
+space_registerCustomCollisionHandlers(JSContext* cx, uintN argc, jsval* vp)
+{
+  jsuint ctA;
+  jsuint ctB;
+  JSObject* spaceWrapper;
+
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "uuo", &ctA, &ctB, &spaceWrapper)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "space_registerCustomCollisionHandlers: couldn't parse out args");
+      return JS_FALSE;
+  }
+  JSObject* spaceObj = JS_THIS_OBJECT(cx, vp);
+  cpSpace* space = (cpSpace*)JS_GetPrivate(cx, spaceObj);
+
+  sugs::physics::chipmonkeyData* data = new sugs::physics::chipmonkeyData;
+  *data = {cx, spaceWrapper};
+
+  cpSpaceAddCollisionHandler(space, ctA, ctB, customBeginHandler, customPreSolveHandler, customPostSolveHandler, customSeparateHandler, data);
+
+  jsval rVal = JSVAL_VOID;
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec
 space_native_functions[] = {
   JS_FS("__native_step", space_step, 1, 0),
   JS_FS("__native_newCircularBody", space_newCircularBody, 8, 0),
   JS_FS("__native_removeBody", space_removeBody, 1, 0),
+  JS_FS("__native_registerCustomCollisionHandlers", space_registerCustomCollisionHandlers, 2, 0),
   JS_FS_END
 };
 
