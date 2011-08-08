@@ -70,6 +70,7 @@ global.require = (path) ->
 
 msgEx = require 'messaging'
 types = require 'types'
+input = require 'input'
 
 # callbacks registered via $.startup()
 startupCallbacks = []
@@ -95,8 +96,8 @@ timePassed = 0
 lastTickForFps = {}
 global.runRender = (nativeCanvas, nativeInput, msElapsed) ->
   canvas = new types.Canvas(nativeCanvas)
-  input = new types.Input(nativeInput)
-  _.each renderCallbacks, (cb) -> cb input, canvas, msElapsed
+  currentInput = new input.CurrentInputState(nativeInput)
+  _.each renderCallbacks, (cb) -> cb currentInput, canvas, msElapsed
 
 global.runMainLoop = (msElapsed) ->
   timePassed += msElapsed
