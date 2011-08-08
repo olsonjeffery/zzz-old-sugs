@@ -45,27 +45,21 @@ class FrontendWorker : public Worker {
     : Worker(rt, msgEx, "frontend")
     {
       this->_config = config;
-      printf("initializing graphics.. sw: %d\n", config.screenWidth);
-      // init graphics
-      this->_gfxEnv = initGraphics(this->_jsEnv.cx, this->_config);
-      this->_evEnv = {
-        newInputFrom(this->_gfxEnv.window, this->_jsEnv.cx)
-      };
+
+      this->componentSetup(this->_jsEnv, this->_config);
 
       this->_entryPoint = entryPoint;
       this->_isClosed = false;
-      // set up graphics libs
-      MediaLibrary::RegisterDefaultFont();
     }
 
     ~FrontendWorker()
     {
-      printf("frontend dtor...\n");
-      jsval argv[0];
-      jsval rVal;
-      JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "showEntryPoints", 0, argv, &rVal);
-      teardownGraphics(this->_gfxEnv.window, this->_gfxEnv.canvas, this->_jsEnv.cx);
+      this->componentTeardown(this->_jsEnv);
     }
+
+    void componentSetup(jsEnv jsEnv, sugsConfig config);
+    void componentTeardown(jsEnv jsEnv);
+    void componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig config);
 
     virtual void initLibraries();
     virtual void doWork();

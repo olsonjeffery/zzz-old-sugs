@@ -28,15 +28,40 @@
 
 #include "frontend.hpp"
 
+void FrontendWorker::componentSetup(jsEnv jsEnv, sugsConfig config) {
+  printf("initializing graphics.. sw: %d\n", config.screenWidth);
+  // init graphics
+  this->_gfxEnv = initGraphics(jsEnv.cx, config);
+  this->_evEnv = {
+    newInputFrom(this->_gfxEnv.window, jsEnv.cx)
+  };
+
+  // set up graphics libs
+  MediaLibrary::RegisterDefaultFont();
+}
+
+void FrontendWorker::componentTeardown(jsEnv jsEnv) {
+  printf("frontend dtor...\n");
+  jsval argv[0];
+  jsval rVal;
+  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "showEntryPoints", 0, argv, &rVal);
+  teardownGraphics(this->_gfxEnv.window, this->_gfxEnv.canvas, jsEnv.cx);
+}
+
+void FrontendWorker::componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig config) {
+  // init sfml bindings for the frontend
+  registerGraphicsNatives(jsEnv.cx, jsEnv.global);
+  registerInputNatives(jsEnv.cx, jsEnv.global);
+}
+
 void FrontendWorker::initLibraries() {
   //load core libs
   printf("inside frontend loadSugsLibraries()...\n");
   this->loadConfig(this->_config);
   this->loadSugsLibraries(this->_config.paths);
 
-  // init sfml bindings for the frontend
-  registerGraphicsNatives(this->_jsEnv.cx, this->_jsEnv.global);
-  registerInputNatives(this->_jsEnv.cx, this->_jsEnv.global);
+  //this->loadComponents(this->_config);
+  this->componentRegisterNativeFunctions(this->_jsEnv, this->_config);
 
   printf("load frontend entry point: %s\n", this->_entryPoint.c_str());
   this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
