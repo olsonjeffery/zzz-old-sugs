@@ -32,7 +32,12 @@
 #include <SFML/Graphics.hpp>
 #include <jsapi.h>
 
-JSObject* newInputFrom(sf::RenderWindow* window, JSContext* cx);
+namespace sugs {
+namespace richclient {
+namespace input {
 
+JSObject* newInputFrom(sf::RenderWindow* window, JSContext* cx);
 void registerInputNatives(JSContext* cx, JSObject* global);
+void pushKeyUpEvent(JSContext* cx, JSObject* global, sf::Key::Code code);
+}}}
 #endif

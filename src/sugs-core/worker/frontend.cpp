@@ -33,7 +33,7 @@ void FrontendWorker::componentSetup(jsEnv jsEnv, sugsConfig config) {
   // init graphics
   this->_gfxEnv = initGraphics(jsEnv.cx, config);
   this->_evEnv = {
-    newInputFrom(this->_gfxEnv.window, jsEnv.cx)
+    sugs::richclient::input::newInputFrom(this->_gfxEnv.window, jsEnv.cx)
   };
 
   // set up graphics libs
@@ -51,7 +51,7 @@ void FrontendWorker::componentTeardown(jsEnv jsEnv) {
 void FrontendWorker::componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig config) {
   // init sfml bindings for the frontend
   registerGraphicsNatives(jsEnv.cx, jsEnv.global);
-  registerInputNatives(jsEnv.cx, jsEnv.global);
+  sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
 }
 
 void FrontendWorker::initLibraries() {
@@ -87,17 +87,19 @@ void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv, int msEla
 }
 
 int msElapsed = 0;
-void FrontendWorker::doWork() {
-  this->processPendingMessages();
-
-  sf::Event Event;
+void FrontendWorker::componentDoWork(jsEnv jsEnv) {
+  sf::Event ev;
 
   msElapsed = this->_gfxEnv.window->GetFrameTime();
   // check for window close/quit event..
-  while(this->_gfxEnv.window->PollEvent(Event)) {
-    if (Event.Type == sf::Event::Closed) {
+  while(this->_gfxEnv.window->PollEvent(ev)) {
+    if (ev.Type == sf::Event::Closed) {
       this->_gfxEnv.window->Close();
       this->_isClosed = JS_TRUE;
+    }
+    if (ev.Type == sf::Event::KeyReleased) {
+      sf::Key::Code code = ev.Key.Code;
+      sugs::richclient::input::pushKeyUpEvent(jsEnv.cx, jsEnv.global, code);
     }
   }
 
@@ -106,10 +108,16 @@ void FrontendWorker::doWork() {
 
   // run $.mainLoop() and $.render() callbacks in
   // user code
-  callIntoJsRender(this->_jsEnv, this->_gfxEnv, this->_evEnv, msElapsed);
+  callIntoJsRender(jsEnv, this->_gfxEnv, this->_evEnv, msElapsed);
 
   this->_gfxEnv.window->Display();
   // END OF DRAW/RENDER LOOP
+}
+
+void FrontendWorker::doWork() {
+  this->processPendingMessages();
+
+  this->componentDoWork(this->_jsEnv);
 }
 
 bool FrontendWorker::isWindowClosed() {

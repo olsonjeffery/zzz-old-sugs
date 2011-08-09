@@ -57,6 +57,7 @@ class FrontendWorker : public Worker {
       this->componentTeardown(this->_jsEnv);
     }
 
+    void componentDoWork(jsEnv jsEnv);
     void componentSetup(jsEnv jsEnv, sugsConfig config);
     void componentTeardown(jsEnv jsEnv);
     void componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig config);

@@ -25,6 +25,14 @@ The views and conclusions contained in the software and documentation are those 
 authors and should not be interpreted as representing official policies, either expressed
 or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
 ###
+
+keyUpHandlers = {}
+global = this
+global.__pushOnKeyUpEvent =  (key) ->
+  if typeof(keyUpHandlers[key.toString()]) != "undefined"
+    _.each keyUpHandlers[key.toString()], (cb) ->
+      cb()
+
 return {
   # Input class -- provides a means to poll for key/mouse button presses
   # and mouse position. An instance is provided to callbacks registered
@@ -38,4 +46,9 @@ return {
 
     getMousePos: ->
       @nativeInput.__native_getMousePos(@nativeInput)
+
+  onKeyUp: (key, handler) ->
+    if typeof(keyUpHandlers[key.toString()]) == "undefined"
+      keyUpHandlers[key.toString()] = []
+    keyUpHandlers[key.toString()].push handler
 }

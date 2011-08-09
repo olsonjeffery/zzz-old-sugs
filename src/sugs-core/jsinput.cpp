@@ -92,8 +92,14 @@ classdef_keyfinder_resolver(JSContext *cx, JSObject *obj, jsid id) {
   else if (strcmp(propName, "S") == 0) {
     keyObj = getKeyObjectFor(cx, sf::Key::S);
   }
+  else if (strcmp(propName, "X") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::X);
+  }
   else if (strcmp(propName, "Space") == 0) {
     keyObj = getKeyObjectFor(cx, sf::Key::Space);
+  }
+  else if (strcmp(propName, "Escape") == 0) {
+    keyObj = getKeyObjectFor(cx, sf::Key::Escape);
   }
   else {
     JS_ReportError(cx, "Unable to find matching key for %s", propName);
@@ -121,12 +127,96 @@ static JSClass keyObjectClassDef = {
   JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, classdef_keyobject_finalize
 };
 
+JSBool keyObj_native_toString(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* keyObj = JS_THIS_OBJECT(cx, vp);
+  sf::Key::Code keyCode = *((sf::Key::Code*)JS_GetPrivate(cx, keyObj));
+  JSString* retString;
+
+  switch(keyCode) {
+    case sf::Key::Up:
+      retString = JS_NewStringCopyZ(cx, "Up");
+      break;
+    case sf::Key::Down:
+      retString = JS_NewStringCopyZ(cx, "Down");
+      break;
+    case sf::Key::Left:
+      retString = JS_NewStringCopyZ(cx, "Left");
+      break;
+    case sf::Key::Right:
+      retString = JS_NewStringCopyZ(cx, "Right");
+      break;
+    case sf::Key::Num1:
+      retString = JS_NewStringCopyZ(cx, "Num1");
+      break;
+    case sf::Key::Num2:
+      retString = JS_NewStringCopyZ(cx, "Num2");
+      break;
+    case sf::Key::Num3:
+      retString = JS_NewStringCopyZ(cx, "Num3");
+      break;
+    case sf::Key::Num4:
+      retString = JS_NewStringCopyZ(cx, "Num4");
+      break;
+    case sf::Key::Num5:
+      retString = JS_NewStringCopyZ(cx, "Num5");
+      break;
+    case sf::Key::Num6:
+      retString = JS_NewStringCopyZ(cx, "Num6");
+      break;
+    case sf::Key::Num7:
+      retString = JS_NewStringCopyZ(cx, "Num7");
+      break;
+    case sf::Key::Num8:
+      retString = JS_NewStringCopyZ(cx, "Num8");
+      break;
+    case sf::Key::Num9:
+      retString = JS_NewStringCopyZ(cx, "Num9");
+      break;
+    case sf::Key::Num0:
+      retString = JS_NewStringCopyZ(cx, "Num0");
+      break;
+    case sf::Key::W:
+      retString = JS_NewStringCopyZ(cx, "W");
+      break;
+    case sf::Key::S:
+      retString = JS_NewStringCopyZ(cx, "S");
+      break;
+    case sf::Key::X:
+      retString = JS_NewStringCopyZ(cx, "X");
+      break;
+    case sf::Key::Space:
+      retString = JS_NewStringCopyZ(cx, "Space");
+      break;
+    case sf::Key::Escape:
+      retString = JS_NewStringCopyZ(cx, "Escape");
+      break;
+    default:
+      JS_ReportError(cx, "Unable to parse out string value of key code with provided const value of %d", keyCode);
+      return JS_FALSE;
+  }
+
+  jsval rVal = STRING_TO_JSVAL(retString);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec keyObjFunctionSpec[] = {
+  JS_FS("toString",keyObj_native_toString,0,0),
+  JS_FS_END
+};
+
 JSObject* getKeyObjectFor(JSContext* cx, sf::Key::Code keyCode) {
   JSObject* keyObj = JS_NewObject(cx, &keyObjectClassDef, NULL, NULL);
   sf::Key::Code* kcp = new sf::Key::Code;
   *kcp = keyCode;
   if (JS_SetPrivate(cx, keyObj, kcp) != JS_TRUE) {
     JS_ReportError(cx, "getKeyObjectFor: failed to set private keyObj member");
+    return NULL;
+  }
+  if(!JS_DefineFunctions(cx, keyObj, keyObjFunctionSpec))
+  {
+    JS_ReportError(cx, "getKeyObjectFor: failed to add function spec for keyObj");
     return NULL;
   }
   return keyObj;
@@ -231,7 +321,7 @@ native_input_classdef = {
   JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, classdef_input_finalize
 };
 
-JSObject* newInputFrom(sf::RenderWindow* window, JSContext* cx) {
+JSObject* sugs::richclient::input::newInputFrom(sf::RenderWindow* window, JSContext* cx) {
   JSObject* input = JS_NewObject(cx, &native_input_classdef, NULL, NULL);
   if (JS_SetPrivate(cx, input, window) != JS_TRUE) {
     JS_ReportError(cx, "Failed to bind RenderWindow to new NativeInput");
@@ -245,8 +335,17 @@ JSObject* newInputFrom(sf::RenderWindow* window, JSContext* cx) {
   return input;
 }
 
-void registerInputNatives(JSContext* cx, JSObject* global) {
+void sugs::richclient::input::registerInputNatives(JSContext* cx, JSObject* global) {
   JSObject* keyFinder = newKeysFinderObject(cx);
   jsval kfVal = OBJECT_TO_JSVAL(keyFinder);
   JS_SetProperty(cx, global, "Keys", &kfVal);
+}
+
+void sugs::richclient::input::pushKeyUpEvent(JSContext* cx, JSObject* global, sf::Key::Code code)
+{
+  JSObject* keyObj = getKeyObjectFor(cx, code);
+  jsval argv[1];
+  argv[0] = OBJECT_TO_JSVAL(keyObj);
+  jsval rVal;
+  JS_CallFunctionName(cx, global, "__pushOnKeyUpEvent", 1, argv, &rVal);
 }
