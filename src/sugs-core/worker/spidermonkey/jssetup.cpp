@@ -241,21 +241,21 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
         printf("getCurrentConfig: failure to pull screenWidth from global.sugsConfig\n");
         exit(EXIT_FAILURE);
     }
-    double width = SUGS_JSVAL_TO_NUMBER(widthVal);
+    int width = SUGS_JSVAL_TO_NUMBER(widthVal);
 
     jsval heightVal;
     if(!JS_GetProperty(cx, sugsConfig, "screenHeight", &heightVal)) {
         printf("getCurrentConfig: failure to pull screenHeight from global.sugsConfig\n");
         exit(EXIT_FAILURE);
     }
-    double height = SUGS_JSVAL_TO_NUMBER(heightVal);
+    int height = SUGS_JSVAL_TO_NUMBER(heightVal);
 
     jsval colorDepthVal;
     if(!JS_GetProperty(cx, sugsConfig, "colorDepth", &colorDepthVal)) {
         printf("getCurrentConfig: failure to pull colorDepth from global.sugsConfig\n");
         exit(EXIT_FAILURE);
     }
-    double colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
+    int colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
 
     jsval pathsVal;
     if(!JS_GetProperty(cx, sugsConfig, "paths", &pathsVal)) {
