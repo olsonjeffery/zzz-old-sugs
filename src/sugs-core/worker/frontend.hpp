@@ -65,6 +65,7 @@ class FrontendWorker : public Worker {
     virtual void initLibraries();
     virtual void doWork();
     bool appIsOpen();
+    void closeApp();
     bool isWindowClosed();
   private:
     graphicsEnv _gfxEnv;

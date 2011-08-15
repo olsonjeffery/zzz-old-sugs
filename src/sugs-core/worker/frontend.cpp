@@ -48,10 +48,37 @@ void FrontendWorker::componentTeardown(jsEnv jsEnv) {
   teardownGraphics(this->_gfxEnv.window, this->_gfxEnv.canvas, jsEnv.cx);
 }
 
+static JSBool
+native_window_exit(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* thisObj = JS_THIS_OBJECT(cx, vp);
+  FrontendWorker* frontend = (FrontendWorker*)JS_GetPrivate(cx, thisObj);
+  frontend->closeApp();
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec
+windowFuncSpecs[] = {
+  JS_FS("exit", native_window_exit, 0, 0),
+  JS_FS_END
+};
+
 void FrontendWorker::componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig config) {
   // init sfml bindings for the frontend
   registerGraphicsNatives(jsEnv.cx, jsEnv.global);
   sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
+
+  // general richclient functions...
+  JSObject* windowFuncsObj = JS_NewObject(jsEnv.cx, NULL, NULL, NULL);
+  if(!JS_SetPrivate(jsEnv.cx, windowFuncsObj, this)) {
+      JS_ReportError(jsEnv.cx,"FrontendWorker::componentRegisterNativeFunctions: Unable to set privite obj on windowFuncsObj...");
+  }
+  if(!JS_DefineFunctions(jsEnv.cx, windowFuncsObj, windowFuncSpecs)) {
+    JS_ReportError(jsEnv.cx,"FrontendWorker::componentRegisterNativeFunctions: Unable to register window funcs obj functions...");
+  }
+
+  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.richclient", windowFuncsObj, "window");
 }
 
 void FrontendWorker::initLibraries() {
@@ -118,6 +145,11 @@ void FrontendWorker::doWork() {
   this->processPendingMessages();
 
   this->componentDoWork(this->_jsEnv);
+}
+
+void FrontendWorker::closeApp()
+{
+  this->_isClosed = true;
 }
 
 bool FrontendWorker::isWindowClosed() {
