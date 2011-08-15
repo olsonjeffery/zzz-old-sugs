@@ -68,7 +68,7 @@ class FrontendWorker : public Worker {
     void closeApp();
     bool isWindowClosed();
   private:
-    graphicsEnv _gfxEnv;
+    sugs::richclient::gfx::GraphicsEnv _gfxEnv;
     eventEnv _evEnv;
     sugsConfig _config;
     std::string _entryPoint;

@@ -36,8 +36,19 @@
 #include "../common.hpp"
 #include "jscanvas.hpp"
 
+namespace sugs {
+namespace richclient {
+namespace gfx {
+
+struct GraphicsEnv {
+  sf::RenderWindow* window;
+  JSObject* canvas;
+};
+
 // graphics setup stuff
-graphicsEnv initGraphics(JSContext* cx, sugsConfig config);
+GraphicsEnv initGraphics(JSContext* cx, sugsConfig config);
 void teardownGraphics(sf::RenderWindow* window, JSObject* canvas, JSContext* cx);
+
+}}} // namespace sugs::richclient::gfx
 
 #endif

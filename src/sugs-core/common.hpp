@@ -55,11 +55,6 @@ typedef struct {
 } jsEnv;
 
 typedef struct {
-  sf::RenderWindow* window;
-  JSObject* canvas;
-} graphicsEnv;
-
-typedef struct {
   JSObject* input;
 } eventEnv;
 

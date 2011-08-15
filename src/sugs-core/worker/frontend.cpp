@@ -31,7 +31,7 @@
 void FrontendWorker::componentSetup(jsEnv jsEnv, sugsConfig config) {
   printf("initializing graphics.. sw: %d\n", config.screenWidth);
   // init graphics
-  this->_gfxEnv = initGraphics(jsEnv.cx, config);
+  this->_gfxEnv = sugs::richclient::gfx::initGraphics(jsEnv.cx, config);
   this->_evEnv = {
     sugs::richclient::input::newInputFrom(this->_gfxEnv.window, jsEnv.cx)
   };
@@ -45,7 +45,7 @@ void FrontendWorker::componentTeardown(jsEnv jsEnv) {
   jsval argv[0];
   jsval rVal;
   JS_CallFunctionName(jsEnv.cx, jsEnv.global, "showEntryPoints", 0, argv, &rVal);
-  teardownGraphics(this->_gfxEnv.window, this->_gfxEnv.canvas, jsEnv.cx);
+  sugs::richclient::gfx::teardownGraphics(this->_gfxEnv.window, this->_gfxEnv.canvas, jsEnv.cx);
 }
 
 static JSBool
@@ -103,7 +103,7 @@ void FrontendWorker::initLibraries() {
   }
 }
 
-void callIntoJsRender(jsEnv jsEnv, graphicsEnv gfxEnv, eventEnv evEnv, int msElapsed) {
+void callIntoJsRender(jsEnv jsEnv, sugs::richclient::gfx::GraphicsEnv gfxEnv, eventEnv evEnv, int msElapsed) {
   jsval argv[3];
 
   argv[0] = OBJECT_TO_JSVAL(gfxEnv.canvas);
