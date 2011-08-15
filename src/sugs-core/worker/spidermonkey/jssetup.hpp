@@ -37,8 +37,6 @@
 #include <string.h>
 
 #include "scripting.hpp"
-#include "../../gfx/jsgraphics.hpp"
-#include "../../jsinput.hpp"
 
 JSRuntime* initRuntime(uint32 maxBytes);
 jsEnv initContext(JSRuntime* rt);

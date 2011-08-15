@@ -26,54 +26,29 @@
  *
  */
 
-#ifndef __frontend_worker_hpp__
-#define __frontend_worker_hpp__
+#ifndef __sfmlsetup_hpp__
+#define __sfmlsetup_hpp__
 
-#include <jsapi.h>
 #include <SFML/Graphics.hpp>
+#include <stdio.h>
+#include <jsapi.h>
 
-#include "worker.hpp"
-#include "../common.hpp"
+#include "../../sugs-core/common.hpp"
+#include "jscanvas.hpp"
 
-#include "../gfx/sfmlsetup.hpp"
-#include "../jsinput.hpp"
-#include "../medialibrary.hpp"
+namespace sugs {
+namespace richclient {
+namespace gfx {
 
-class FrontendWorker : public Worker {
-  public:
-    FrontendWorker(JSRuntime* rt, sugsConfig config, std::string entryPoint, MessageExchange* msgEx)
-    : Worker(rt, msgEx, "frontend")
-    {
-      this->_config = config;
-
-      this->componentSetup(this->_jsEnv, this->_config);
-
-      this->_entryPoint = entryPoint;
-      this->_isClosed = false;
-    }
-
-    ~FrontendWorker()
-    {
-      this->componentTeardown(this->_jsEnv);
-    }
-
-    void componentDoWork(jsEnv jsEnv);
-    void componentSetup(jsEnv jsEnv, sugsConfig config);
-    void componentTeardown(jsEnv jsEnv);
-    void componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig config);
-
-    virtual void initLibraries();
-    virtual void doWork();
-    bool appIsOpen();
-    void closeApp();
-    bool isWindowClosed();
-  private:
-    sugs::richclient::gfx::GraphicsEnv _gfxEnv;
-    eventEnv _evEnv;
-    sugsConfig _config;
-    std::string _entryPoint;
-
-    bool _isClosed;
+struct GraphicsEnv {
+  sf::RenderWindow* window;
+  JSObject* canvas;
 };
+
+// graphics setup stuff
+GraphicsEnv initGraphics(JSContext* cx, sugsConfig config);
+void teardownGraphics(sf::RenderWindow* window, JSObject* canvas, JSContext* cx);
+
+}}} // namespace sugs::richclient::gfx
 
 #endif

@@ -1,3 +1,8 @@
+
+
+#ifndef __jscircle_hpp__
+#define __jscircle_hpp__
+
 /* Copyright 2011 Jeffery Olson <olson.jeffery@gmail.com>. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
@@ -26,70 +31,11 @@
  *
  */
 
-#ifndef __common_hpp__
-#define __common_hpp__
+ #include <jsapi.h>
+#include <SFML/Graphics.hpp>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <jsapi.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <string>
+#include "jsdrawable.hpp"
 
-#include "common/rng.hpp"
-#include "common/jsutil.hpp"
-#include "messaging/messageexchange.hpp"
-
-typedef struct {
-  JSIntn result;
-  char* message;
-  jsval optionalRetVal;
-} predicateResult;
-
-typedef struct {
-  JSRuntime* rt;
-  JSContext* cx;
-  JSObject* global;
-} jsEnv;
-
-typedef struct {
-  std::string* paths;
-  int length;
-} pathStrings;
-
-typedef struct {
-  pathStrings paths;
-  char* moduleEntryPoint;
-  char* moduleDir;
-  int screenWidth;
-  int screenHeight;
-  int colorDepth;
-} sugsConfig;
-
-typedef struct {
-  char* entryPoint;
-} workerInfo;
-
-typedef struct {
-  workerInfo* backendWorkers;
-  int backendsCount;
-  workerInfo frontendWorker;
-} workerInfos;
-
-typedef struct {
-  std::string entryPoint;
-  sugsConfig config;
-  void* msgEx;
-} workerPayload;
-
-/* util functions */
-void readEntireFile(const char* path, char** outBuffer, int* outLength);
-bool fileExists(const char * filename);
-bool doesFilenameEndWithDotCoffee(const char* filename);
-clock_t getCurrentMilliseconds();
-std::string getCurrentWorkingDir();
-
-#define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
+void registerCircleFactory(JSContext* cx, JSObject* global);
 
 #endif

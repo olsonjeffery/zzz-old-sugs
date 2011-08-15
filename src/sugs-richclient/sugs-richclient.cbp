@@ -2,12 +2,12 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="sugs-core" />
+		<Option title="sugs-richclient" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="linux64Debug">
-				<Option output="bin/linux64Debug/libsugs-core" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/linux64Debug/libsugs-richclient" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="bin/linux64Debug" />
 				<Option object_output="obj/linux64Debug/" />
 				<Option type="3" />
@@ -24,21 +24,25 @@
 					<Add directory="../../extlibs/linux64Debug/include/chipmunk" />
 				</Compiler>
 				<Linker>
+					<Add option="-lsfml-graphics" />
+					<Add option="-lsfml-window" />
 					<Add option="-lsfml-system" />
 					<Add option="-lmozjs" />
 					<Add option="-lnspr4" />
 					<Add option="-lchipmunk" />
 					<Add option="-lGL" />
+					<Add option="-lsugs-core" />
 					<Add directory="bin/linux64Debug" />
 				</Linker>
 				<ExtraCommands>
 					<Add before="mkdir -p bin/linux64Debug" />
+					<Add before="cp -Rf ../sugs-core/bin/linux64Debug/* bin/linux64Debug" />
 					<Add before="cp -Rf ../../extlibs/linux64Debug/lib/* bin/linux64Debug" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
 			<Target title="linux64Release">
-				<Option output="bin/linux64Release/libsugs-core" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/linux64Release/libsugs-richclient" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="bin/linux64Release" />
 				<Option object_output="obj/linux64Release/" />
 				<Option type="3" />
@@ -56,48 +60,46 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="-lsfml-graphics" />
+					<Add option="-lsfml-window" />
 					<Add option="-lsfml-system" />
 					<Add option="-lmozjs" />
 					<Add option="-lnspr4" />
 					<Add option="-lchipmunk" />
 					<Add option="-lGL" />
+					<Add option="-lsugs-core" />
 					<Add directory="bin/linux64Release" />
 				</Linker>
 				<ExtraCommands>
 					<Add before="mkdir -p bin/linux64Release" />
+					<Add before="cp -Rf ../sugs-core/bin/linux64Release/* bin/linux64Release" />
 					<Add before="cp -Rf ../../extlibs/linux64Release/lib/* bin/linux64Release" />
 					<Mode after="always" />
 				</ExtraCommands>
 			</Target>
 		</Build>
-		<Unit filename="common.cpp" />
-		<Unit filename="common.hpp" />
-		<Unit filename="common/jsutil.cpp" />
-		<Unit filename="common/jsutil.hpp" />
-		<Unit filename="common/rng.cpp" />
-		<Unit filename="common/rng.hpp" />
-		<Unit filename="ext/component.cpp" />
-		<Unit filename="ext/component.h" />
-		<Unit filename="messaging/messageexchange.cpp" />
-		<Unit filename="messaging/messageexchange.hpp" />
-		<Unit filename="messaging/pubsub.cpp" />
-		<Unit filename="messaging/pubsub.hpp" />
-		<Unit filename="physics/circularbody.cpp" />
-		<Unit filename="physics/circularbody.h" />
-		<Unit filename="physics/sim.cpp" />
-		<Unit filename="physics/sim.h" />
-		<Unit filename="physics/space.cpp" />
-		<Unit filename="physics/space.h" />
-		<Unit filename="worker/backend.cpp" />
-		<Unit filename="worker/backend.hpp" />
-		<Unit filename="worker/configurator.cpp" />
-		<Unit filename="worker/configurator.hpp" />
-		<Unit filename="worker/spidermonkey/jssetup.cpp" />
-		<Unit filename="worker/spidermonkey/jssetup.hpp" />
-		<Unit filename="worker/spidermonkey/scripting.cpp" />
-		<Unit filename="worker/spidermonkey/scripting.hpp" />
-		<Unit filename="worker/worker.cpp" />
-		<Unit filename="worker/worker.hpp" />
+		<Unit filename="frontendworker.cpp" />
+		<Unit filename="frontendworker.h" />
+		<Unit filename="gfx/jscanvas.cpp" />
+		<Unit filename="gfx/jscanvas.hpp" />
+		<Unit filename="gfx/jscircle.cpp" />
+		<Unit filename="gfx/jscircle.hpp" />
+		<Unit filename="gfx/jsdrawable.cpp" />
+		<Unit filename="gfx/jsdrawable.hpp" />
+		<Unit filename="gfx/jsgraphics.cpp" />
+		<Unit filename="gfx/jsgraphics.hpp" />
+		<Unit filename="gfx/jsrect.cpp" />
+		<Unit filename="gfx/jsrect.hpp" />
+		<Unit filename="gfx/jssprite.cpp" />
+		<Unit filename="gfx/jssprite.hpp" />
+		<Unit filename="gfx/jstext.cpp" />
+		<Unit filename="gfx/jstext.hpp" />
+		<Unit filename="gfx/sfmlsetup.cpp" />
+		<Unit filename="gfx/sfmlsetup.hpp" />
+		<Unit filename="jsinput.cpp" />
+		<Unit filename="jsinput.hpp" />
+		<Unit filename="medialibrary.cpp" />
+		<Unit filename="medialibrary.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

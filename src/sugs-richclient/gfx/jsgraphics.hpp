@@ -26,70 +26,24 @@
  *
  */
 
-#ifndef __common_hpp__
-#define __common_hpp__
+#ifndef __jsgraphics_hpp__
+#define __jsgraphics_hpp__
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <math.h>
 #include <jsapi.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <string>
 
-#include "common/rng.hpp"
-#include "common/jsutil.hpp"
-#include "messaging/messageexchange.hpp"
+#include "../medialibrary.hpp"
+#include "../../sugs-core/common.hpp"
+#include "jssprite.hpp"
+#include "jsrect.hpp"
+#include "jscircle.hpp"
+#include "jstext.hpp"
 
-typedef struct {
-  JSIntn result;
-  char* message;
-  jsval optionalRetVal;
-} predicateResult;
+namespace sugs {
+namespace richclient {
+namespace gfx {
 
-typedef struct {
-  JSRuntime* rt;
-  JSContext* cx;
-  JSObject* global;
-} jsEnv;
+void registerGraphicsNatives(JSContext* cx, JSObject* global);
 
-typedef struct {
-  std::string* paths;
-  int length;
-} pathStrings;
-
-typedef struct {
-  pathStrings paths;
-  char* moduleEntryPoint;
-  char* moduleDir;
-  int screenWidth;
-  int screenHeight;
-  int colorDepth;
-} sugsConfig;
-
-typedef struct {
-  char* entryPoint;
-} workerInfo;
-
-typedef struct {
-  workerInfo* backendWorkers;
-  int backendsCount;
-  workerInfo frontendWorker;
-} workerInfos;
-
-typedef struct {
-  std::string entryPoint;
-  sugsConfig config;
-  void* msgEx;
-} workerPayload;
-
-/* util functions */
-void readEntireFile(const char* path, char** outBuffer, int* outLength);
-bool fileExists(const char * filename);
-bool doesFilenameEndWithDotCoffee(const char* filename);
-clock_t getCurrentMilliseconds();
-std::string getCurrentWorkingDir();
-
-#define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
-
+}}} // namespace sugs::richclient::graphics
 #endif

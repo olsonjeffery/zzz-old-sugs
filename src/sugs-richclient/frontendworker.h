@@ -26,70 +26,55 @@
  *
  */
 
-#ifndef __common_hpp__
-#define __common_hpp__
+#ifndef __frontend_worker_hpp__
+#define __frontend_worker_hpp__
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <jsapi.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <string>
+#include <SFML/Graphics.hpp>
 
-#include "common/rng.hpp"
-#include "common/jsutil.hpp"
-#include "messaging/messageexchange.hpp"
+#include "../sugs-core/worker/worker.hpp"
+#include "../sugs-core/common.hpp"
 
-typedef struct {
-  JSIntn result;
-  char* message;
-  jsval optionalRetVal;
-} predicateResult;
+#include "gfx/sfmlsetup.hpp"
+#include "gfx/jsgraphics.hpp"
+#include "jsinput.hpp"
+#include "medialibrary.hpp"
 
-typedef struct {
-  JSRuntime* rt;
-  JSContext* cx;
-  JSObject* global;
-} jsEnv;
+class FrontendWorker : public Worker {
+  public:
+    FrontendWorker(JSRuntime* rt, sugsConfig config, std::string entryPoint, MessageExchange* msgEx)
+    : Worker(rt, msgEx, "frontend")
+    {
+      this->_config = config;
 
-typedef struct {
-  std::string* paths;
-  int length;
-} pathStrings;
+      this->componentSetup(this->_jsEnv, this->_config);
 
-typedef struct {
-  pathStrings paths;
-  char* moduleEntryPoint;
-  char* moduleDir;
-  int screenWidth;
-  int screenHeight;
-  int colorDepth;
-} sugsConfig;
+      this->_entryPoint = entryPoint;
+      this->_isClosed = false;
+    }
 
-typedef struct {
-  char* entryPoint;
-} workerInfo;
+    ~FrontendWorker()
+    {
+      this->componentTeardown(this->_jsEnv);
+    }
 
-typedef struct {
-  workerInfo* backendWorkers;
-  int backendsCount;
-  workerInfo frontendWorker;
-} workerInfos;
+    void componentDoWork(jsEnv jsEnv);
+    void componentSetup(jsEnv jsEnv, sugsConfig config);
+    void componentTeardown(jsEnv jsEnv);
+    void componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig config);
 
-typedef struct {
-  std::string entryPoint;
-  sugsConfig config;
-  void* msgEx;
-} workerPayload;
+    virtual void initLibraries();
+    virtual void doWork();
+    bool appIsOpen();
+    void closeApp();
+    bool isWindowClosed();
+  private:
+    sugs::richclient::gfx::GraphicsEnv _gfxEnv;
+    sugs::richclient::input::EventEnv _evEnv;
+    sugsConfig _config;
+    std::string _entryPoint;
 
-/* util functions */
-void readEntireFile(const char* path, char** outBuffer, int* outLength);
-bool fileExists(const char * filename);
-bool doesFilenameEndWithDotCoffee(const char* filename);
-clock_t getCurrentMilliseconds();
-std::string getCurrentWorkingDir();
-
-#define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
+    bool _isClosed;
+};
 
 #endif

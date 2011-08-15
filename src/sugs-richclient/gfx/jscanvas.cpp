@@ -26,70 +26,55 @@
  *
  */
 
-#ifndef __common_hpp__
-#define __common_hpp__
+#include "jscanvas.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <jsapi.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <string>
+JSBool reformer_native_canvas_draw(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* This;
+  JSObject* spriteObj;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oo", &This, &spriteObj)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "wtf can't parse arguments for pos obj", 1);
+      return JS_FALSE;
+  }
 
-#include "common/rng.hpp"
-#include "common/jsutil.hpp"
-#include "messaging/messageexchange.hpp"
+  // need error check
+  sf::Sprite* sprite = (sf::Sprite*)(JS_GetPrivate(cx, spriteObj));
+  sf::RenderWindow* win = (sf::RenderWindow*)(JS_GetPrivate(cx, This));
+  win->Draw(*sprite);
 
-typedef struct {
-  JSIntn result;
-  char* message;
-  jsval optionalRetVal;
-} predicateResult;
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+static void
+classdef_canvas_finalize(JSContext* cx, JSObject* sp) {
+  /*sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, sp);
+  printf("About to try and delete an sf::RenderWindow...\n");
+  delete window;*/
+}
+static JSClass
+native_canvas_classdef = {
+  "NativeCanvas",
+  JSCLASS_HAS_PRIVATE,
+  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+  JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, classdef_canvas_finalize
+};
 
-typedef struct {
-  JSRuntime* rt;
-  JSContext* cx;
-  JSObject* global;
-} jsEnv;
+static JSFunctionSpec canvas_native_functions[] = {
+  JS_FS("__native_draw", reformer_native_canvas_draw, 2, 0),
+  JS_FS_END
+};
 
-typedef struct {
-  std::string* paths;
-  int length;
-} pathStrings;
+JSObject* newCanvasFrom(sf::RenderWindow* window, JSContext* cx) {
+  JSObject* canvas = JS_NewObject(cx, &native_canvas_classdef, NULL, NULL);
 
-typedef struct {
-  pathStrings paths;
-  char* moduleEntryPoint;
-  char* moduleDir;
-  int screenWidth;
-  int screenHeight;
-  int colorDepth;
-} sugsConfig;
+  // DEFINE FUNCS FOR CANVAS!!!
+  JS_DefineFunctions(cx, canvas, canvas_native_functions);
 
-typedef struct {
-  char* entryPoint;
-} workerInfo;
+  if (!JS_SetPrivate(cx, canvas, window)) {
+    printf("couldn't set private on canvas");
+    exit(EXIT_FAILURE);
+  }
 
-typedef struct {
-  workerInfo* backendWorkers;
-  int backendsCount;
-  workerInfo frontendWorker;
-} workerInfos;
-
-typedef struct {
-  std::string entryPoint;
-  sugsConfig config;
-  void* msgEx;
-} workerPayload;
-
-/* util functions */
-void readEntireFile(const char* path, char** outBuffer, int* outLength);
-bool fileExists(const char * filename);
-bool doesFilenameEndWithDotCoffee(const char* filename);
-clock_t getCurrentMilliseconds();
-std::string getCurrentWorkingDir();
-
-#define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
-
-#endif
+  return canvas;
+}

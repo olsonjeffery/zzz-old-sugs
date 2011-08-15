@@ -26,7 +26,7 @@
  *
  */
 
-#include "frontend.hpp"
+#include "frontendworker.h"
 
 void FrontendWorker::componentSetup(jsEnv jsEnv, sugsConfig config) {
   printf("initializing graphics.. sw: %d\n", config.screenWidth);
@@ -66,7 +66,7 @@ windowFuncSpecs[] = {
 
 void FrontendWorker::componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig config) {
   // init sfml bindings for the frontend
-  registerGraphicsNatives(jsEnv.cx, jsEnv.global);
+  sugs::richclient::gfx::registerGraphicsNatives(jsEnv.cx, jsEnv.global);
   sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
 
   // general richclient functions...
@@ -103,7 +103,7 @@ void FrontendWorker::initLibraries() {
   }
 }
 
-void callIntoJsRender(jsEnv jsEnv, sugs::richclient::gfx::GraphicsEnv gfxEnv, eventEnv evEnv, int msElapsed) {
+void callIntoJsRender(jsEnv jsEnv, sugs::richclient::gfx::GraphicsEnv gfxEnv, sugs::richclient::input::EventEnv evEnv, int msElapsed) {
   jsval argv[3];
 
   argv[0] = OBJECT_TO_JSVAL(gfxEnv.canvas);

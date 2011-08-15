@@ -26,70 +26,24 @@
  *
  */
 
-#ifndef __common_hpp__
-#define __common_hpp__
+#ifndef __jsinput_hpp__
+#define __jsinput_hpp__
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <SFML/Graphics.hpp>
 #include <jsapi.h>
-#include <iostream>
-#include <fstream>
-#include <time.h>
-#include <string>
 
-#include "common/rng.hpp"
-#include "common/jsutil.hpp"
-#include "messaging/messageexchange.hpp"
+namespace sugs {
+namespace richclient {
+namespace input {
 
-typedef struct {
-  JSIntn result;
-  char* message;
-  jsval optionalRetVal;
-} predicateResult;
 
-typedef struct {
-  JSRuntime* rt;
-  JSContext* cx;
-  JSObject* global;
-} jsEnv;
+struct EventEnv {
+  JSObject* input;
+};
 
-typedef struct {
-  std::string* paths;
-  int length;
-} pathStrings;
+JSObject* newInputFrom(sf::RenderWindow* window, JSContext* cx);
+void registerInputNatives(JSContext* cx, JSObject* global);
+void pushKeyUpEvent(JSContext* cx, JSObject* global, sf::Key::Code code);
 
-typedef struct {
-  pathStrings paths;
-  char* moduleEntryPoint;
-  char* moduleDir;
-  int screenWidth;
-  int screenHeight;
-  int colorDepth;
-} sugsConfig;
-
-typedef struct {
-  char* entryPoint;
-} workerInfo;
-
-typedef struct {
-  workerInfo* backendWorkers;
-  int backendsCount;
-  workerInfo frontendWorker;
-} workerInfos;
-
-typedef struct {
-  std::string entryPoint;
-  sugsConfig config;
-  void* msgEx;
-} workerPayload;
-
-/* util functions */
-void readEntireFile(const char* path, char** outBuffer, int* outLength);
-bool fileExists(const char * filename);
-bool doesFilenameEndWithDotCoffee(const char* filename);
-clock_t getCurrentMilliseconds();
-std::string getCurrentWorkingDir();
-
-#define SUGS_JSVAL_TO_NUMBER(n) JSVAL_IS_INT(n) ? JSVAL_TO_INT(n): JSVAL_TO_DOUBLE(n)
-
+}}}
 #endif
