@@ -111,6 +111,20 @@ global.runMainLoop = (msElapsed) ->
   lastTickForFps[gap] = timePassed
   cb = mainLoopCallback[1]
   cb msElapsed
+global.embedObjectInNamespace = (outter, ns, inner, propName) ->
+  all = ns.split '.'
+  if ns == ""
+    outter[propName] = inner
+  else
+    tail = (obj, curr, rest) ->
+      if typeof(obj[curr]) == "undefined"
+        obj[curr] = {}
+      obj = obj[curr]
+      if rest.length == 0
+        obj[propName] = inner
+      else
+        tail obj, _.first(rest), _.rest(rest)
+    tail outter, _.first(all), _.rest(all)
 
 # global event registrar/util interface
 configHasRan = false

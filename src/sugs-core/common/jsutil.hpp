@@ -37,6 +37,7 @@ namespace jsutil {
 
 JSClass* getDefaultClassDef();
 jsval pullPropertyFromSugsConfigInGlobal(JSContext* cx, JSObject* global, const char* propName);
+void embedObjectInNamespaceWithinObject(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner, const char* propName);
 
 }
 }

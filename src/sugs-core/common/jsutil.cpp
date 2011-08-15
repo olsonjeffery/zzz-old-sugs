@@ -55,3 +55,16 @@ jsval sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(JSContext* cx, JS
   }
   return propVal;
 }
+
+void sugs::common::jsutil::embedObjectInNamespaceWithinObject(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner, const char* propName)
+{
+  jsval argv[4];
+  argv[0] = OBJECT_TO_JSVAL(outter);
+  JSString* nsString = JS_NewStringCopyZ(cx, ns);
+  argv[1] = STRING_TO_JSVAL(nsString);
+  argv[2] = OBJECT_TO_JSVAL(inner);
+  JSString* propNameString = JS_NewStringCopyZ(cx, propName);
+  argv[3] = STRING_TO_JSVAL(propNameString);
+  jsval rVal;
+  JS_CallFunctionName(cx, global, "embedObjectInNamespace", 4, argv, &rVal);
+}
