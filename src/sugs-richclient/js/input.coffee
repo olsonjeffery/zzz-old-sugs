@@ -38,8 +38,7 @@ return {
   # and mouse position. An instance is provided to callbacks registered
   # in $.render(). Instances are *only* available during the render loop.
   CurrentInputState: class
-    constructor: (nativeInput) ->
-      @nativeInput = nativeInput
+    constructor: (@nativeInput) ->
 
     isKeyDown: (key) ->
       @nativeInput.__native_isKeyDown @nativeInput, key
