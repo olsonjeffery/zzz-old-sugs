@@ -52,7 +52,7 @@ native_subscribe(JSContext* cx, uintN argc, jsval* vp)
 
   msgEx->addSubscription(myAgentId, msgId);
 
-  JS_SET_RVAL(cx, vp, NULL);
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
   return JS_TRUE;
 }
 
@@ -77,7 +77,7 @@ native_publish_broadcast(JSContext* cx, uintN argc, jsval* vp)
 
   worker->getMessageExchange()->publish(myAgentId, msgId, jsonData);
 
-  JS_SET_RVAL(cx, vp, NULL);
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
   return JS_TRUE;
 }
 
@@ -104,7 +104,7 @@ native_publish_single_target(JSContext* cx, uintN argc, jsval* vp)
 
   worker->getMessageExchange()->publish(target, myAgentId, msgId, jsonData);
 
-  JS_SET_RVAL(cx, vp, NULL);
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
   return JS_TRUE;
 }
 
