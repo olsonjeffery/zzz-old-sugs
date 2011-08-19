@@ -88,7 +88,28 @@ JSID_TO_ATOM(jsid id)
     return (JSAtom *)JSID_TO_STRING(id);
 }
 
+extern jsid
+js_CheckForStringIndex(jsid id);
+
+JS_STATIC_ASSERT(sizeof(JSHashNumber) == 4);
+JS_STATIC_ASSERT(sizeof(jsid) == JS_BYTES_PER_WORD);
+
 namespace js {
+
+static JS_ALWAYS_INLINE JSHashNumber
+HashId(jsid id)
+{
+    JS_ASSERT(js_CheckForStringIndex(id) == id);
+    JSHashNumber n =
+#if JS_BYTES_PER_WORD == 4
+        JSHashNumber(JSID_BITS(id));
+#elif JS_BYTES_PER_WORD == 8
+        JSHashNumber(JSID_BITS(id)) ^ JSHashNumber(JSID_BITS(id) >> 32);
+#else
+# error "Unsupported configuration"
+#endif
+    return n * JS_GOLDEN_RATIO;
+}
 
 static JS_ALWAYS_INLINE Value
 IdToValue(jsid id)
@@ -147,13 +168,6 @@ struct JSAtomMap {
 };
 
 namespace js {
-
-/* N.B. must correspond to boolean tagging behavior. */
-enum InternBehavior
-{
-    DoNotInternAtom = false,
-    InternAtom = true
-};
 
 typedef TaggedPointerEntry<JSAtom> AtomStateEntry;
 
@@ -225,6 +239,7 @@ struct JSAtomState
     JSAtom              *applyAtom;
     JSAtom              *argumentsAtom;
     JSAtom              *arityAtom;
+    JSAtom              *BYTES_PER_ELEMENTAtom;
     JSAtom              *callAtom;
     JSAtom              *calleeAtom;
     JSAtom              *callerAtom;
@@ -311,6 +326,9 @@ struct JSAtomState
 
     JSAtom              *byteLengthAtom;
 
+    JSAtom              *returnAtom;
+    JSAtom              *throwAtom;
+
     /* Less frequently used atoms, pinned lazily by JS_ResolveStandardClass. */
     struct {
         JSAtom          *XMLListAtom;
@@ -392,6 +410,7 @@ extern const char   js_anonymous_str[];
 extern const char   js_apply_str[];
 extern const char   js_arguments_str[];
 extern const char   js_arity_str[];
+extern const char   js_BYTES_PER_ELEMENT_str[];
 extern const char   js_call_str[];
 extern const char   js_callee_str[];
 extern const char   js_caller_str[];
@@ -480,13 +499,6 @@ js_InitCommonAtoms(JSContext *cx);
 
 extern void
 js_FinishCommonAtoms(JSContext *cx);
-
-/*
- * Find or create the atom for a string. Return null on failure to allocate
- * memory.
- */
-extern JSAtom *
-js_AtomizeString(JSContext *cx, JSString *str, js::InternBehavior ib = js::DoNotInternAtom);
 
 extern JSAtom *
 js_Atomize(JSContext *cx, const char *bytes, size_t length,
