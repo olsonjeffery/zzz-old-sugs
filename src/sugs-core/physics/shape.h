@@ -32,6 +32,8 @@
 #include <chipmunk.h>
 #include <jsapi.h>
 
+#include "../../sugs-core/common/jsutil.hpp"
+
 namespace sugs {
 namespace physics {
 

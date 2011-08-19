@@ -41,7 +41,7 @@ JSObject* createNewCircleShapeJSObjectFor(JSContext* cx, cpSpace* space, cpBody*
     return JS_FALSE;
   }
 
-  JSObject* circleShapeObj = JS_NewObject(cx, NULL, NULL, NULL);
+  JSObject* circleShapeObj = JS_NewObject(cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
   if(!JS_SetPrivate(cx, circleShapeObj, circleShape)) {
     JS_ReportError(cx, "space_newCircleShape: unable to store cpShape* in circleShapeObj private slot");
     return JS_FALSE;

@@ -70,7 +70,7 @@ void FrontendWorker::componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig co
   sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
 
   // general richclient functions...
-  JSObject* windowFuncsObj = JS_NewObject(jsEnv.cx, NULL, NULL, NULL);
+  JSObject* windowFuncsObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
   if(!JS_SetPrivate(jsEnv.cx, windowFuncsObj, this)) {
       JS_ReportError(jsEnv.cx,"FrontendWorker::componentRegisterNativeFunctions: Unable to set privite obj on windowFuncsObj...");
   }
