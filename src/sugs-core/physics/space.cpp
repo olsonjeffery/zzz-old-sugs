@@ -115,13 +115,11 @@ static void
 removeShapeFromSpaceIterator(cpBody* body, cpShape* shape, void* space)
 {
   cpSpaceRemoveShape((cpSpace*)space, shape);
-  cpShapeFree(shape);
 }
 static void
 removeConstraintFromSpaceIterator(cpBody* body, cpConstraint* constraint, void* space)
 {
   cpSpaceRemoveConstraint((cpSpace*)space, constraint);
-  cpConstraintFree(constraint);
 }
 
 void
@@ -129,7 +127,6 @@ doBodyRemoval(cpSpace* space, cpBody* body) {
   cpBodyEachShape(body, &removeShapeFromSpaceIterator, space);
   cpBodyEachConstraint(body, &removeConstraintFromSpaceIterator, space);
   cpSpaceRemoveBody(space, body);
-  cpBodyFree(body);
 }
 
 static JSBool
