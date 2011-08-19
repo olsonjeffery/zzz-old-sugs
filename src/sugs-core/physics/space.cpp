@@ -49,27 +49,57 @@ space_step(JSContext* cx, uintN argc, jsval* vp)
 }
 
 static JSBool
-space_newCircularBody(JSContext* cx, uintN argc, jsval* vp)
+space_newCircleShape(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* bodyJsObj;
+  jsdouble radius;
+  jsdouble friction;
+  jsdouble xOffset;
+  jsdouble yOffset;
+  jsuint groupId;
+  jsuint collisionType;
+  jsuint layers;
+
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "odddduuu", &bodyJsObj, &radius, &friction, &xOffset, &yOffset, &groupId, &collisionType, &layers)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "space_newCircleShape: couldn't parse out args");
+      return JS_FALSE;
+  }
+
+  cpVect offset = {xOffset, yOffset};
+
+  JSObject* spaceObj = JS_THIS_OBJECT(cx, vp);
+
+  cpSpace* space = (cpSpace*)JS_GetPrivate(cx, spaceObj);
+  cpBody* body = (cpBody*)JS_GetPrivate(cx, bodyJsObj);
+
+  JSObject* circleShapeObj = sugs::physics::createNewCircleShapeJSObjectFor(cx, space, body, radius, friction,
+                                                                            offset, groupId, collisionType, layers);
+  jsval rVal = OBJECT_TO_JSVAL(circleShapeObj);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
+static JSBool
+space_newBodyWithCircularMoment(JSContext* cx, uintN argc, jsval* vp)
 {
   jsdouble xPos;
   jsdouble yPos;
-  jsdouble radius;
   jsdouble mass;
-  jsdouble friction;
-  jsuint groupId;
-  jsuint collisionType;
+  jsdouble radius;
   JSObject* outterJsObj;
 
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "ddddduuo", &xPos, &yPos, &mass, &radius, &friction, &groupId, &collisionType, &outterJsObj)) {
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "ddddo", &xPos, &yPos, &mass, &radius, &outterJsObj)) {
       /* Throw a JavaScript exception. */
-      JS_ReportError(cx, "space_newCircularBody: couldn't parse out args");
+      JS_ReportError(cx, "space_newBodyWithCircularMoment: couldn't parse out args");
       return JS_FALSE;
   }
   JSObject* spaceObj = JS_THIS_OBJECT(cx, vp);
 
   cpSpace* space = (cpSpace*)JS_GetPrivate(cx, spaceObj);
 
-  JSObject* bodyObj = sugs::physics::createNewCircularBodyFrom(cx, space, xPos, yPos, mass, radius, friction, groupId, collisionType, outterJsObj);
+  cpFloat moment = cpMomentForCircle(mass, 0, radius, cpvzero);
+  JSObject* bodyObj = sugs::physics::createNewBodyJsObjectFrom(cx, space, xPos, yPos, mass, moment, outterJsObj);
 
   if (bodyObj == NULL)
   {
@@ -81,7 +111,6 @@ space_newCircularBody(JSContext* cx, uintN argc, jsval* vp)
   JS_SET_RVAL(cx, vp, rVal);
   return JS_TRUE;
 }
-
 static void
 removeShapeFromSpaceIterator(cpBody* body, cpShape* shape, void* space)
 {
@@ -268,7 +297,8 @@ space_registerCustomCollisionHandlers(JSContext* cx, uintN argc, jsval* vp)
 static JSFunctionSpec
 space_native_functions[] = {
   JS_FS("__native_step", space_step, 1, 0),
-  JS_FS("__native_newCircularBody", space_newCircularBody, 8, 0),
+  JS_FS("__native_newCircleShape", space_newCircleShape, 7, 0),
+  JS_FS("__native_newBodyWithCircularMoment", space_newBodyWithCircularMoment, 5, 0),
   JS_FS("__native_removeBody", space_removeBody, 1, 0),
   JS_FS("__native_registerCustomCollisionHandlers", space_registerCustomCollisionHandlers, 2, 0),
   JS_FS_END

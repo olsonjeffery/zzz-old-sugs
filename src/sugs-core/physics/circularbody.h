@@ -37,10 +37,6 @@
 namespace sugs{
 namespace physics {
 
-JSObject* createNewCircularBodyFrom(JSContext* cx, cpSpace* space, cpFloat posX, cpFloat posY, cpFloat mass, cpFloat radius,
-                                    cpFloat friction, unsigned int groupId, unsigned int collisionType, JSObject* outterJsObj);
-cpShape* createNewCircleShapeFor(cpSpace* space, cpBody* body, cpFloat radius, cpFloat friction, cpVect offset,
-                                                unsigned int groupId, unsigned int collisionType);
 }} // namespace sugs::physics
 
  #endif

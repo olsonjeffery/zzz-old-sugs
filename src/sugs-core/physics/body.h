@@ -26,4 +26,18 @@
  *
  */
 
-#include "circularbody.h"
+#ifndef __sugs_core_physics_body__
+#define __sugs_core_physics_body__
+
+#include <math.h>
+#include <chipmunk.h>
+#include <jsapi.h>
+
+namespace sugs {
+namespace physics {
+
+JSObject* createNewBodyJsObjectFrom(JSContext* cx, cpSpace* space, cpFloat posX, cpFloat posY, cpFloat mass, cpFloat moment, JSObject* outterJsObj);
+cpBody* createNewBodyFrom(cpSpace* space, cpFloat posX, cpFloat posY, cpFloat mass, cpFloat moment, JSObject* outterJsObj);
+
+}} // namespace sugs::physics
+ #endif

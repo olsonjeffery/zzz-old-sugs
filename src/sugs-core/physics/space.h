@@ -29,10 +29,13 @@
 #ifndef __physics_space_h__
 #define __physics_space_h__
 
+#include "../../sugs-core/common.hpp"
+
 #include <jsapi.h>
 #include <chipmunk.h>
 
-#include "circularbody.h"
+#include "body.h"
+#include "shape.h"
 
 namespace sugs {
 namespace physics {

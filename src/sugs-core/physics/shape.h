@@ -26,4 +26,18 @@
  *
  */
 
-#include "circularbody.h"
+#ifndef __sugs_core_physics_shape__
+#define __sugs_core_physics_shape__
+
+#include <chipmunk.h>
+#include <jsapi.h>
+
+namespace sugs {
+namespace physics {
+
+JSObject* createNewCircleShapeJSObjectFor(JSContext* cx, cpSpace* space, cpBody* body, cpFloat radius, cpFloat friction, cpVect offset,
+                                                unsigned int groupId, unsigned int collisionType, unsigned int layer);
+cpShape* createNewCircleShapeFor(cpSpace* space, cpBody* body, cpFloat radius, cpFloat friction, cpVect offset,
+                                                unsigned int groupId, unsigned int collisionType, unsigned int layer);
+}} // namespace sugs::physics
+ #endif

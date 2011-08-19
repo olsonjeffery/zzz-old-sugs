@@ -26,4 +26,35 @@
  *
  */
 
-#include "circularbody.h"
+#include "shape.h"
+
+namespace sugs {
+namespace physics {
+
+JSObject* createNewCircleShapeJSObjectFor(JSContext* cx, cpSpace* space, cpBody* body, cpFloat radius, cpFloat friction, cpVect offset,
+                                                unsigned int groupId, unsigned int collisionType, unsigned int layers)
+{
+  cpShape* circleShape = sugs::physics::createNewCircleShapeFor(space, body, radius, friction, offset, groupId, collisionType, layers);
+  if (circleShape == NULL)
+  {
+    // error reason should be reported in createNewCircularBodyFrom()
+    return JS_FALSE;
+  }
+
+  JSObject* circleShapeObj = JS_NewObject(cx, NULL, NULL, NULL);
+  if(!JS_SetPrivate(cx, circleShapeObj, circleShape)) {
+    JS_ReportError(cx, "space_newCircleShape: unable to store cpShape* in circleShapeObj private slot");
+    return JS_FALSE;
+  }
+}
+cpShape* createNewCircleShapeFor(cpSpace* space, cpBody* body, cpFloat radius, cpFloat friction, cpVect offset,
+                                                unsigned int groupId, unsigned int collisionType, unsigned int layers) {
+  cpShape* circularShape = cpSpaceAddShape(space, cpCircleShapeNew(body, radius, offset));
+  cpShapeSetFriction(circularShape, friction);
+  cpShapeSetGroup(circularShape, groupId);
+  cpShapeSetCollisionType(circularShape, collisionType);
+  cpShapeSetLayers(circularShape, layers);
+  return circularShape;
+}
+
+}} // namespace sugs::physics
