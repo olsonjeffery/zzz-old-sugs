@@ -19,6 +19,7 @@
 					<Add option="-g" />
 					<Add option="-fPIC" />
 					<Add option="-DSFML_DYNAMIC" />
+					<Add option="-DDEBUG" />
 					<Add directory="../../extlibs/linux64Debug/include" />
 					<Add directory="../../extlibs/linux64Debug/include/js" />
 					<Add directory="../../extlibs/linux64Debug/include/chipmunk" />
@@ -82,8 +83,10 @@
 		<Unit filename="messaging/messageexchange.hpp" />
 		<Unit filename="messaging/pubsub.cpp" />
 		<Unit filename="messaging/pubsub.hpp" />
-		<Unit filename="physics/circularbody.cpp" />
-		<Unit filename="physics/circularbody.h" />
+		<Unit filename="physics/body.cpp" />
+		<Unit filename="physics/body.h" />
+		<Unit filename="physics/shape.cpp" />
+		<Unit filename="physics/shape.h" />
 		<Unit filename="physics/sim.cpp" />
 		<Unit filename="physics/sim.h" />
 		<Unit filename="physics/space.cpp" />

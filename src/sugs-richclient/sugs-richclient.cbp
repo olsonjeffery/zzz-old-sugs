@@ -19,6 +19,7 @@
 					<Add option="-g" />
 					<Add option="-fPIC" />
 					<Add option="-DSFML_DYNAMIC" />
+					<Add option="-DDEBUG" />
 					<Add directory="../../extlibs/linux64Debug/include" />
 					<Add directory="../../extlibs/linux64Debug/include/js" />
 					<Add directory="../../extlibs/linux64Debug/include/chipmunk" />

@@ -200,6 +200,10 @@ jsEnv initContext(JSRuntime* rt) {
 
   JS_SetErrorReporter(cx, reportError);
 
+#ifdef DEBUG
+  JS_SetGCZeal(cx, 1, 20, JS_FALSE);
+#endif
+
   jsEnv env = {rt, cx, global};
   return env;
 }
