@@ -1,4 +1,4 @@
-cbody = require 'physics/circularbody'
+Body = require 'physics/body'
 msgEx = require 'messaging'
 mixins = require 'mixins'
 patterns = require 'patterns'
@@ -13,13 +13,20 @@ return {
     step: (stepTime) ->
       @_space.__native_step stepTime
 
-    newCircularBody: (xPos, yPos, mass, radius, friction, groupId, collType) ->
-      body = new cbody.CircularBody groupId, collType
+    newBodyWithCircularMoment: (xPos, yPos, mass, radius, groupId, collType, layer) ->
+      puts "before creating body..."
+      body = new Body groupId, collType, layer
+      puts "after creating body.."
 
-      innerBody = @_space.__native_newCircularBody xPos, yPos, mass, radius, friction, groupId, collType, body
+      innerBody = @_space.__native_newBodyWithCircularMoment xPos, yPos, mass, radius, body
       body.setInnerBody innerBody
       body.setSpace @_space
       body
+
+    newCircleShapeFor: (body, radius, friction, offset, groupId, collType, layers) ->
+      puts "offsets: #{offset.x}, #{offset.y}"
+      @_space.__native_newCircleShape body.getInnerBody(), radius, friction,
+        offset.x, offset.y, groupId, collType, layers
 
     removeBody: (body) ->
       @_space.__native_removeBody body._body

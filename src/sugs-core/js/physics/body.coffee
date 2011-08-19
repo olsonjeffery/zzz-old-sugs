@@ -1,12 +1,12 @@
 msgEx = require 'messaging'
-mixins = require 'mixins'
+mix = require 'mixins'
 patterns = require 'patterns'
-return {
-  CircularBody: class
-    constructor: (@groupId, @collType) ->
-      mixins.into this, patterns.ObjectEventHandlerMixin
+class Body
+    constructor: (@groupId, @collType, @layer) ->
+      mix.into this, patterns.ObjectEventHandlerMixin
 
     setInnerBody: (@_body) ->
+    getInnerBody: -> @_body
 
     getPos: ->
       rawPos = @_body.__native_getPos()
@@ -15,8 +15,8 @@ return {
         y: -rawPos.y
       }
 
-    getRadius: ->
-      @_body.__native_getRadius()
+    getRadius: (layerMask) ->
+      @_body.__native_getRadius layerMask
 
     getRotation: ->
       @_body.__native_getRotation()
@@ -28,4 +28,5 @@ return {
 
     applyDirectionalImpulse: (amt) ->
       @_body.__native_applyDirectionalImpulse amt
-}
+
+return Body
