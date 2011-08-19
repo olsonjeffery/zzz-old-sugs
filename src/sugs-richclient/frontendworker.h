@@ -34,9 +34,11 @@
 
 #include "../sugs-core/worker/worker.hpp"
 #include "../sugs-core/common.hpp"
+#include "../sugs-core/common/jsutil.hpp"
 
 #include "gfx/sfmlsetup.hpp"
 #include "gfx/jsgraphics.hpp"
+#include "gfx/jscanvas.hpp"
 #include "jsinput.hpp"
 #include "medialibrary.hpp"
 
@@ -70,7 +72,6 @@ class FrontendWorker : public Worker {
     bool isWindowClosed();
   private:
     sugs::richclient::gfx::GraphicsEnv _gfxEnv;
-    sugs::richclient::input::EventEnv _evEnv;
     sugsConfig _config;
     std::string _entryPoint;
 

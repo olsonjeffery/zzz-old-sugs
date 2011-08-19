@@ -32,10 +32,6 @@ void FrontendWorker::componentSetup(jsEnv jsEnv, sugsConfig config) {
   printf("initializing graphics.. sw: %d\n", config.screenWidth);
   // init graphics
   this->_gfxEnv = sugs::richclient::gfx::initGraphics(jsEnv.cx, config);
-  this->_evEnv = {
-    sugs::richclient::input::newInputFrom(this->_gfxEnv.window, jsEnv.cx)
-  };
-
   // set up graphics libs
   MediaLibrary::RegisterDefaultFont();
 }
@@ -103,11 +99,11 @@ void FrontendWorker::initLibraries() {
   }
 }
 
-void callIntoJsRender(jsEnv jsEnv, sugs::richclient::gfx::GraphicsEnv gfxEnv, sugs::richclient::input::EventEnv evEnv, int msElapsed) {
+void callIntoJsRender(jsEnv jsEnv, JSObject* canvas, JSObject* input, int msElapsed) {
   jsval argv[3];
 
-  argv[0] = OBJECT_TO_JSVAL(gfxEnv.canvas);
-  argv[1] = OBJECT_TO_JSVAL(evEnv.input);
+  argv[0] = OBJECT_TO_JSVAL(canvas);
+  argv[1] = OBJECT_TO_JSVAL(input);
   argv[2] = INT_TO_JSVAL(msElapsed);
   jsval rval;
   JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runRender", 3, argv, &rval);
@@ -133,9 +129,11 @@ void FrontendWorker::componentDoWork(jsEnv jsEnv) {
   // BEGINNING OF THE DRAW/RENDER LOOP
   this->_gfxEnv.window->Clear();
 
+  JSObject* inputObj = sugs::richclient::input::newInputFrom(this->_gfxEnv.window, jsEnv.cx);
+  JSObject* canvas = newCanvasFrom(this->_gfxEnv.window, jsEnv.cx);
   // run $.mainLoop() and $.render() callbacks in
   // user code
-  callIntoJsRender(jsEnv, this->_gfxEnv, this->_evEnv, msElapsed);
+  callIntoJsRender(jsEnv, canvas, inputObj, msElapsed);
 
   this->_gfxEnv.window->Display();
   // END OF DRAW/RENDER LOOP
