@@ -58,36 +58,6 @@ struct RadiusFetchingData {
   unsigned int layerMask;
 };
 
-static void
-getRadiusIterator(cpBody* body, cpShape* shape, void* data)
-{
-  RadiusFetchingData* fetchData = (RadiusFetchingData*)data;
-  unsigned int shapeLayers = cpShapeGetLayers(shape);
-  if (shapeLayers == fetchData->layerMask) {
-    fetchData->radius = cpCircleShapeGetRadius(shape);
-  }
-}
-static JSBool
-circularBody_getRadius(JSContext* cx, uintN argc, jsval* vp)
-{
-  jsuint layerMask;
-  JSObject* bodyObj = JS_THIS_OBJECT(cx, vp);
-
-  cpBody* body = (cpBody*)JS_GetPrivate(cx, bodyObj);
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "u", &layerMask)) {
-      /* Throw a JavaScript exception. */
-      JS_ReportError(cx, "circularBody_getRadius: couldn't parse out layer");
-      return JS_FALSE;
-  }
-
-  RadiusFetchingData radiusFetchingData = { 0, layerMask };
-  // assuming only a single shape, here..
-  cpBodyEachShape(body, &getRadiusIterator, &radiusFetchingData);
-  jsval rVal = DOUBLE_TO_JSVAL(radiusFetchingData.radius);
-  JS_SET_RVAL(cx, vp, rVal);
-  return JS_TRUE;
-}
-
 static JSBool
 body_getRotation(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -147,9 +117,8 @@ body_applyDirectionalImpulse(JSContext* cx, uintN argc, jsval* vp)
 }
 
 static JSFunctionSpec
-circularBody_functionSpec[] = {
+body_functionSpec[] = {
   JS_FS("__native_getPos", body_getPos, 0, 0),
-  JS_FS("__native_getRadius", circularBody_getRadius, 1, 0),
   JS_FS("__native_getRotation", body_getRotation, 0, 0),
   JS_FS("__native_setRotation", body_setRotation, 1, 0),
   JS_FS("__native_applyDirectionalImpulse", body_applyDirectionalImpulse, 1, 0),
@@ -178,8 +147,8 @@ classdef_circularBody_finalize(JSContext* cx, JSObject* sp) {
 }
 
 static JSClass
-circularBodyClassDef = {
-  "NativeChipmunkCircularBody",
+bodyClassDef = {
+  "NativeChipmunkBody",
   JSCLASS_HAS_PRIVATE,
   JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
   JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, classdef_circularBody_finalize
@@ -190,8 +159,8 @@ namespace physics {
 JSObject* createNewBodyJsObjectFrom(JSContext* cx, cpSpace* space, cpFloat posX, cpFloat posY, cpFloat mass, cpFloat moment, JSObject* outterJsObj)
 {
   cpBody* body = sugs::physics::createNewBodyFrom(space, posX, posY, mass, moment, outterJsObj);
-  JSObject* bodyObj = JS_NewObject(cx, &circularBodyClassDef, NULL, NULL);
-  JS_DefineFunctions(cx, bodyObj, circularBody_functionSpec);
+  JSObject* bodyObj = JS_NewObject(cx, &bodyClassDef, NULL, NULL);
+  JS_DefineFunctions(cx, bodyObj, body_functionSpec);
 
   if(!JS_SetPrivate(cx, bodyObj, (void*)body)) {
     JS_ReportError(cx, "createNewBodyJsObjectFrom: Failed to set private for new body..");
