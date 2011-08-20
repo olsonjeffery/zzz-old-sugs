@@ -41,9 +41,45 @@ circleShape_getRadius(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+static JSBool
+circleShape_getLayers(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* shapeObj = JS_THIS_OBJECT(cx, vp);
+
+  cpShape* shape = (cpShape*)JS_GetPrivate(cx, shapeObj);
+
+  cpLayers layers = cpShapeGetLayers(shape);
+
+  jsval rVal = INT_TO_JSVAL(layers);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
+static JSBool
+circleShape_setLayers(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* shapeObj = JS_THIS_OBJECT(cx, vp);
+  int32 layers;
+
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "i", &layers)) {
+    JS_ReportError(cx, "circleShape_setLayers: unable to parse layers arg");
+    return JS_FALSE;
+  }
+
+  cpShape* shape = (cpShape*)JS_GetPrivate(cx, shapeObj);
+
+  cpShapeSetLayers(shape, layers);
+
+  jsval rVal = JSVAL_VOID;
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec
 circleShape_functionSpec[] = {
-  JS_FS("__native_getRadius", circleShape_getRadius, 0, 0),
+  JS_FS("getRadius", circleShape_getRadius, 0, 0),
+  JS_FS("getLayers", circleShape_getLayers, 0, 0),
+  JS_FS("setLayers", circleShape_setLayers, 1, 0),
   JS_FS_END
 };
 
