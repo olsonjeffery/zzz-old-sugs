@@ -28,6 +28,33 @@
 
 #include "shape.h"
 
+static JSBool
+circleShape_getRadius(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* shapeObj = JS_THIS_OBJECT(cx, vp);
+
+  cpShape* shape = (cpShape*)JS_GetPrivate(cx, shapeObj);
+
+  cpFloat radius = cpCircleShapeGetRadius(shape);
+  jsval rVal = DOUBLE_TO_JSVAL(radius);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec
+circleShape_functionSpec[] = {
+  JS_FS("__native_getRadius", circleShape_getRadius, 0, 0),
+  JS_FS_END
+};
+
+static JSClass
+circleShapeClassDef = {
+  "NativeChipmunkCircleShape",
+  JSCLASS_HAS_PRIVATE,
+  JS_PropertyStub, JS_PropertyStub, JS_PropertyStub, JS_StrictPropertyStub,
+  JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub
+};
+
 namespace sugs {
 namespace physics {
 
@@ -41,12 +68,18 @@ JSObject* createNewCircleShapeJSObjectFor(JSContext* cx, cpSpace* space, cpBody*
     return JS_FALSE;
   }
 
-  JSObject* circleShapeObj = JS_NewObject(cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  JSObject* circleShapeObj = JS_NewObject(cx, &circleShapeClassDef, NULL, NULL);
+  if(!JS_DefineFunctions(cx, circleShapeObj, circleShape_functionSpec)) {
+    JS_ReportError(cx, "space_newCircleShape: unable to define funcs.");
+    return NULL;
+  }
   if(!JS_SetPrivate(cx, circleShapeObj, circleShape)) {
     JS_ReportError(cx, "space_newCircleShape: unable to store cpShape* in circleShapeObj private slot");
-    return JS_FALSE;
+    return NULL;
   }
+  return circleShapeObj;
 }
+
 cpShape* createNewCircleShapeFor(cpSpace* space, cpBody* body, cpFloat radius, cpFloat friction, cpVect offset,
                                                 unsigned int groupId, unsigned int collisionType, unsigned int layers) {
   cpShape* circularShape = cpSpaceAddShape(space, cpCircleShapeNew(body, radius, offset));

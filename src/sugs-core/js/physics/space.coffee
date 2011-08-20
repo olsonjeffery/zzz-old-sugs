@@ -24,7 +24,6 @@ return {
       body
 
     newCircleShapeFor: (body, radius, friction, offset, groupId, collType, layers) ->
-      puts "offsets: #{offset.x}, #{offset.y}"
       @_space.__native_newCircleShape body.getInnerBody(), radius, friction,
         offset.x, offset.y, groupId, collType, layers
 
