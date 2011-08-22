@@ -75,11 +75,67 @@ circleShape_setLayers(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+static JSBool
+circleShape_getOffset(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* shapeObj = JS_THIS_OBJECT(cx, vp);
+
+  cpShape* shape = (cpShape*)JS_GetPrivate(cx, shapeObj);
+
+  cpVect offset = cpCircleShapeGetOffset(shape);
+
+  jsval xVal = DOUBLE_TO_JSVAL(offset.x);
+  jsval yVal = DOUBLE_TO_JSVAL(offset.y);
+  JSObject* offsetObj = JS_NewObject(cx, NULL, NULL, NULL);
+  if(!JS_SetProperty(cx, offsetObj, "x", &xVal)) {
+    JS_ReportError(cx, "circleShape_getOffset: unable to set x offset");
+    return JS_FALSE;
+  }
+  if(!JS_SetProperty(cx, offsetObj, "y", &yVal)) {
+    JS_ReportError(cx, "circleShape_getOffset: unable to set y offset");
+    return JS_FALSE;
+  }
+
+  jsval rVal = OBJECT_TO_JSVAL(offsetObj);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
+static JSBool
+circleShape_getWorldPos(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* shapeObj = JS_THIS_OBJECT(cx, vp);
+
+  cpShape* shape = (cpShape*)JS_GetPrivate(cx, shapeObj);
+
+  cpVect offset = cpCircleShapeGetOffset(shape);
+  cpBody* body = cpShapeGetBody(shape);
+  cpVect worldPos = cpBodyLocal2World(body, offset);
+
+  jsval xVal = DOUBLE_TO_JSVAL(worldPos.x);
+  jsval yVal = DOUBLE_TO_JSVAL(worldPos.y);
+  JSObject* posObj = JS_NewObject(cx, NULL, NULL, NULL);
+  if(!JS_SetProperty(cx, posObj, "x", &xVal)) {
+    JS_ReportError(cx, "circleShape_getWorldPos: unable to set x offset");
+    return JS_FALSE;
+  }
+  if(!JS_SetProperty(cx, posObj, "y", &yVal)) {
+    JS_ReportError(cx, "circleShape_getWorldPos: unable to set y offset");
+    return JS_FALSE;
+  }
+
+  jsval rVal = OBJECT_TO_JSVAL(posObj);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec
 circleShape_functionSpec[] = {
   JS_FS("getRadius", circleShape_getRadius, 0, 0),
   JS_FS("getLayers", circleShape_getLayers, 0, 0),
   JS_FS("setLayers", circleShape_setLayers, 1, 0),
+  JS_FS("getOffset", circleShape_getOffset, 0, 0),
+  JS_FS("getWorldPos", circleShape_getWorldPos, 0, 0),
   JS_FS_END
 };
 
