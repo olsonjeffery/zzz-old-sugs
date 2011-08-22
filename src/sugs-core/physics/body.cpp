@@ -106,7 +106,7 @@ body_applyDirectionalImpulse(JSContext* cx, uintN argc, jsval* vp)
 
   cpBody* body = (cpBody*)JS_GetPrivate(cx, bodyObj);
   cpFloat angle = cpBodyGetAngle(body);
-  double xAmt = sin(angle) * amt;
+  double xAmt = -sin(angle) * amt;
   double yAmt = cos(angle) * amt;
   cpVect j = {xAmt, yAmt};
   cpBodyApplyImpulse(body, j, cpvzero);
