@@ -9,14 +9,7 @@ class Body
     getInnerBody: -> @_body
 
     getPos: ->
-      rawPos = @_body.__native_getPos()
-      return {
-        x: rawPos.x
-        y: -rawPos.y
-      }
-
-    getRadius: (layerMask) ->
-      @_body.__native_getRadius layerMask
+      @_body.__native_getPos()
 
     getRotation: ->
       @_body.__native_getRotation()
