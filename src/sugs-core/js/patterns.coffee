@@ -54,4 +54,26 @@ return {
 
       receiver.safeTrigger = (name, msg) ->
         @__ObjectEventHandlerMixin_imx__.safeTrigger name, msg
+
+  SleeplessFpsThrottler: class
+    constructor: (@fps) ->
+      @gap = 1000 / @fps
+      @timePassed = 0
+      @lastTime = 0
+      @runNow = false
+
+    tick: (msElapsed) ->
+      @timePassed += msElapsed
+      @runNow = ((@lastTime + @gap) - @timePassed) <= 0
+      if @runNow
+        @runNowLock = true
+        @lastTime = @timePassed
+
+    willRunThisTick: ->
+      @runNowLock
+
+    handle: (callback) ->
+      if @runNowLock
+        @runNowLock = false
+        callback()
 }
