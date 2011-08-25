@@ -22,4 +22,7 @@ class Body
     applyDirectionalImpulse: (amt) ->
       @_body.__native_applyDirectionalImpulse amt
 
+    setAngVel: (angVel) ->
+      @_body.__native_setAngVel angVel, @_space
+
 return Body

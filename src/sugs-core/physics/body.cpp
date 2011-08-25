@@ -91,7 +91,6 @@ body_setRotation(JSContext* cx, uintN argc, jsval* vp)
   JS_SET_RVAL(cx, vp, rVal);
   return JS_TRUE;
 }
-
 static JSBool
 body_applyDirectionalImpulse(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -116,12 +115,36 @@ body_applyDirectionalImpulse(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+static JSBool
+body_setAngVel(JSContext* cx, uintN argc, jsval* vp)
+{
+  jsdouble angVel;
+  JSObject* spaceObj;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "do", &angVel, &spaceObj)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "body_setAngVel: couldn't parse out angVel");
+      return JS_FALSE;
+  }
+
+  JSObject* bodyObj = JS_THIS_OBJECT(cx, vp);
+
+  cpBody* body = (cpBody*)JS_GetPrivate(cx, bodyObj);
+  cpBodySetAngVel(body, angVel);
+  cpSpace* space = (cpSpace*)JS_GetPrivate(cx, spaceObj);
+  cpSpaceReindexShapesForBody(space, body);
+
+  jsval rVal = JSVAL_VOID;
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec
 body_functionSpec[] = {
   JS_FS("__native_getPos", body_getPos, 0, 0),
   JS_FS("__native_getRotation", body_getRotation, 0, 0),
-  JS_FS("__native_setRotation", body_setRotation, 1, 0),
+  JS_FS("__native_setRotation", body_setRotation, 2, 0),
   JS_FS("__native_applyDirectionalImpulse", body_applyDirectionalImpulse, 1, 0),
+  JS_FS("__native_setAngVel", body_setAngVel, 2, 0),
   JS_FS_END
 };
 
