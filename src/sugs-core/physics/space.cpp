@@ -253,7 +253,7 @@ customSeparateHandler(cpArbiter *arb, cpSpace *space, void *data)
   jsuint ctB = cpShapeGetCollisionType(shapeB);
   JSObject* bObjA = (JSObject*)cpBodyGetUserData(bodyA);
   JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
-  const char* callbackNameCStr = "onSeparate ";
+  const char* callbackNameCStr = "onSeparate";
   JSString* callbackName = JS_NewStringCopyN(cD->cx, callbackNameCStr, strlen(callbackNameCStr));
   argv[0] = INT_TO_JSVAL(ctA);
   argv[1] = INT_TO_JSVAL(ctB);
