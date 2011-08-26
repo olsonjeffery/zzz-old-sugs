@@ -174,9 +174,9 @@ customBeginHandler(cpArbiter *arb, struct cpSpace *space, void *data)
   argv[2] = STRING_TO_JSVAL(callbackName);
   argv[3] = OBJECT_TO_JSVAL(bObjA);
   argv[4] = OBJECT_TO_JSVAL(bObjB);
-  jsval rVal;
+  jsval rVal = BOOLEAN_TO_JSVAL(JS_FALSE);
   if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_callCustomHandlerFor", 5, argv, &rVal)) {
-    JS_ReportError(cD->cx, "Exception when executing custom call handler in onBegin..\n");
+    JS_ReportPendingException(cD->cx);
   }
   return JSVAL_TO_BOOLEAN(rVal);
 }
@@ -203,9 +203,9 @@ customPreSolveHandler(cpArbiter *arb, struct cpSpace *space, void *data)
   argv[2] = STRING_TO_JSVAL(callbackName);
   argv[3] = OBJECT_TO_JSVAL(bObjA);
   argv[4] = OBJECT_TO_JSVAL(bObjB);
-  jsval rVal;
+  jsval rVal = BOOLEAN_TO_JSVAL(JS_FALSE);
   if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_callCustomHandlerFor", 5, argv, &rVal)) {
-    JS_ReportError(cD->cx, "Exception when executing custom call handler in onBegin..\n");
+    JS_ReportPendingException(cD->cx);
   }
   return JSVAL_TO_BOOLEAN(rVal);
 }
@@ -234,7 +234,7 @@ customPostSolveHandler(cpArbiter *arb, cpSpace *space, void *data)
   argv[4] = OBJECT_TO_JSVAL(bObjB);
   jsval rVal;
   if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_callCustomHandlerFor", 5, argv, &rVal)) {
-    JS_ReportError(cD->cx, "Exception when executing custom call handler in onBegin..\n");
+    JS_ReportPendingException(cD->cx);
   }
 }
 
@@ -262,7 +262,7 @@ customSeparateHandler(cpArbiter *arb, cpSpace *space, void *data)
   argv[4] = OBJECT_TO_JSVAL(bObjB);
   jsval rVal;
   if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_callCustomHandlerFor", 5, argv, &rVal)) {
-    JS_ReportError(cD->cx, "Exception when executing custom call handler in onBegin..\n");
+    JS_ReportPendingException(cD->cx);
   }
 }
 
@@ -328,8 +328,10 @@ defaultBeginHandler(cpArbiter *arb, struct cpSpace *space, void *data)
   JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
   argv[0] = OBJECT_TO_JSVAL(bObjA);
   argv[1] = OBJECT_TO_JSVAL(bObjB);
-  jsval rVal;
-  JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionBeginHandler", 2, argv, &rVal);
+  jsval rVal = BOOLEAN_TO_JSVAL(JS_FALSE);
+  if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionBeginHandler", 2, argv, &rVal)) {
+    JS_ReportPendingException(cD->cx);
+  }
   return JSVAL_TO_BOOLEAN(rVal);
 }
 
@@ -345,8 +347,10 @@ defaultPreSolveHandler(cpArbiter *arb, struct cpSpace *space, void *data)
   JSObject* bObjB = (JSObject*)cpBodyGetUserData(bodyB);
   argv[0] = OBJECT_TO_JSVAL(bObjA);
   argv[1] = OBJECT_TO_JSVAL(bObjB);
-  jsval rVal;
-  JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionPreSolveHandler", 2, argv, &rVal);
+  jsval rVal = BOOLEAN_TO_JSVAL(JS_FALSE);
+  if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionBeginHandler", 2, argv, &rVal)) {
+    JS_ReportPendingException(cD->cx);
+  }
   return JSVAL_TO_BOOLEAN(rVal);
 }
 
@@ -363,7 +367,9 @@ defaultPostSolveHandler(cpArbiter *arb, cpSpace *space, void *data)
   argv[0] = OBJECT_TO_JSVAL(bObjA);
   argv[1] = OBJECT_TO_JSVAL(bObjB);
   jsval rVal;
-  JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionPostSolveHandler", 2, argv, &rVal);
+  if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionBeginHandler", 2, argv, &rVal)) {
+    JS_ReportPendingException(cD->cx);
+  }
 }
 
 static void
@@ -379,7 +385,9 @@ defaultSeparateHandler(cpArbiter *arb, cpSpace *space, void *data)
   argv[0] = OBJECT_TO_JSVAL(bObjA);
   argv[1] = OBJECT_TO_JSVAL(bObjB);
   jsval rVal;
-  JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionSeparateHandler", 2, argv, &rVal);
+  if(!JS_CallFunctionName(cD->cx, cD->spaceObj, "_defaultCollisionBeginHandler", 2, argv, &rVal)) {
+    JS_ReportPendingException(cD->cx);
+  }
 }
 
 /* public funcs */
