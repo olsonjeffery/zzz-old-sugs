@@ -2,6 +2,8 @@
 
 `sugs` is a JavaScript *platform* (ala [node.js](http://nodejs.org), [narwhal](http://nawwhaljs.org), the browser, etc) that targets multiuser, rich media applications.
 
+`sugs` is released under the ["Simplified", 2-clause BSD License](http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29).
+
 ### Sugs is all about
 
 * A shared-nothing, "worker"-based runtime environment where each worker is an
@@ -15,7 +17,7 @@
   (JavaScript is supported as well, of course).
 * 2D, rigid body physics via the [Chipmunk Game Dynamics](http://code.google.com/p/chipmunk-physics/) engine.
 
-# Techically speaking
+### Techically speaking
 
 A `sugs` application looks like:
 
@@ -44,7 +46,7 @@ A `sugs` application looks like:
 * [Underscore.js](http://documentcloud.github.com/underscore/) 1.1.7
 * [Sugar.js](http://sugarjs.com) 0.9.4
 
-# Things that sugs should be all about at some point in the future:
+### Things that sugs should be all about at some point in the future:
 
 * Message passing transparently scaled to support network-based
   communication between multiple `sugs` processes (either local or
@@ -57,8 +59,6 @@ remote).
   * A repl ala node, coffee, etc.
   * A way to custom build client apps with native c/c++ as needed
     (pretty much the current setup).
-
-`sugs` is released under the ["Simplified", 2-clause BSD License](http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29).
 
 ### OS platform support
 
