@@ -36,7 +36,13 @@ A `sugs` application looks like:
   system gives developers the patterns to push performance intensive
   code paths down into native code (developers can write their own
   components in C++, in addition to using ones from the `sugs` library)
-  while exposing it cleanly for use by code running in SpiderMonkey
+  while exposing it cleanly for use by code running in SpiderMonkey.
+* JavaScript code running in a given Worker is sandboxed within that
+  Worker. Each Worker runs it's own JavaScript *runtime* and *all*
+  information sharing happens via JSON message passing (you can't pass
+  functions or native-bound JavaScript objects between Workers, either).
+  This design decision scales transparently to network communications,
+  as well.
 
 ### JavaScript libraries out-of-the-box
 
