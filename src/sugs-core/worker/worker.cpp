@@ -137,6 +137,11 @@ void Worker::loadSugsLibraries(pathStrings paths) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
+  result = findAndExecuteScript("sugar.min.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
+  if(result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
+  }
   result = findAndExecuteScript("sugs.coffee", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
