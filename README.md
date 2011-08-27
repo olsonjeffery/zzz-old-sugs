@@ -1,8 +1,6 @@
 # sugs
 
-`sugs` is a JavaScript *platform* (ala [node.js](http://nodejs.org), [narwhal](http://nawwhaljs.org), the browser, etc) that targets multiuser, rich media applications.
-
-`sugs` is released under the ["Simplified", 2-clause BSD License](http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29).
+`sugs` is a JavaScript *platform* (ala [node.js](http://nodejs.org), [narwhal](http://nawwhaljs.org), the browser, etc) that targets multiuser, rich media applications. It is released under the ["Simplified", 2-clause BSD License](http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29).
 
 ### Sugs is all about
 
@@ -13,7 +11,7 @@
   subscribed to a message (by a string-based message identifier), or sent to a specific
   recipient and message identifier.
 * Bindings for 2D graphics using the SFML library.
-* [CoffeeScript](http://coffee-script.org) as a first class languae
+* [CoffeeScript](http://coffee-script.org) as a first class language.
   (JavaScript is supported as well, of course).
 * 2D, rigid body physics via the [Chipmunk Game Dynamics](http://code.google.com/p/chipmunk-physics/) engine.
 
