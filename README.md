@@ -44,7 +44,7 @@ A `sugs` application looks like:
 * [Underscore.js](http://documentcloud.github.com/underscore/) 1.1.7
 * [Sugar.js](http://sugarjs.com) 0.9.4
 
-### Things that sugs should be all about at some point in the future:
+# Things that sugs should be all about at some point in the future:
 
 * Message passing transparently scaled to support network-based
   communication between multiple `sugs` processes (either local or
@@ -60,7 +60,7 @@ remote).
 
 `sugs` is released under the ["Simplified", 2-clause BSD License](http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29).
 
-# OS platform support
+### OS platform support
 
 Currently, only 64bit linux is supported (as this is where all of the dev is occuring). 32bit linux should be trivial to support. 32bit windows support is planned. Initial OSX support will come via wineskin wrappers of a windows version.
 
