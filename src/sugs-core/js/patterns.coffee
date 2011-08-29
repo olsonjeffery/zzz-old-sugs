@@ -22,7 +22,7 @@ return {
         trigger : (msgId, msg) ->
           matched = @hasHandlerFor msgId
           if not matched
-            throw "Unresolved event name #{msgId} trigger'd after startup"
+            throw "Unresolved event name '#{msgId}' trigger'd after startup"
           else
             _.each @handlers[msgId], (cb) -> cb msg
 
