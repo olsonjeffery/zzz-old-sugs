@@ -119,8 +119,7 @@ static JSBool
 body_setAngVel(JSContext* cx, uintN argc, jsval* vp)
 {
   jsdouble angVel;
-  JSObject* spaceObj;
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "do", &angVel, &spaceObj)) {
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "d", &angVel)) {
       /* Throw a JavaScript exception. */
       JS_ReportError(cx, "body_setAngVel: couldn't parse out angVel");
       return JS_FALSE;
@@ -130,21 +129,71 @@ body_setAngVel(JSContext* cx, uintN argc, jsval* vp)
 
   cpBody* body = (cpBody*)JS_GetPrivate(cx, bodyObj);
   cpBodySetAngVel(body, angVel);
-  cpSpace* space = (cpSpace*)JS_GetPrivate(cx, spaceObj);
-  cpSpaceReindexShapesForBody(space, body);
 
   jsval rVal = JSVAL_VOID;
   JS_SET_RVAL(cx, vp, rVal);
   return JS_TRUE;
 }
 
+static JSBool body_getVelocity(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* bodyObj = JS_THIS_OBJECT(cx, vp);
+
+  cpBody* body = (cpBody*)JS_GetPrivate(cx, bodyObj);
+
+  cpVect velocity = cpBodyGetVel(body);
+  jsval xVelVal = DOUBLE_TO_JSVAL(velocity.x);
+  jsval yVelVal = DOUBLE_TO_JSVAL(velocity.y);
+  JSObject* velocityObj = JS_NewObject(cx, NULL, NULL, NULL);
+  if(!JS_SetProperty(cx, velocityObj, "x", &xVelVal)) {
+    JS_ReportError(cx, "Failure to set x property of velocity for Body");
+  }
+  if(!JS_SetProperty(cx, velocityObj, "y", &yVelVal)) {
+    JS_ReportError(cx, "Failure to set y property of velocity for Body");
+  }
+  jsval rVal = OBJECT_TO_JSVAL(velocityObj);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+static JSBool body_getVelocityLimit(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* bodyObj = JS_THIS_OBJECT(cx, vp);
+
+  cpBody* body = (cpBody*)JS_GetPrivate(cx, bodyObj);
+
+  jsval rVal = DOUBLE_TO_JSVAL(cpBodyGetVelLimit(body));
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
+static JSBool body_setVelocityLimit(JSContext* cx, uintN argc, jsval* vp)
+{
+  jsdouble velocityVal;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "d", &velocityVal)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "body_setVelocityLimit: couldn't parse out velocity limit");
+      return JS_FALSE;
+  }
+
+  JSObject* bodyObj = JS_THIS_OBJECT(cx, vp);
+
+  cpBody* body = (cpBody*)JS_GetPrivate(cx, bodyObj);
+  cpBodySetVelLimit(body, velocityVal);
+
+  jsval rVal = JSVAL_VOID;
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
 static JSFunctionSpec
 body_functionSpec[] = {
   JS_FS("__native_getPos", body_getPos, 0, 0),
   JS_FS("__native_getRotation", body_getRotation, 0, 0),
   JS_FS("__native_setRotation", body_setRotation, 2, 0),
   JS_FS("__native_applyDirectionalImpulse", body_applyDirectionalImpulse, 1, 0),
-  JS_FS("__native_setAngVel", body_setAngVel, 2, 0),
+  JS_FS("__native_setAngVel", body_setAngVel, 1, 0),
+  JS_FS("getVelocity", body_getVelocity, 0, 0),
+  JS_FS("getVelocityLimit", body_getVelocityLimit, 0, 0),
+  JS_FS("setVelocityLimit", body_setVelocityLimit, 1, 0),
   JS_FS_END
 };
 

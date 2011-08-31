@@ -23,6 +23,15 @@ class Body
       @_body.__native_applyDirectionalImpulse amt
 
     setAngVel: (angVel) ->
-      @_body.__native_setAngVel angVel, @_space
+      @_body.__native_setAngVel angVel
+
+    getVelocity: ->
+      @_body.getVelocity()
+
+    getVelocityLimit: ->
+      @_body.getVelocityLimit()
+
+    setVelocityLimit: (cap) ->
+      @_body.setVelocityLimit cap
 
 return Body

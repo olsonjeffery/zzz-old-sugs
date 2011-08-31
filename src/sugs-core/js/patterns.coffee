@@ -1,5 +1,5 @@
 mixins = require 'mixins'
-return {
+thisModule =
   DeferredActionProcessor : class
     constructor: ->
       @actions = {}
@@ -55,6 +55,12 @@ return {
       receiver.safeTrigger = (name, msg) ->
         @__ObjectEventHandlerMixin_imx__.safeTrigger name, msg
 
+  EventListener: class
+    constructor: (state) ->
+      mixins.into this, thisModule.ObjectEventHandlerMixin
+      for k, v of state
+        this[k] = v
+
   SleeplessFpsThrottler: class
     constructor: (@fps) ->
       @gap = 1000 / @fps
@@ -76,4 +82,5 @@ return {
       if @runNowLock
         @runNowLock = false
         callback()
-}
+
+return thisModule
