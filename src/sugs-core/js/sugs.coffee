@@ -68,16 +68,10 @@ global.require = (path) ->
     result = scriptLoadCache[fullPath]
   result
 
-msgEx = require 'messaging'
-types = require 'types'
-input = require 'input'
-
 # callbacks registered via $.startup()
 startupCallbacks = []
 # callbacks registered via $.mainLoop()
 mainLoopCallback = null
-# callbacks registered via $.render()
-renderCallbacks = []
 
 # doStartup() -- Called from native code once on startup to run
 # all of the registered callbacks to be ran on startup. Graphics
@@ -85,20 +79,8 @@ renderCallbacks = []
 global.doStartup = ->
   _.each startupCallbacks, (cb) -> cb()
 
-# renderSprites() -- Called from native code at the beginning of
-# every render loop to allow user code to process game logic and
-# set stuff to be drawn. Before being called, the display is Clear()'d,
-# and is Display()'d afterward.
-#
-# This is, pretty much, the main hook into the user code's side
-# of the main game loop
 timePassed = 0
 lastTickForFps = {}
-global.runRender = (nativeCanvas, nativeInput, msElapsed) ->
-  canvas = new types.Canvas(nativeCanvas)
-  currentInput = new input.CurrentInputState(nativeInput)
-  _.each renderCallbacks, (cb) -> cb currentInput, canvas, msElapsed
-
 global.runMainLoop = (msElapsed) ->
   timePassed += msElapsed
   gap = mainLoopCallback[0]
@@ -111,6 +93,7 @@ global.runMainLoop = (msElapsed) ->
   lastTickForFps[gap] = timePassed
   cb = mainLoopCallback[1]
   cb msElapsed
+
 global.embedObjectInNamespace = (outter, ns, inner, propName) ->
   all = ns.split '.'
   if ns == ""
@@ -150,15 +133,6 @@ global.$ = {
     gap = 1000 / fps
     lastTickForFps[gap] = 0
     mainLoopCallback = [ gap, callback ]
-
-  # $.render() -- callbacks registered with this function will be called
-  # once at the beginning of every render loop. The display is Clear()'d
-  # before every render loop and is Display()'d afterwards. Sprite positioning,
-  # draw()'ing, and game logic, etc goes in here. Either register once for your
-  # whole program or maybe have each sprite being rendered register its own
-  # callback (the latter is probably less efficient).
-  render: (callback) ->
-    renderCallbacks.push callback
 }
 
 entryPointsInContext = []

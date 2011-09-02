@@ -83,6 +83,12 @@ void FrontendWorker::initLibraries() {
   this->loadConfig(this->_config);
   this->loadSugsLibraries(this->_config.paths);
 
+  predicateResult result = findAndExecuteScript("richclient.coffee", this->_config.paths, this->_jsEnv.cx, this->_jsEnv.global);
+  if(result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
+  }
+
   //this->loadComponents(this->_config);
   this->componentRegisterNativeFunctions(this->_jsEnv, this->_config);
 
@@ -90,7 +96,6 @@ void FrontendWorker::initLibraries() {
   this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
   printf("after frontend entry point...\n");
 
-  predicateResult result;
   // run $.startup() in user code
   result = execStartupCallbacks(this->_jsEnv);
   if (result.result == JS_FALSE) {
