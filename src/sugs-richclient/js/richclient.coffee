@@ -13,7 +13,6 @@ renderCallbacks = []
 #
 # This is, pretty much, the main hook into the user code's side
 # of the main game loop
-timePassed = 0
 global.runRender = (nativeCanvas, nativeInput, msElapsed) ->
   canvas = new types.Canvas(nativeCanvas)
   currentInput = new input.CurrentInputState(nativeInput)
