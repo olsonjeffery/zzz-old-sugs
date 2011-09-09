@@ -1,0 +1,12 @@
+prefix=/home/jeff/src/gflags-dist
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: gflags
+Version: 1.6
+Description: A commandline flags library that allows for distributed flags
+URL: http://code.google.com/p/google-gflags
+Requires:
+Libs: -L${libdir} -lgflags_nothreads
+Cflags: -I${includedir}
