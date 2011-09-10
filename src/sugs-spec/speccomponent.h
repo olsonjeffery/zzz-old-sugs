@@ -13,7 +13,7 @@
  * THIS SOFTWARE IS PROVIDED BY JEFFERY OLSON <OLSON.JEFFERY@GMAIL.COM> ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
- * JEFFERY OLSON <OLSON.JEFFERY@GMAIL.COM> OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * JEFFERY OLSON <OLSON.JEFFERY@GMAI`L.COM> OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
@@ -26,12 +26,34 @@
  *
  */
 
- #include "component.h"
+#ifndef __sugs_physics_speccomponent__
+#define __sugs_physics_speccomponent__
+
+#include <string>
+
+#include <jsapi.h>
+
+#include "../sugs-core/common.hpp"
+#include "../sugs-core/ext/component.h"
 
 namespace sugs {
-namespace ext {
+namespace spec {
 
-void Component::registerNativeFunctions(jsEnv jsEnv, sugsConfig config) {}
-void Component::doWork(jsEnv jsEnv, sugsConfig config) {}
+class SpecComponent : public sugs::ext::Component
+{
+  public:
+  SpecComponent(std::string rawPaths)
+  {
+    this->_rawPaths = rawPaths;
+  }
 
-}} // namespace sugs::ext
+  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
+  virtual void doWork(jsEnv jsEnv, sugsConfig config);
+
+  private:
+  std::string _rawPaths;
+};
+
+}} // namespace sugs::spec
+
+#endif

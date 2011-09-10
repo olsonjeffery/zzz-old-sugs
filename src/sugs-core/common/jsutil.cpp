@@ -50,10 +50,22 @@ jsval sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(JSContext* cx, JS
 
   jsval propVal;
   if(!JS_GetProperty(cx, sugsConfigObj, propName, &propVal)) {
-    printf("unable to pull prop '%s' from sugsConfig obj\n");
+    printf("unable to pull prop '%s' from sugsConfig obj\n", propName);
     exit(EXIT_FAILURE);
   }
   return propVal;
+}
+
+JSObject* pullJSObjectFrom(JSContext* cx, JSObject* topLevel, const char* nsPlusPropName)
+{
+  jsval argv[2];
+  argv[0] = OBJECT_TO_JSVAL(topLevel);
+  JSString* nsString = JS_NewStringCopyZ(cx, nsPlusPropName);
+  argv[1] = STRING_TO_JSVAL(nsString);
+  jsval rVal;
+  JS_CallFunctionName(cx, topLevel, "pullObjectFrom", 2, argv, &rVal);
+
+  return JSVAL_TO_OBJECT(rVal);
 }
 
 void sugs::common::jsutil::embedObjectInNamespaceWithinObject(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner, const char* propName)

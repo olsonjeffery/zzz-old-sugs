@@ -13,7 +13,7 @@
  * THIS SOFTWARE IS PROVIDED BY JEFFERY OLSON <OLSON.JEFFERY@GMAIL.COM> ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
- * JEFFERY OLSON <OLSON.JEFFERY@GMAIL.COM> OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * JEFFERY OLSON <OLSON.JEFFERY@GMAI`L.COM> OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
@@ -25,13 +25,37 @@
  * or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
  *
  */
+#include "speccomponent.h"
 
- #include "component.h"
+static JSFunctionSpec specFuncs[] = {
+  JS_FS_END
+};
+
+void storeSpecRunnerInputPath(jsEnv jsEnv, std::string rawPaths)
+{
+  const char* pathCStr = rawPaths.c_str();
+  JSString* pathString = JS_NewStringCopyZ(jsEnv.cx, pathCStr);
+  jsval pathVal = STRING_TO_JSVAL(pathString);
+  JSObject* specObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  if(!JS_SetProperty(jsEnv.cx, specObj, "rawPath", &pathVal)) {
+    JS_ReportError(jsEnv.cx, "storeSpecRunnerInputPath: failed to set rawPAth prop");
+    JS_ReportPendingException(jsEnv.cx);
+  }
+  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "", specObj, "spec");
+  printf("storing the rawPath! %s\n", rawPaths.c_str());
+}
 
 namespace sugs {
-namespace ext {
+namespace spec {
 
-void Component::registerNativeFunctions(jsEnv jsEnv, sugsConfig config) {}
-void Component::doWork(jsEnv jsEnv, sugsConfig config) {}
+void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+{
+  std::string rawPaths = this->_rawPaths;
+  storeSpecRunnerInputPath(jsEnv, rawPaths);
+}
 
-}} // namespace sugs::ext
+void SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)
+{
+}
+
+}} // namespace sugs::spec
