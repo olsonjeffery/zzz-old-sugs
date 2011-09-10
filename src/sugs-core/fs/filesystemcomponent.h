@@ -25,37 +25,27 @@
  * or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
  *
  */
-#include "speccomponent.h"
 
-static JSFunctionSpec specFuncs[] = {
-  JS_FS_END
-};
+#include <boost/filesystem.hpp>
 
-void storeSpecRunnerInputPath(jsEnv jsEnv, std::string rawPaths)
-{
-  const char* pathCStr = rawPaths.c_str();
-  JSString* pathString = JS_NewStringCopyZ(jsEnv.cx, pathCStr);
-  jsval pathVal = STRING_TO_JSVAL(pathString);
-  JSObject* specObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
-  if(!JS_SetProperty(jsEnv.cx, specObj, "rawPath", &pathVal)) {
-    JS_ReportError(jsEnv.cx, "storeSpecRunnerInputPath: failed to set rawPAth prop");
-    JS_ReportPendingException(jsEnv.cx);
-  }
-  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs", specObj, "specNative");
-  printf("storing the rawPath! %s\n", rawPaths.c_str());
-}
+#include <jsapi.h>
+
+#include "../common.hpp"
+#include "../ext/component.h"
 
 namespace sugs {
-namespace spec {
+namespace core {
+namespace fs {
 
-void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+class FilesystemComponent : public sugs::ext::Component
 {
-  std::string rawPaths = this->_rawPaths;
-  storeSpecRunnerInputPath(jsEnv, rawPaths);
-}
+  public:
+  FilesystemComponent() {}
 
-void SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)
-{
-}
+  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
+  virtual void doWork(jsEnv jsEnv, sugsConfig config);
 
-}} // namespace sugs::spec
+  private:
+};
+
+}}} // namespace sugs::core::fs

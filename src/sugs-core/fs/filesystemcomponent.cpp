@@ -25,37 +25,30 @@
  * or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
  *
  */
-#include "speccomponent.h"
 
-static JSFunctionSpec specFuncs[] = {
+#include "filesystemcomponent.h"
+
+static JSFunctionSpec filesystemFuncs[] = {
   JS_FS_END
 };
 
-void storeSpecRunnerInputPath(jsEnv jsEnv, std::string rawPaths)
+namespace sugs {
+namespace core {
+namespace fs {
+
+void FilesystemComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
 {
-  const char* pathCStr = rawPaths.c_str();
-  JSString* pathString = JS_NewStringCopyZ(jsEnv.cx, pathCStr);
-  jsval pathVal = STRING_TO_JSVAL(pathString);
-  JSObject* specObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
-  if(!JS_SetProperty(jsEnv.cx, specObj, "rawPath", &pathVal)) {
-    JS_ReportError(jsEnv.cx, "storeSpecRunnerInputPath: failed to set rawPAth prop");
+  JSObject* fsFuncsObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  if(!JS_DefineFunctions(jsEnv.cx, fsFuncsObj, filesystemFuncs)) {
+    JS_ReportError(jsEnv.cx, "failure to define fsFuncs stuff on sugs.funcs");
     JS_ReportPendingException(jsEnv.cx);
   }
-  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs", specObj, "specNative");
-  printf("storing the rawPath! %s\n", rawPaths.c_str());
+  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs", fsFuncsObj, "fsInternal");
 }
 
-namespace sugs {
-namespace spec {
-
-void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+void FilesystemComponent::doWork(jsEnv jsEnv, sugsConfig config)
 {
-  std::string rawPaths = this->_rawPaths;
-  storeSpecRunnerInputPath(jsEnv, rawPaths);
+
 }
 
-void SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)
-{
-}
-
-}} // namespace sugs::spec
+}}} // namespace sugs::core::fs
