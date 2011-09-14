@@ -25,6 +25,7 @@
  * or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
  *
  */
+#include <list>
 
 #include <boost/filesystem.hpp>
 

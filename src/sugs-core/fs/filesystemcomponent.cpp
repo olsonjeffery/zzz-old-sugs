@@ -27,8 +27,54 @@
  */
 
 #include "filesystemcomponent.h"
+namespace fs = boost::filesystem;
+
+static JSBool
+filesystem_ls(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSString* pathStr;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &pathStr)) {
+    JS_ReportError(cx, "filesystem_ls: failure to parse path arg");
+    return JS_FALSE;
+  }
+  int numberOfEntries = 1;
+  char* pathCharArr = JS_EncodeString(cx, pathStr);
+
+  printf("Provided path: %s\n", pathCharArr);
+  fs::path path(pathCharArr);
+  int resultLength = 0;
+  fs::directory_iterator endIter;
+
+  std::list<std::string> fileList;
+  // iterate over dir contents
+  if(fs::exists(path) && fs::is_directory(path)) {
+    for(fs::directory_iterator dirIter(path); dirIter != endIter; dirIter++) {
+      if(fs::is_regular_file(dirIter->status())) {
+        resultLength++;
+        fileList.push_back(std::string(dirIter->path().c_str()));
+      }
+    }
+  }
+
+  // turn result list in jsval arr
+  jsval lsResults[resultLength];
+  //lsResults[0] = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, "baz"));
+  int resultPosCtr = 0;
+  for(std::list<std::string>::iterator iter = fileList.begin(); iter != fileList.end();iter++) {
+    JSString* filePathStr = JS_NewStringCopyZ(cx, (*iter).c_str());
+    lsResults[resultPosCtr] = STRING_TO_JSVAL(filePathStr);
+    resultPosCtr++;
+  }
+
+  JSObject* lsArrObj = JS_NewArrayObject(cx, sizeof(lsResults)/sizeof(jsval), lsResults);
+
+  jsval rVal = OBJECT_TO_JSVAL(lsArrObj);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
 
 static JSFunctionSpec filesystemFuncs[] = {
+  JS_FS("ls", filesystem_ls, 1, 0),
   JS_FS_END
 };
 
@@ -42,8 +88,10 @@ void FilesystemComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config
   if(!JS_DefineFunctions(jsEnv.cx, fsFuncsObj, filesystemFuncs)) {
     JS_ReportError(jsEnv.cx, "failure to define fsFuncs stuff on sugs.funcs");
     JS_ReportPendingException(jsEnv.cx);
+    printf("FAILURE TO DEFINE fsFuncs!\n");
   }
-  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs", fsFuncsObj, "fsInternal");
+  printf("LOADING FILESYSTEM COMPONENT\n");
+  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugsNative.core", fsFuncsObj, "fs");
 }
 
 void FilesystemComponent::doWork(jsEnv jsEnv, sugsConfig config)

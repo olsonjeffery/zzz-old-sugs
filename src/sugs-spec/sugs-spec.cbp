@@ -21,6 +21,7 @@
 					<Add option="-lmozjs" />
 					<Add option="-lnspr4" />
 					<Add option="-lsugs-core" />
+					<Add option="-lgflags" />
 					<Add directory="bin/linux64Debug" />
 				</Linker>
 				<ExtraCommands>
@@ -50,6 +51,7 @@
 					<Add option="-lmozjs" />
 					<Add option="-lnspr4" />
 					<Add option="-lsugs-core" />
+					<Add option="-lgflags" />
 					<Add directory="bin/linux64Release" />
 				</Linker>
 				<ExtraCommands>
@@ -70,6 +72,8 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="main.cpp" />
+		<Unit filename="speccomponent.cpp" />
+		<Unit filename="speccomponent.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

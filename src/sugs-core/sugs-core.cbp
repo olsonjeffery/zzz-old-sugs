@@ -30,6 +30,8 @@
 					<Add option="-lnspr4" />
 					<Add option="-lchipmunk" />
 					<Add option="-lGL" />
+					<Add option="-lboost_system" />
+					<Add option="-lboost_filesystem" />
 					<Add directory="bin/linux64Debug" />
 				</Linker>
 				<ExtraCommands>
@@ -62,6 +64,8 @@
 					<Add option="-lnspr4" />
 					<Add option="-lchipmunk" />
 					<Add option="-lGL" />
+					<Add option="-lboost_system" />
+					<Add option="-lboost_filesystem" />
 					<Add directory="bin/linux64Release" />
 				</Linker>
 				<ExtraCommands>
@@ -79,6 +83,8 @@
 		<Unit filename="common/rng.hpp" />
 		<Unit filename="ext/component.cpp" />
 		<Unit filename="ext/component.h" />
+		<Unit filename="fs/filesystemcomponent.cpp" />
+		<Unit filename="fs/filesystemcomponent.h" />
 		<Unit filename="messaging/messageexchange.cpp" />
 		<Unit filename="messaging/messageexchange.hpp" />
 		<Unit filename="messaging/pubsub.cpp" />

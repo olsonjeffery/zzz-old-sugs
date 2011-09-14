@@ -11,6 +11,7 @@
 #include "../sugs-core/worker/backend.hpp"
 #include "../sugs-core/messaging/messageexchange.hpp"
 
+#include "../sugs-core/fs/filesystemcomponent.h"
 #include "speccomponent.h"
 
 // gflags declaration
@@ -50,10 +51,12 @@ int main(int argc, char *argv[])
   std::cout << "sugs-spec" << std::endl;
   std::cout << "path: '"<< FLAGS_path << "'" << std::endl;
 
+  sugs::ext::Component* fsComp = new sugs::core::fs::FilesystemComponent();
   sugs::ext::Component* specComp = new sugs::spec::SpecComponent(FLAGS_path);
 
   BackendWorker* worker = new BackendWorker(rt, config, "runner.coffee", msgEx);
 
+  worker->addComponent(fsComp);
   worker->addComponent(specComp);
   worker->initLibraries();
 
