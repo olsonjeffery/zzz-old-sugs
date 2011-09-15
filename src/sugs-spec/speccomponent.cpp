@@ -27,22 +27,49 @@
  */
 #include "speccomponent.h"
 
+static JSBool
+spec_runScript(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSString* pathStrObj;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "S", &pathStrObj)) {
+    JS_ReportError(cx, "filesystem_ls: failure to parse path arg");
+    return JS_FALSE;
+  }
+  char* pathStr = JS_EncodeString(cx, pathStrObj);
+  JSObject* global = JS_GetGlobalObject(cx);
+  predicateResult result;
+  if (fileExists(pathStr)) {
+    bool isCoffee = doesFilenameEndWithDotCoffee(pathStr);
+    if (isCoffee)
+    {
+      result = executeFullPathCoffeeScript(pathStr, cx, global);
+    }
+    else
+    {
+      result = executeFullPathJavaScript(pathStr, cx, global);
+    }
+  }
+  if (!result.result) {
+    JS_ReportPendingException(cx);
+  }
+  jsval rVal = JSVAL_VOID;
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
 static JSFunctionSpec specFuncs[] = {
+  JS_FS("runScript", spec_runScript, 1, 0),
   JS_FS_END
 };
 
-void storeSpecRunnerInputPath(jsEnv jsEnv, std::string rawPaths)
+void storeSpecRunnerInputPath(jsEnv jsEnv, std::string rawPaths, JSObject* specObj)
 {
   const char* pathCStr = rawPaths.c_str();
   JSString* pathString = JS_NewStringCopyZ(jsEnv.cx, pathCStr);
   jsval pathVal = STRING_TO_JSVAL(pathString);
-  JSObject* specObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
   if(!JS_SetProperty(jsEnv.cx, specObj, "rawPath", &pathVal)) {
     JS_ReportError(jsEnv.cx, "storeSpecRunnerInputPath: failed to set rawPAth prop");
     JS_ReportPendingException(jsEnv.cx);
   }
-  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs", specObj, "specNative");
-  printf("storing the rawPath! %s\n", rawPaths.c_str());
 }
 
 namespace sugs {
@@ -50,8 +77,15 @@ namespace spec {
 
 void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
 {
+  JSObject* specObj;
+  if(!sugs::common::jsutil::newJSObjectFromFunctionSpec(jsEnv.cx, specFuncs, &specObj)) {
+    printf("failure to register spec global natives!\n");
+    exit(1);
+  }
   std::string rawPaths = this->_rawPaths;
-  storeSpecRunnerInputPath(jsEnv, rawPaths);
+  storeSpecRunnerInputPath(jsEnv, rawPaths, specObj);
+  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs", specObj, "spec");
+  printf("storing the rawPath! %s\n", rawPaths.c_str());
 }
 
 void SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)

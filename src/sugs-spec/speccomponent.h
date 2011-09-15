@@ -35,6 +35,8 @@
 
 #include "../sugs-core/common.hpp"
 #include "../sugs-core/ext/component.h"
+#include "../sugs-core/worker/spidermonkey/scripting.hpp"
+#include "../sugs-core/common/jsutil.hpp"
 
 namespace sugs {
 namespace spec {
