@@ -36,11 +36,27 @@ defaultClassDefWithPrivateMember = {
   JS_EnumerateStub, JS_ResolveStub, JS_ConvertStub, JS_FinalizeStub
 };
 
-JSClass* sugs::common::jsutil::getDefaultClassDef() {
+JSObject* pullJSObjectFrom(JSContext* cx, JSObject* topLevel, const char* nsPlusPropName)
+{
+  jsval argv[2];
+  argv[0] = OBJECT_TO_JSVAL(topLevel);
+  JSString* nsString = JS_NewStringCopyZ(cx, nsPlusPropName);
+  argv[1] = STRING_TO_JSVAL(nsString);
+  jsval rVal;
+  JS_CallFunctionName(cx, topLevel, "pullObjectFrom", 2, argv, &rVal);
+
+  return JSVAL_TO_OBJECT(rVal);
+}
+
+namespace sugs {
+namespace common {
+namespace jsutil {
+
+JSClass* getDefaultClassDef() {
   return &defaultClassDefWithPrivateMember;
 }
 
-jsval sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(JSContext* cx, JSObject* global, const char* propName) {
+jsval pullPropertyFromSugsConfigInGlobal(JSContext* cx, JSObject* global, const char* propName) {
   jsval sugsConfigVal;
   if(!JS_GetProperty(cx, global, "sugsConfig", &sugsConfigVal)) {
     printf("unable to pull sugsConfig from global obj\n");
@@ -56,19 +72,7 @@ jsval sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(JSContext* cx, JS
   return propVal;
 }
 
-JSObject* pullJSObjectFrom(JSContext* cx, JSObject* topLevel, const char* nsPlusPropName)
-{
-  jsval argv[2];
-  argv[0] = OBJECT_TO_JSVAL(topLevel);
-  JSString* nsString = JS_NewStringCopyZ(cx, nsPlusPropName);
-  argv[1] = STRING_TO_JSVAL(nsString);
-  jsval rVal;
-  JS_CallFunctionName(cx, topLevel, "pullObjectFrom", 2, argv, &rVal);
-
-  return JSVAL_TO_OBJECT(rVal);
-}
-
-void sugs::common::jsutil::embedObjectInNamespaceWithinObject(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner, const char* propName)
+void embedObjectInNamespaceWithinObject(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner, const char* propName)
 {
   jsval argv[4];
   argv[0] = OBJECT_TO_JSVAL(outter);
@@ -80,3 +84,17 @@ void sugs::common::jsutil::embedObjectInNamespaceWithinObject(JSContext* cx, JSO
   jsval rVal;
   JS_CallFunctionName(cx, global, "embedObjectInNamespace", 4, argv, &rVal);
 }
+
+bool newJSObjectFromFunctionSpec(JSContext* cx, JSFunctionSpec* spec, JSObject** obj)
+{
+  bool result = true;
+  *obj = JS_NewObject(cx, getDefaultClassDef(), NULL, NULL);
+  if(!JS_DefineFunctions(cx, *obj, spec)) {
+    obj = NULL;
+    result = false;
+  }
+
+  return result;
+}
+
+}}} // namespace sugs::common::jsutil
