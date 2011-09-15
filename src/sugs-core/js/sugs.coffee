@@ -50,6 +50,14 @@ resolveScriptPath = (path) ->
 
 scriptLoadCache = {}
 # load(path) -- load an external javascript file
+global.fileIsInPath = (path) ->
+  result = false
+  for p in global.sugsConfig.paths
+    fullPath = "#{p}/#{path}"
+    if __native_fileExists fullPath
+      result = true
+      break
+  result
 global.require = (path) ->
   result = null
   fullPath = resolveScriptPath path
