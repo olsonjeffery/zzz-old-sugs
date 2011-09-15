@@ -1,4 +1,5 @@
 fs = require 'fs'
+spec = require 'spec'
 
 # called from native code
 $.startup ->
@@ -16,8 +17,8 @@ isASpecsFile = (p) ->
 
 
 $.mainLoop 1, ->
-  puts "rawPath: #{sugs.specNative.rawPath}"
-  dirs = sugs.specNative.rawPath.split ';'
+  puts "rawPath: #{sugs.spec.rawPath}"
+  dirs = sugs.spec.rawPath.split ';'
   testableList = []
   if dirs.length > 0
     for relPath in dirs
@@ -27,4 +28,12 @@ $.mainLoop 1, ->
         for f in files
           if not isATempFile(f) and isASpecsFile(f)
             testableList.push(f)
-  puts "testable files: #{testableList.toString()}"
+  puts "testable files..."
+  # load the scripts that contain specs
+  for f in testableList
+    puts "About to run spec script #{f}"
+    sugs.spec.runScript f
+  # now we have our specs loaded, so let's run them..
+  results = spec.runner.run()
+  puts "#{results.totalSpecs} Specs (in #{results.totalContexts} Contexts)"
+  puts "#{results.failures} Failures, #{results.errors} Errors and #{results.unimpl} Unimpl'd"
