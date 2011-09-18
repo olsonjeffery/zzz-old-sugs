@@ -15,7 +15,6 @@ isASpecsFile = (p) ->
   puts "spec #{result} #{p}"
   result
 
-
 $.mainLoop 1, ->
   puts "rawPath: #{sugs.spec.rawPath}"
   dirs = sugs.spec.rawPath.split ';'

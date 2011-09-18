@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
   sugs::ext::Component* fsComp = new sugs::core::fs::FilesystemComponent();
   sugs::ext::Component* specComp = new sugs::spec::SpecComponent(FLAGS_path);
 
-  BackendWorker* worker = new BackendWorker(rt, config, "runner.coffee", msgEx);
+  BackendWorker* worker = new BackendWorker(rt, config, "spec/clirunner.coffee", msgEx);
 
   worker->addComponent(fsComp);
   worker->addComponent(specComp);

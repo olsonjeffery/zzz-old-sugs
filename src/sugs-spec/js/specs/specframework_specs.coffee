@@ -35,7 +35,7 @@ When "requiring the spec module", ->
 
 When "having a context that errors during the handler", ->
   reporter = new specModule.BaseCliReporter
-  runnerUnderTest = new specModule.SpecFrameworkRunner(reporter)
+  runnerUnderTest = new specModule.SpecFrameworkRunner(reporter, specModule.SpecContext, specModule.Specification)
   Before ->
     runnerUnderTest.addContext "errors during handler", ->
       throw "barf!"
@@ -46,7 +46,7 @@ When "having a context that errors during the handler", ->
 When "having a context with 2 specs that errors during the Before handler", ->
   shouldBeFalse = false
   reporter = new specModule.BaseCliReporter
-  runnerUnderTest = new specModule.SpecFrameworkRunner(reporter)
+  runnerUnderTest = new specModule.SpecFrameworkRunner(reporter, specModule.SpecContext, specModule.Specification)
   stubSpec = ->
   secondStubSpec = ->
     shouldBeFalse = true
@@ -87,7 +87,7 @@ When "having a context with 2 specs that errors during the Before handler", ->
 When "having a context that errors during the After handler", ->
   shouldBeFalse = false
   reporter = new specModule.BaseCliReporter
-  runnerUnderTest = new specModule.SpecFrameworkRunner(reporter)
+  runnerUnderTest = new specModule.SpecFrameworkRunner(reporter, specModule.SpecContext, specModule.Specification)
   stubSpec = ->
   secondStubSpec = ->
     shouldBeFalse = true
