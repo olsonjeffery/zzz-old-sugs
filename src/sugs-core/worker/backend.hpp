@@ -47,7 +47,7 @@ class BackendWorker : public Worker {
 
     ~BackendWorker()
     {
-      printf("backend dtor...\n");
+      //printf("backend dtor...\n");
       jsval argv[0];
       jsval rVal;
       JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "showEntryPoints", 0, argv, &rVal);

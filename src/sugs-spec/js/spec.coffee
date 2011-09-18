@@ -1,57 +1,53 @@
 { assert, AssertionError } = require 'spec/assert'
 
-results =
-  totalSpecs: 0
-  totalContexts: 0
-  failures: 0
-  errors: 0
-  unimpl: 0
+pullMessageFrom = (err) ->
+  if typeof(err) == 'string'
+    err
+  else
+    err.message
 
 class Specification
-  constructor: (@name, @handler) ->
-    @pass = 'undefined'
+  constructor: (@name, @handler, @results, @cliReporter) ->
+    @result = 'undefined'
     @failureMessage = ''
 
   run: ->
-    results.totalSpecs++
+    @results.totalSpecs++
     if typeof(@handler) != 'undefined'
       try
         @handler()
-      catch e
-        if e not instanceof AssertionError
-          results.errors++
-          @pass = 'error'
-          if typeof(e) == 'string'
-            @failureMessage = "    ERROR: #{e}"
-          else
-            @failureMessage = "    ERROR: #{e.message}"
+      catch error
+        if error instanceof AssertionError
+          @failWith error.message
         else
-          results.failures++
-          @pass = 'fail'
-          @failureMessage = e.message
-      if @pass == 'undefined'
-        @pass = 'success'
+          @errorWith error
+      if @result == 'undefined'
+        @result = 'success'
+        @results.successes++
     else
-      results.unimpl++
+      @results.unimpl++
+
+  failWith: (message) ->
+    @result = 'fail'
+    @failureMessage = message
+    @results.failures++
+
+  errorWith: (message) ->
+    @results.errors++
+    @result = 'error'
+    @failureMessage = message
 
   displayResults: ->
-    suffix = ''
-    if @pass == 'fail'
-      suffix = ' [FAILED]'
-    if @pass == 'error'
-      suffix = ' [ERROR]'
-    if @pass == 'undefined'
-      suffix = ' [UNIMPLEMENTED]'
-    puts "  It #{@name}#{suffix}"
-    if @pass == 'fail' or @pass == 'error'
-      puts @failureMessage
+    @cliReporter.reportSpecification @name, @result, @failureMessage
+    @cliReporter.endSpecification
 
 class SpecContext
-  constructor: (@name) ->
+  constructor: (@name, @results, @cliReporter) ->
     @befores = []
     @specs = []
     @afters = []
     @children = []
+    @result = 'pass'
 
   hasFailingSpecs: ->
     result = false
@@ -65,30 +61,69 @@ class SpecContext
     for spec in @specs
       spec.displayResults()
 
-  run: ->
-    results.totalContexts++
-    for cb in @befores
-      cb()
+  runAndReportResult: (funcs) ->
+    result = true
+    message = ''
+    for cb in funcs
+      try
+        cb()
+      catch error
+        result = false
+        message = pullMessageFrom error
+    [ result, message ]
+
+  runSpecs: ->
     for spec in @specs
       spec.run()
-    failed = ''
-    if @hasFailingSpecs()
-      failed = " [FAILED]"
-    puts "When #{@name}#{failed}"
-    @displaySpecResults()
-    puts ""
-    for ctx in @children
-      ctx.run()
-    for cb in @afters
-      cb()
 
+  errorAllSpecs: (message) ->
+    for spec in @specs
+      spec.errorWith message
+
+  failWith: (message) ->
+    @result = 'fail'
+    @results.contextFailures++
+    @cliReporter.contextFailure @name, message
+
+  run: ->
+    @results.totalContexts++
+    [beforesGood, beforeMessage] = @runAndReportResult @befores
+    if beforesGood
+      @runSpecs()
+      @runAndReportResult @afters # going to swallow errors
+                                  # in the @afters, for now
+      if @hasFailingSpecs
+        @result = 'fail'
+      @cliReporter.reportContext @name, @result, @hasFailingSpecs()
+      @displaySpecResults()
+      @cliReporter.endContext()
+      for ctx in @children
+        ctx.run()
+      [aftersGood, afterMsg] = @runAndReportResult @afters
+      if not aftersGood
+        @failWith afterMsg
+        @errorAllSpecs afterMsg
+        @cliReporter.endContext()
+    else
+      @failWith beforeMessage
+      @errorAllSpecs beforeMessage
+      @cliReporter.endContext()
 
 class SpecFrameworkRunner
-  constructor: ->
+  constructor: (@cliReporter) ->
     @contexts = []
     @beforeAlls = []
     @afterAlls = []
     @contextStack = []
+
+    @results =
+      successes: 0
+      totalSpecs: 0
+      totalContexts: 0
+      failures: 0
+      contextFailures: 0
+      errors: 0
+      unimpl: 0
 
   run: ->
     puts "Running specs..."
@@ -96,25 +131,79 @@ class SpecFrameworkRunner
     for cb in @beforeAlls
       cb()
     for ctx in @contexts
-      ctx.run()
+      if ctx.result == 'fail'
+        ctx.failWith ctx.failureMessage
+      else
+        ctx.run()
     for cb in @afterAlls
       cb()
-    return results
+    return @results
 
-runner = new SpecFrameworkRunner()
+  addContext: (contextName, handler) ->
+    isChildCtx = @contextStack.length > 0
+    ctx = new SpecContext contextName, @results, @cliReporter
+    if isChildCtx
+      parentCtx = @contextStack.last()
+      parentCtx.children.push ctx
+    else
+      @contexts.push ctx
+    @contextStack.push ctx
+    try
+      handler()
+    catch error
+      msg = pullMessageFrom error
+      ctx.failureMessage = msg
+      ctx.result = 'fail'
+    @contextStack.pop()
+
+  addSpecification: (specName, handler) ->
+    specification = new Specification specName, handler, @results, @cliReporter
+    currCtx = @contextStack.last()
+    currCtx.specs.push specification
+
+class BaseCliReporter
+  constructor: ->
+  reportContext: (contextName, result, hasFailingSpecs) ->
+  contextFailure: (contextName, message) ->
+  reportSpecification: (specName, result, failureMessage) ->
+  endSpecification: ->
+  endContext: ->
+
+class DefaultCliReporter extends BaseCliReporter
+  constructor: ->
+
+  reportContext: (contextName, result, hasFailingSpecs) ->
+    failed = ''
+    if hasFailingSpecs
+      failed = " [FAILED]"
+    puts "When #{contextName}#{failed}"
+
+  contextFailure: (contextName, message) ->
+    puts "When #{contextName}[FAILED]"
+    puts "  ERROR: #{message}"
+    puts ""
+
+  reportSpecification: (specName, result, failureMessage) ->
+    suffix = ''
+    if result == 'fail'
+      suffix = ' [FAILED]'
+    if result == 'error'
+      suffix = ' [ERROR]'
+    if result == 'undefined'
+      suffix = ' [UNIMPLEMENTED]'
+    puts "  It #{specName}#{suffix}"
+    if result == 'fail' or result == 'error'
+      puts "    ERROR: #{failureMessage}"
+
+  endSpecification: ->
+
+  endContext: ->
+     puts ''
+
+runner = new SpecFrameworkRunner(new DefaultCliReporter())
 
 When = (contextName, handler) ->
-  parentCtx = {children: []}
-  isChildCtx = runner.contextStack.length > 0
-  ctx = new SpecContext contextName
-  if isChildCtx
-    parentCtx = _.last runner.contextStack
-    parentCtx.children.push ctx
-  else
-    runner.contexts.push ctx
-  runner.contextStack.push ctx
-  handler()
-  runner.contextStack.pop()
+  runner.addContext contextName, handler
 
 BeforeAll = (handler) ->
   runner.beforeAlls.push handler
@@ -124,9 +213,7 @@ Before = (handler) ->
   currCtx.befores.push handler
 
 It = (specName, handler) ->
-  specification = new Specification specName, handler
-  currCtx = _.last runner.contextStack
-  currCtx.specs.push specification
+  runner.addSpecification specName, handler
 
 After = (handler) ->
   currCtx = _.last runner.contextStack
@@ -136,11 +223,20 @@ AfterAll = (handler) ->
   runner.afterAlls.push handler
 
 return {
+  # our, ahem, "public" exports
   When: When
-  Before: Before
   It: It
+  Before: Before
   After: After
-  runner: runner
+  BeforeAll: BeforeAll
+  AfterAll: AfterAll
   assert: assert
   verify: assert
+
+  # These exports are for testing this module
+  runner: runner
+  SpecContext: SpecContext
+  Specification: Specification
+  SpecFrameworkRunner: SpecFrameworkRunner
+  BaseCliReporter: BaseCliReporter
 }

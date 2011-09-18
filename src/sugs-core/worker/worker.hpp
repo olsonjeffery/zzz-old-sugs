@@ -50,7 +50,7 @@ class Worker
       }
     }
     ~Worker() {
-      printf("worker dtor\n");
+      //printf("worker dtor\n");
       teardownContext(this->_jsEnv.cx);
     }
 

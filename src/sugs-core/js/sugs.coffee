@@ -164,8 +164,5 @@ global.$ = {
 
 entryPointsInContext = []
 global.showEntryPoints = ->
-  puts "###############"
-  puts "ENTRY POINTS IN CONTEXT: #{entryPointsInContext.join(', ')}"
-  puts "###############"
 global.addEntryPoint = (ep) ->
   entryPointsInContext.push ep

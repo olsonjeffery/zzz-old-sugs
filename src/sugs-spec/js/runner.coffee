@@ -36,4 +36,4 @@ $.mainLoop 1, ->
   # now we have our specs loaded, so let's run them..
   results = spec.runner.run()
   puts "#{results.totalSpecs} Specs (in #{results.totalContexts} Contexts)"
-  puts "#{results.failures} Failures, #{results.errors} Errors and #{results.unimpl} Unimpl'd"
+  puts "#{results.successes} Passes, #{results.failures} Failures (#{results.contextFailures} Ctxs), #{results.errors} Errors and #{results.unimpl} Unimpl'd"

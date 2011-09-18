@@ -209,17 +209,17 @@ jsEnv initContext(JSRuntime* rt) {
 }
 
 void teardownContext(JSContext* cx) {
-  printf("Destroy JSContext...\n");
+  //printf("Destroy JSContext...\n");
   JS_DestroyContext(cx);
 }
 void teardownRuntime(JSRuntime* rt)
 {
-  printf("Destroy JSRuntime...\n");
+  //printf("Destroy JSRuntime...\n");
   JS_DestroyRuntime(rt);
 }
 
 void shutdownSpidermonkey() {
-  printf("Shutting down SpiderMonkey...\n");
+  //printf("Shutting down SpiderMonkey...\n");
   JS_ShutDown();
 }
 
