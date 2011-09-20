@@ -37,21 +37,24 @@ global.__processIncomingMessage = (msgId, jsonData) ->
       cb.call data, data.msg
 
 class PubSubMessenger
-  constructor: (@isUdp) ->
   subscribe : (msgId, callback) ->
     if typeof msgExMsgHandlers[msgId] == "undefined"
       msgExMsgHandlers[msgId] = []
     msgExMsgHandlers[msgId].push callback
     global.__native_subscribe msgId
 
-  publish : (targetAgentId, msgId, msg) ->
+  publish: (targetAgentId, msgId, msg) ->
+    @publishDurable targetAgentId, msgId, msg
+
+  publishFast : (targetAgentId, msgId, msg) ->
+    isUdp = true
     if typeof msg == "undefined" #called with only two args.. msgId = msg payload
       data =
         msg: msgId
         meta:
           sender: global.sugsConfig.myAgentId
           msgId: targetAgentId
-      global.__native_publish_broadcast targetAgentId, JSON.stringify data, @isUdp
+      global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
     else
       data =
         msg: msg
@@ -60,13 +63,21 @@ class PubSubMessenger
           msgId: msgId
       global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, @isUdp
 
-return {
-  on: (transport) ->
-    switch transport
-      when 'tcp'
-        new PubSubMessenger false
-      when 'udp'
-        new PubSubMessenger true
-      else
-        throw "Unsupported transport #{transport} selected for pubsub."
-}
+  publishDurable : (targetAgentId, msgId, msg) ->
+    isUdp = false
+    if typeof msg == "undefined" #called with only two args.. msgId = msg payload
+      data =
+        msg: msgId
+        meta:
+          sender: global.sugsConfig.myAgentId
+          msgId: targetAgentId
+      global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
+    else
+      data =
+        msg: msg
+        meta:
+          sender: global.sugsConfig.myAgentId
+          msgId: msgId
+      global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, @isUdp
+
+return new PubSubMessenger()
