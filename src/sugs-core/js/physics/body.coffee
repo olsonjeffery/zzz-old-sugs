@@ -1,4 +1,3 @@
-msgEx = require 'messaging'
 mix = require 'mixins'
 patterns = require 'patterns'
 class Body

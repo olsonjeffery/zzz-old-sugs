@@ -14,7 +14,7 @@ permitted provided that the following conditions are met:
 THIS SOFTWARE IS PROVIDED BY JEFFERY OLSON <OLSON.JEFFERY@GMAIL.COM> ``AS IS'' AND ANY
 EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
 MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
-JEFFERY OLSON <OLSON.JEFFERY@GMAIL.COM> OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
+JEFFERY OLSON <OLSON.JEFFERY@GMAIL.COM> OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
 INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
 PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
@@ -36,7 +36,8 @@ global.__processIncomingMessage = (msgId, jsonData) ->
     _.each msgExMsgHandlers[msgId], (cb) ->
       cb.call data, data.msg
 
-return {
+class PubSubMessenger
+  constructor: (@isUdp) ->
   subscribe : (msgId, callback) ->
     if typeof msgExMsgHandlers[msgId] == "undefined"
       msgExMsgHandlers[msgId] = []
@@ -50,12 +51,22 @@ return {
         meta:
           sender: global.sugsConfig.myAgentId
           msgId: targetAgentId
-      global.__native_publish_broadcast targetAgentId, JSON.stringify data
+      global.__native_publish_broadcast targetAgentId, JSON.stringify data, @isUdp
     else
       data =
         msg: msg
         meta:
           sender: global.sugsConfig.myAgentId
           msgId: msgId
-      global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data
+      global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, @isUdp
+
+return {
+  on: (transport) ->
+    switch transport
+      when 'tcp'
+        new PubSubMessenger false
+      when 'udp'
+        new PubSubMessenger true
+      else
+        throw "Unsupported transport #{transport} selected for pubsub."
 }

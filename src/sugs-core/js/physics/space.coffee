@@ -1,5 +1,4 @@
 Body = require 'physics/body'
-msgEx = require 'messaging'
 mixins = require 'mixins'
 patterns = require 'patterns'
 
