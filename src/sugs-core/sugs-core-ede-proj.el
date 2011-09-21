@@ -10,10 +10,22 @@
 																"/physics"
 																"/worker"
 																"/worker/spidermonkey"
+																"../../extlibs/linux64Release/include"
+															  "../../extlibs/linux64Release/include/js"
+															  "../../extlibs/linux64Release/include/boost"
                                )
                 :system-include-path '("~/include"
 																			 "~/src/sugs/extlibs/linux64Release/include"
 																			 "~/src/sugs/extlibs/linux64Release/include/js"
-																			 )
-                :spp-table '(("isUnix" . "")
-                             ("SFML_DYNAMIC" . "")))
+																			 ))
+
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include" 'c-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include" 'c++-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include/js" 'c-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include/js" 'c++-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include/boost" 'c-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include/boost" 'c++-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include/chipmunk" 'c-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include/chipmunk" 'c++-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include/SFML" 'c-mode)
+(semantic-add-system-include "~/src/sugs/extlibs/linux64Release/include/SFML" 'c++-mode)
