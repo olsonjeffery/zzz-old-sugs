@@ -25,6 +25,14 @@ After = (handler) ->
 AfterAll = (handler) ->
   runner.afterAlls.push handler
 
+trap_error = (handler) ->
+  result = null
+  try
+    handler()
+  catch e
+    result = e
+  result
+
 return {
   # our, ahem, "public" exports
   When: When
@@ -35,6 +43,7 @@ return {
   AfterAll: AfterAll
   assert: assert
   verify: assert
+  trap_error: trap_error
 
   # These exports are for testing this module
   runner: runner

@@ -1,5 +1,5 @@
 # stuff I actually need to write specs
-{When, It, Before, After, assert} = require 'spec'
+{When, It, Before, After, assert, trap_error} = require 'spec'
 
 specModule = require 'spec' # for SUT
 
@@ -124,3 +124,31 @@ When "having a context that errors during the After handler", ->
 
   It "should have allowed the specs to run and modify state", ->
     assert shouldBeFalse == true
+
+When "using trap_error and no exception bubbles from the input func", ->
+  result = 'sdfsdf'
+  Before ->
+    result = trap_error ->
+  It "should return a null value", ->
+    assert result == null
+
+class TrapError
+  constructor: ->
+When "using trap_error and an exception bubbles from the input func", ->
+  result = null
+  Before ->
+    result = trap_error ->
+      throw new TrapError()
+  It "should return the instance of that error", ->
+    assert result instanceof TrapError
+
+When "using trap_error and a string bubbles as an error from the input func", ->
+  result = null
+  errorMessage = "SDFSDfsdf212342!!!!xxxx"
+  Before ->
+    result = trap_error ->
+      throw errorMessage
+  It "should return the string", ->
+    assert result == errorMessage
+  It "should be an instance of a string", ->
+    assert typeof(result) == "string"

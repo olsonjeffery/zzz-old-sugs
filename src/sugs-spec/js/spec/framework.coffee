@@ -1,3 +1,5 @@
+{ assert, AssertionError } = require 'spec/assert'
+
 pullMessageFrom = (err) ->
   if typeof(err) == 'string'
     err
