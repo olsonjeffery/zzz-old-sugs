@@ -136,6 +136,18 @@ JSBool reformer_native_threadSleep(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+JSBool sugs_native_random_uuid(JSContext* cx, uintN argc, jsval* vp)
+{
+  char buffer[32];
+  sprintf(buffer, "%d", Rng::next());
+  std::string randomComponent(buffer);
+	const char* randCStr = randomComponent.c_str();
+	JSString* randStrObj = JS_NewStringCopyZ(cx, randCStr);
+	jsval rVal = STRING_TO_JSVAL(randStrObj);
+	JS_SET_RVAL(cx, vp, rVal);
+	return JS_TRUE;
+}
+
 static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("puts", reformer_native_puts, 1, 0),
   JS_FS("__native_require", reformer_native_executeScript, 2, 0),
@@ -143,6 +155,7 @@ static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("__native_getcwd", reformer_native_getcwd, 0, 0),
   JS_FS("__native_fileExists", reformer_native_fileExists, 1, 0),
   JS_FS("__native_thread_sleep", reformer_native_threadSleep, 1, 0),
+  JS_FS("__native_random_uuid", sugs_native_random_uuid, 0, 0),
   JS_FS_END
 };
 

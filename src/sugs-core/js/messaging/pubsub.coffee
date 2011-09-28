@@ -28,13 +28,47 @@ or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
 global = this
 msgExMsgHandlers = {}
 
+publishFast = (targetAgentId, msgId, msg) ->
+  isUdp = true
+  if typeof msg == "undefined" #called with only two args.. msgId = msg payload
+    data =
+      msg: msgId
+      meta:
+        sender: global.sugsConfig.myAgentId
+        msgId: targetAgentId
+    global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
+  else
+    data =
+      msg: msg
+      meta:
+        sender: global.sugsConfig.myAgentId
+        msgId: msgId
+    global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, isUdp
+
+publishDurable = (targetAgentId, msgId, msg) ->
+  isUdp = false
+  if typeof msg == "undefined" #called with only two args.. msgId = msg payload
+    data =
+      msg: msgId
+      meta:
+        sender: global.sugsConfig.myAgentId
+        msgId: targetAgentId
+    global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
+  else
+    data =
+      msg: msg
+      meta:
+        sender: global.sugsConfig.myAgentId
+        msgId: msgId
+    global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, isUdp
+
 global.__processIncomingMessage = (msgId, jsonData) ->
   if typeof msgExMsgHandlers[msgId] == "undefined"
     throw "No handlers for msg ex registered handler of #{msgId}"
   else
     data = JSON.parse jsonData
     _.each msgExMsgHandlers[msgId], (cb) ->
-      cb.call data, data.msg
+      cb.call data, data.msg, data.meta
 
 class PubSubMessenger
   subscribe : (msgId, callback) ->
@@ -44,40 +78,8 @@ class PubSubMessenger
     global.__native_subscribe msgId
 
   publish: (targetAgentId, msgId, msg) ->
-    @publishDurable targetAgentId, msgId, msg
-
-  publishFast : (targetAgentId, msgId, msg) ->
-    isUdp = true
-    if typeof msg == "undefined" #called with only two args.. msgId = msg payload
-      data =
-        msg: msgId
-        meta:
-          sender: global.sugsConfig.myAgentId
-          msgId: targetAgentId
-      global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
-    else
-      data =
-        msg: msg
-        meta:
-          sender: global.sugsConfig.myAgentId
-          msgId: msgId
-      global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, @isUdp
-
-  publishDurable : (targetAgentId, msgId, msg) ->
-    isUdp = false
-    if typeof msg == "undefined" #called with only two args.. msgId = msg payload
-      data =
-        msg: msgId
-        meta:
-          sender: global.sugsConfig.myAgentId
-          msgId: targetAgentId
-      global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
-    else
-      data =
-        msg: msg
-        meta:
-          sender: global.sugsConfig.myAgentId
-          msgId: msgId
-      global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, @isUdp
+    publishDurable targetAgentId, msgId, msg
+  publishFast: (targetAgentId, msgId, msg) ->
+    publishFast targetAgentId, msgId, msg
 
 return new PubSubMessenger()
