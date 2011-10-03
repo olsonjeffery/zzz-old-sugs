@@ -58,7 +58,7 @@ JSBool reformer_native_executeScript(JSContext* cx, uintN argc, jsval* vp)
 
   char* path = JS_EncodeString(cx, text);
 
-  predicateResult result = executeFullPathJavaScript(path, cx, global);
+  predicateResult result = sugs::core::js::executeFullPathJavaScript(path, cx, global);
   if (result.result == JS_FALSE) {
     //JS_ReportError(cx, "reformer_native_executeScript -- error running js script '%s': %s", path, result.message);
     return JS_FALSE;
@@ -80,7 +80,7 @@ JSBool reformer_native_executeCoffeeScript(JSContext* cx, uintN argc, jsval* vp)
 
   char* path = JS_EncodeString(cx, text);
 
-  predicateResult result = executeFullPathCoffeeScript(path, cx, global);
+  predicateResult result = sugs::core::js::executeFullPathCoffeeScript(path, cx, global);
   if (result.result == JS_FALSE) {
     //JS_ReportError(cx, "reformer_native_executeCoffeeScript -- error running coffee script '%s': %s", path, result.message);
     return JS_FALSE;
@@ -177,6 +177,11 @@ void reportError(JSContext *cx, const char *message, JSErrorReport *report)
           message);
 }
 
+// exports
+namespace sugs {
+namespace core {
+namespace js {
+
 JSRuntime* initRuntime(uint32 maxBytes) {
   JSRuntime *rt;
   rt = JS_NewRuntime(maxBytes);
@@ -234,15 +239,6 @@ void teardownRuntime(JSRuntime* rt)
 void shutdownSpidermonkey() {
   //printf("Shutting down SpiderMonkey...\n");
   JS_ShutDown();
-}
-
-predicateResult execStartupCallbacks(jsEnv jsEnv) {
-  jsval argv[0];
-  jsval rval;
-  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
-    return {JS_FALSE, "error occured while called doStartup()\n"};
-  }
-  return { JS_TRUE, ""};
 }
 
 sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
@@ -425,3 +421,5 @@ workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config)
   printf("FRONTEND SCRIPT: %s\n", wi.frontendWorker.entryPoint);
   return wi;
 }
+
+}}} // namespace sugs::core::js

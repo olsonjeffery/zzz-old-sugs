@@ -1,7 +1,7 @@
 #include "configurator.hpp"
 
 void ConfiguratorWorker::parseConfigFile() {
-  this->_config = execConfig(this->_jsEnv.cx, this->_jsEnv.global);
+  this->_config = sugs::core::js::execConfig(this->_jsEnv.cx, this->_jsEnv.global);
 }
 
 void ConfiguratorWorker::initLibraries() {
@@ -14,6 +14,6 @@ sugsConfig ConfiguratorWorker::getConfig() {
 }
 
 workerInfos ConfiguratorWorker::getWorkerInfos() {
-  this->_workers = getWorkerInfo(this->_jsEnv.cx, this->_jsEnv.global, this->_config);
+  this->_workers = sugs::core::js::getWorkerInfo(this->_jsEnv.cx, this->_jsEnv.global, this->_config);
   return this->_workers;
 }

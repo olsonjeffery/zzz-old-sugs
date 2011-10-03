@@ -127,22 +127,22 @@ MessageExchange* Worker::getMessageExchange() {
 void Worker::loadSugsLibraries(pathStrings paths) {
   predicateResult result;
   // Load up our core dependencies
-  result = findAndExecuteScript("underscore.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
+  result = sugs::core::js::findAndExecuteScript("underscore.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  result = findAndExecuteScript("coffee-script.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
+  result = sugs::core::js::findAndExecuteScript("coffee-script.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  result = findAndExecuteScript("sugar.min.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
+  result = sugs::core::js::findAndExecuteScript("sugar.min.js", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
-  result = findAndExecuteScript("sugs.coffee", paths, this->_jsEnv.cx, this->_jsEnv.global);
+  result = sugs::core::js::findAndExecuteScript("sugs.coffee", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
@@ -233,12 +233,12 @@ void Worker::loadConfig(sugsConfig config) {
 void Worker::doWork() { }
 
 void Worker::teardown() {
-  teardownContext(this->_jsEnv.cx);
+  sugs::core::js::teardownContext(this->_jsEnv.cx);
 }
 
 void Worker::loadEntryPointScript(const char* entryPoint, pathStrings paths) {
   predicateResult result;
-  result = findAndExecuteScript(entryPoint, paths, this->_jsEnv.cx, this->_jsEnv.global);
+  result = sugs::core::js::findAndExecuteScript(entryPoint, paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);

@@ -34,7 +34,7 @@
 #include <jsapi.h>
 
 #include "../ext/component.h"
-#include "spidermonkey/jssetup.hpp"
+#include "../corejs/jssetup.hpp"
 #include "../common.hpp"
 #include "../messaging/messageexchange.hpp"
 
@@ -43,7 +43,7 @@ class Worker
   public:
     Worker(JSRuntime* rt, MessageExchange* msgEx, std::string prefix)
     {
-      this->_jsEnv = initContext(rt);
+      this->_jsEnv = sugs::core::js::initContext(rt);
       if (msgEx != NULL) {
         this->_msgEx = msgEx;
         this->_agentId = this->_msgEx->registerNewAgent(prefix);
@@ -51,7 +51,7 @@ class Worker
     }
     ~Worker() {
       //printf("worker dtor\n");
-      teardownContext(this->_jsEnv.cx);
+      sugs::core::js::teardownContext(this->_jsEnv.cx);
     }
 
     void addComponent(sugs::ext::Component* c);

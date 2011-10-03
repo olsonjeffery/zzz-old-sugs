@@ -38,6 +38,10 @@
 
 #include "scripting.hpp"
 
+namespace sugs {
+namespace core {
+namespace js {
+
 JSRuntime* initRuntime(uint32 maxBytes);
 jsEnv initContext(JSRuntime* rt);
 void teardownContext(JSContext* cx);
@@ -46,5 +50,7 @@ void shutdownSpidermonkey();
 
 sugsConfig execConfig(JSContext* cx, JSObject* global);
 workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config);
+
+}}} // namespace sugs::core::js
 
 #endif

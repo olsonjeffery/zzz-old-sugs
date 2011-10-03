@@ -30,6 +30,7 @@
 
 #include <jsapi.h>
 
+#include "../corejs/jssetup.hpp"
 #include "worker.hpp"
 #include "../common.hpp"
 

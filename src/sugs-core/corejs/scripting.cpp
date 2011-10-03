@@ -28,7 +28,12 @@
 
 #include "scripting.hpp"
 
-/* prototypes */
+// public exports
+
+namespace sugs {
+namespace core {
+namespace js {
+
 predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global) {
   printf("executing %s from source!!!\n", path);
   /* Execute a script */
@@ -163,3 +168,15 @@ predicateResult findAndExecuteScript(const char* relScriptLoc, pathStrings paths
   }
   return result;
 }
+
+
+predicateResult execStartupCallbacks(jsEnv jsEnv) {
+  jsval argv[0];
+  jsval rval;
+  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
+    return {JS_FALSE, "error occured while called doStartup()\n"};
+  }
+  return { JS_TRUE, ""};
+}
+
+}}} // namespace sugs::core::js

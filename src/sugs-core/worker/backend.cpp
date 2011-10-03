@@ -39,7 +39,7 @@ void BackendWorker::initLibraries() {
   this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
 
   // run $.startup() in user code
-  result = execStartupCallbacks(this->_jsEnv);
+  result = sugs::core::js::execStartupCallbacks(this->_jsEnv);
   if (result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
