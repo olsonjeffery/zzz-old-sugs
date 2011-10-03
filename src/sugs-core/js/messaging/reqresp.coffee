@@ -66,9 +66,6 @@ processIncomingRequest = (wireMsg, metaInfo) ->
   else
     handler = @respBindings[msgId]
     publisher = @publish
-    reqObj =
-      msg: msg
-      clientId: clientId
     respObj =             # this needs to have the goods to process
       send: (respMsg) ->  # the response..
         respMsg.ticketId = ticketId
@@ -78,28 +75,25 @@ processIncomingRequest = (wireMsg, metaInfo) ->
           success: true
         publisher clientId, 'sugs:messaging:receive:resp', wireMsg
     try
-      puts "CALLING REQ HANDLER @META #{metaInfo}"
-      handler.call {meta:metaInfo, msg:reqObj}, reqObj, respObj, metaInfo
+      handler.call {meta:metaInfo, msg:msg}, msg, respObj, metaInfo
     catch reqHandlerFailError
-      msg = ''
+      errorMsg = ''
       if typeof(reqHandlerFailError.message) != 'undefined'
-        msg = reqHandlerFailError.message
+        errorMsg = reqHandlerFailError.message
       if typeof(e) == 'string'
-        msg = reqHandlerFailError
+        errorMsg = reqHandlerFailError
       else
-        puts "REQUEST HANDLER FAILED HERE FOR endpoint #{msgId} on #{sugsConfig.myClientId}"
 
-        msg = 'an unknown error has occured in the request handler'
+        errorMsg = 'an unknown error has occured in the request handler'
       wireMsg =
         ticketId: ticketId
-        msg: msg
+        msg: errorMsg
         success: false
       publisher clientId, 'sugs:messaging:receive:resp', wireMsg
       throw reqHandlerFailError
 
 processIncomingResponse = (wireMsg, metaInfo) ->
   {msg, ticketId} = wireMsg
-  puts "OUR MSG KEYS: "+msg
   if typeof(@reqTickets[ticketId]) == 'undefined'
     throw new NoTicketForResponseError()
   else
@@ -124,7 +118,6 @@ impl.init()
 # these are the actual subscriptions to catch stuff
 # coming into and out of a module.
 pubsub.subscribe 'sugs:messaging:receive:req', (msg) ->
-  puts "HAVE INCOMING REQUEST!"
   impl.processIncomingRequest msg, @meta
 pubsub.subscribe 'sugs:messaging:receive:resp', (msg) ->
   impl.processIncomingResponse msg, @meta

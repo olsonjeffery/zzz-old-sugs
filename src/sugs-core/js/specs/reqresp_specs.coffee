@@ -24,17 +24,20 @@ When "a new request is received with a request handler bound", ->
   msgId = "test:bound_handler"
   responseHandlerCalled = false
   publishWasCalled = false
+  magicKey = 'asdasda'
+  reqMsgProperlyPassed = false
   Before ->
     impl.publish = (clientId, msgId, msg) ->
       publishWasCalled = true
     msg =
       msgId: msgId
       msg:
-        payload: 'asd'
+        payload: magicKey
       clientId: 'client_1'
       ticketId: '123123123'
     impl.registerResponseBinding msgId, (reqMsg, resp) ->
       responseHandlerCalled = true
+      reqMsgProperlyPassed = reqMsg.payload == magicKey
       resp.send
         unique: 'sdsdf2222'
     impl.processIncomingRequest msg
@@ -44,6 +47,9 @@ When "a new request is received with a request handler bound", ->
 
   It "should publish the response afterwards, when resp.send is called", ->
     assert publishWasCalled == true
+
+  It "should correctly pass the request message across the wire", ->
+    assert reqMsgProperlyPassed == true
 
 When "a response is received for an non-existant ticketId", ->
   error = null
