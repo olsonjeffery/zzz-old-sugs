@@ -93,7 +93,8 @@ processIncomingRequest = (wireMsg, metaInfo) ->
       throw reqHandlerFailError
 
 processIncomingResponse = (wireMsg, metaInfo) ->
-  {msg, ticketId} = wireMsg
+  {msg, ticketId, success} = wireMsg
+  metaInfo.requestHandlerSuccess = success
   if typeof(@reqTickets[ticketId]) == 'undefined'
     throw new NoTicketForResponseError()
   else

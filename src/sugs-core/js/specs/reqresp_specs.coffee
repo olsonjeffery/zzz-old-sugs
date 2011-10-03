@@ -61,7 +61,7 @@ When "a response is received for an non-existant ticketId", ->
         payload: {}
       ticketId: '123123123'
     error = trap_error ->
-      impl.processIncomingResponse wireMsg
+      impl.processIncomingResponse wireMsg, {}
 
   It "should cause an error", ->
     assert error instanceof reqrespModule.NoTicketForResponseError
@@ -73,19 +73,22 @@ When "a response handler is registered for and then a response is received for a
   publishWasCalled = false
   payload =
     unique: 'ndvkjnldsfg'
+  requestHandlerSucceeded = false
   Before ->
     impl.publish = (clientId, msgId, msg) ->
       publishWasCalled = true
     ticketId = '321x'
     clientId = "client_x1"
-    respHandler = (respMsg) ->
+    respHandler = (respMsg, metaInfo) ->
       responseHandlerUnique = respMsg.unique
+      requestHandlerSucceeded = metaInfo.requestHandlerSuccess == true
     impl.registerRequestTicket ticketId, clientId, 'some:test:msg', {}, respHandler
     wireMsg =
       msg: payload
       ticketId: ticketId
+      success: true # notification of request handler success.
     error = trap_error ->
-      impl.processIncomingResponse wireMsg
+      impl.processIncomingResponse wireMsg, {}
 
   It "should not cause an error", ->
     assert error == null
@@ -95,6 +98,9 @@ When "a response handler is registered for and then a response is received for a
 
   It "should attempt to publish the request", ->
     assert publishWasCalled == true
+
+  It "should notify the requestor that the request handler succeeded", ->
+    assert requestHandlerSucceeded == true
 
 When "an error occurs handling a responder to a request", ->
   error = null
@@ -122,6 +128,30 @@ When "an error occurs handling a responder to a request", ->
     assert publishWasCalled == true
   It "should notify the requestor of the failure", ->
     assert failureFlagSet == true
+
+When "processing a response that failed in the request handler", ->
+  rand = __native_random_uuid()
+  ticketId = 'ticket_#_#{rand}'
+  clientId = 'client_#{rand}'
+  msgId = "test:req_handler_that_fails_#{rand}"
+  error = null
+  failurePassedThrough = false
+
+  Before ->
+    msg =
+      msgId: msgId
+      msg:
+        payload: 'payload_#{rand}'
+      clientId: clientId
+      ticketId: ticketId
+      success: false
+    impl.registerRequestTicket ticketId, clientId, msgId, msg, (respMsg, metaInfo) ->
+      failurePassedThrough = metaInfo.requestHandlerSuccess == false
+    error = trap_error ->
+      impl.processIncomingResponse msg, {}
+
+  It "should allow the response handler to know of the request handler's completion status", ->
+    assert failurePassedThrough == true
 
 When "attempting to bind multiple responders, within a single worker, to the same msg Id", ->
   error = null
@@ -152,8 +182,6 @@ When "executing the req/resp callbacks", ->
   payload = {}
   Before ->
     reqHandler = (reqObj, respObj, meta) ->
-      puts "REQ HANDLER THIS.META #{@meta}"
-      puts "REQ HANDLER PARAM META #{meta}"
       providedReqHandlerThisMeta = @meta?
       providedReqHandlerThirdParamMeta = meta?
     respHandler = (respMsg, meta) ->
