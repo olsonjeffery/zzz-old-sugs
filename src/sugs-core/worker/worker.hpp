@@ -34,9 +34,10 @@
 #include <jsapi.h>
 
 #include "../ext/component.h"
-#include "../corejs/jssetup.hpp"
 #include "../common.hpp"
 #include "../messaging/messageexchange.hpp"
+
+#include "../corejs/corejs.h"
 
 class Worker
 {

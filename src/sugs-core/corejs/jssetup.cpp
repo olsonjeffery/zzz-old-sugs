@@ -26,7 +26,7 @@
  *
  */
 
-#include "jssetup.hpp"
+#include "corejs.h"
 
 /* NATIVE UTIL FUNCTIONS */
 JSBool reformer_native_puts(JSContext* cx, uintN argc, jsval* vp)

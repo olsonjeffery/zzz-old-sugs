@@ -26,22 +26,9 @@
  *
  */
 
-#ifndef __scripting_hpp__
-#define __scripting_hpp__
+#ifndef __sugs_core_hpp__
+#define __sugs_core_hpp__
 
-#include <jsapi.h>
-
-#include "../common.hpp"
-
-namespace sugs {
-namespace core {
-namespace js {
-
-predicateResult findAndExecuteScript(const char* path, pathStrings paths, JSContext* cx, JSObject* global);
-predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObject* global);
-predicateResult executeFullPathCoffeeScript(const char* path, JSContext* cx, JSObject* global);
-predicateResult execStartupCallbacks(jsEnv jsEnv);
-
-}}} // namespace sugs::core::js
+#include "corejs/corejs.h"
 
 #endif

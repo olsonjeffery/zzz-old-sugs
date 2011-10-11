@@ -26,22 +26,24 @@
  *
  */
 
-#ifndef __jssetup_hpp__
-#define __jssetup_hpp__
+#ifndef __sugs_core_js_hpp__
+#define __sugs_core_js_hpp__
 
-#define XP_UNIX
 #include <jsapi.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 
-#include "scripting.hpp"
+#include "../common.hpp"
 
 namespace sugs {
 namespace core {
 namespace js {
 
+// related to running scripts
+predicateResult findAndExecuteScript(const char* path, pathStrings paths, JSContext* cx, JSObject* global);
+predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObject* global);
+predicateResult executeFullPathCoffeeScript(const char* path, JSContext* cx, JSObject* global);
+predicateResult execStartupCallbacks(jsEnv jsEnv);
+
+// javascript system setup
 JSRuntime* initRuntime(uint32 maxBytes);
 jsEnv initContext(JSRuntime* rt);
 void teardownContext(JSContext* cx);

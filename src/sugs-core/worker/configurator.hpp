@@ -30,9 +30,10 @@
 
 #include <jsapi.h>
 
-#include "../corejs/jssetup.hpp"
 #include "worker.hpp"
 #include "../common.hpp"
+
+#include "../corejs/corejs.h"
 
 class ConfiguratorWorker : public Worker
 {

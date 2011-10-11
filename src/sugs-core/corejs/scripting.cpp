@@ -26,7 +26,7 @@
  *
  */
 
-#include "scripting.hpp"
+#include "corejs.h"
 
 // public exports
 
