@@ -81,10 +81,10 @@
 		<Unit filename="common/jsutil.hpp" />
 		<Unit filename="common/rng.cpp" />
 		<Unit filename="common/rng.hpp" />
+		<Unit filename="core.h" />
+		<Unit filename="corejs/corejs.h" />
 		<Unit filename="corejs/jssetup.cpp" />
-		<Unit filename="corejs/jssetup.hpp" />
 		<Unit filename="corejs/scripting.cpp" />
-		<Unit filename="corejs/scripting.hpp" />
 		<Unit filename="ext/component.cpp" />
 		<Unit filename="ext/component.h" />
 		<Unit filename="fs/filesystemcomponent.cpp" />
