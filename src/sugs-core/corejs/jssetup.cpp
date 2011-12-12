@@ -110,7 +110,7 @@ JSBool reformer_native_fileExists(JSContext* cx, uintN argc, jsval* vp)
 
   char* path = JS_EncodeString(cx, text);
   JSBool exists = JS_FALSE;
-  if (fileExists(path)) {
+  if (sugs::core::fs::fileExists(path)) {
     exists = JS_TRUE;
   }
   jsval rVal = BOOLEAN_TO_JSVAL(exists);
@@ -288,7 +288,7 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
     pathStrings paths;
     paths.length = pathsLength;
     paths.paths = new std::string[pathsLength];
-    std::string cwdPrefix = getCurrentWorkingDir();
+    std::string cwdPrefix = sugs::core::fs::getCurrentWorkingDir();
     std::string sep = "/"; // FIXME: need platform portable solution
     for(jsint ctr = 0;ctr < pathsLength;ctr++) {
       jsval entryVal;
@@ -335,7 +335,7 @@ sugsConfig execConfig(JSContext* cx, JSObject* global)
 {
   predicateResult result;
   // The introduction of user code
-  if (fileExists("config.js")) {
+  if (sugs::core::fs::fileExists("config.js")) {
     result = executeFullPathJavaScript("config.js", cx, global);
     if(result.result == JS_FALSE) {
       printf(result.message);
@@ -351,8 +351,8 @@ workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config)
 {
   printf("gonna execute %s\n", config.moduleEntryPoint);
 
-  if (fileExists(config.moduleEntryPoint)) {
-    if (doesFilenameEndWithDotCoffee(config.moduleEntryPoint) == JS_TRUE) {
+  if (sugs::core::fs::fileExists(config.moduleEntryPoint)) {
+    if (sugs::core::fs::doesFilenameEndWithDotCoffee(config.moduleEntryPoint) == JS_TRUE) {
       printf("entry point is .coffee: %s\n", config.moduleEntryPoint);
       executeFullPathCoffeeScript(config.moduleEntryPoint, cx, global);
     }

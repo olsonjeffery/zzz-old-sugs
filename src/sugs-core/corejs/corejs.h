@@ -32,6 +32,7 @@
 #include <jsapi.h>
 
 #include "../common.hpp"
+#include "../fs/fs.hpp"
 
 namespace sugs {
 namespace core {

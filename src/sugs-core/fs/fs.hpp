@@ -25,6 +25,10 @@
  * or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
  *
  */
+
+#ifndef __sugs_core_fs_hpp__
+#define __sugs_core_fs_hpp__
+
 #include <list>
 
 #include <boost/filesystem.hpp>
@@ -49,4 +53,11 @@ class FilesystemComponent : public sugs::ext::Component
   private:
 };
 
+void readEntireFile(const char* path, char** outBuffer, int* outLength);
+bool fileExists(const char * filename);
+bool doesFilenameEndWithDotCoffee(const char* filename);
+std::string getCurrentWorkingDir();
+
 }}} // namespace sugs::core::fs
+
+#endif

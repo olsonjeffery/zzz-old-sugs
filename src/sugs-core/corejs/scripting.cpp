@@ -75,12 +75,12 @@ predicateResult executeScriptFromSrc(const char* path, char** src, int length, J
 predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObject* global) {
   char* srcBuffer;
   int length;
-  if (!fileExists(path)) {
+  if (!sugs::core::fs::fileExists(path)) {
     char msg[2056];
     sprintf(msg, "Script %s not found!\n", path);
     return {JS_FALSE, msg};
   }
-  readEntireFile(path, &srcBuffer, &length);
+  sugs::core::fs::readEntireFile(path, &srcBuffer, &length);
 
   predicateResult result = executeScriptFromSrc(path, &srcBuffer, length, cx, global);
   free(srcBuffer);
@@ -90,12 +90,12 @@ predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObj
 predicateResult executeFullPathCoffeeScript(const char* path, JSContext* cx, JSObject* global) {
   char* buffer;
   int length;
-  if (!fileExists(path)) {
+  if (!sugs::core::fs::fileExists(path)) {
     char msg[2056];
     sprintf(msg, "Script %s not found and can't be loaded!\n", path);
     return {JS_FALSE, msg};
   }
-  readEntireFile(path, &buffer, &length);
+  sugs::core::fs::readEntireFile(path, &buffer, &length);
 
   jsval argv[2];
   JSString* coffeeFileText = JS_NewStringCopyZ(cx, buffer);
@@ -151,9 +151,9 @@ predicateResult findAndExecuteScript(const char* relScriptLoc, pathStrings paths
     std::string fullPath = pathPrefix + scriptFragment;
     const char* fullPathCStr = fullPath.c_str();
     printf("Looking in %s for %s\n", pathPrefix.c_str(), fullPathCStr);
-    if(fileExists(fullPathCStr)) {
+    if(sugs::core::fs::fileExists(fullPathCStr)) {
       foundScript = true;
-      if (doesFilenameEndWithDotCoffee(fullPathCStr)) {
+      if (sugs::core::fs::doesFilenameEndWithDotCoffee(fullPathCStr)) {
         result = executeFullPathCoffeeScript(fullPathCStr, cx, global);
       }
       else {

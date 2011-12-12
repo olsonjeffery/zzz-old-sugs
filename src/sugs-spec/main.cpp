@@ -6,12 +6,11 @@
 #include "../sugs-core/ext/component.h"
 #include "../sugs-core/common.hpp"
 
-#include "../sugs-core/worker/spidermonkey/jssetup.hpp"
+#include "../sugs-core/core.h"
 #include "../sugs-core/worker/configurator.hpp"
 #include "../sugs-core/worker/backend.hpp"
 #include "../sugs-core/messaging/messageexchange.hpp"
 
-#include "../sugs-core/fs/filesystemcomponent.h"
 #include "speccomponent.h"
 
 // gflags declaration
@@ -24,7 +23,7 @@ DEFINE_string(path, "./",
 static const bool path_dummy = google::RegisterFlagValidator(&FLAGS_path, &ValidatePath);
 
 void getConfig(JSRuntime* rt, sugsConfig* config) {
-  jsEnv jsEnv = initContext(rt);
+  jsEnv jsEnv = sugs::core::js::initContext(rt);
   ConfiguratorWorker configurator(rt);
   configurator.initLibraries();
   sugsConfig lConf = configurator.getConfig();
@@ -44,7 +43,7 @@ int main(int argc, char *argv[])
   MessageExchange* msgEx = new MessageExchange();
 
   printf("setting up runtime and fetching config...\n");
-  JSRuntime* rt = initRuntime(vmMemSize);
+  JSRuntime* rt = sugs::core::js::initRuntime(vmMemSize);
   sugsConfig config;
   getConfig(rt, &config);
 
@@ -65,8 +64,8 @@ int main(int argc, char *argv[])
   delete worker;      // all of these deletes should go away w/ shared_ptr use
   delete specComp;
   delete msgEx;
-  teardownRuntime(rt);
-  shutdownSpidermonkey();
+  sugs::core::js::teardownRuntime(rt);
+  sugs::core::js::shutdownSpidermonkey();
 
   return 0;
 }

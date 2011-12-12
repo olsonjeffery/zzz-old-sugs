@@ -26,7 +26,7 @@
  *
  */
 
-#include "filesystemcomponent.h"
+#include "fs.hpp"
 namespace fs = boost::filesystem;
 
 static JSBool

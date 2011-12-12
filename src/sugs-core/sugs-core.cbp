@@ -88,7 +88,8 @@
 		<Unit filename="ext/component.cpp" />
 		<Unit filename="ext/component.h" />
 		<Unit filename="fs/filesystemcomponent.cpp" />
-		<Unit filename="fs/filesystemcomponent.h" />
+		<Unit filename="fs/fs.cpp" />
+		<Unit filename="fs/fs.hpp" />
 		<Unit filename="messaging/messageexchange.cpp" />
 		<Unit filename="messaging/messageexchange.hpp" />
 		<Unit filename="messaging/pubsub.cpp" />

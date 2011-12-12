@@ -30,5 +30,6 @@
 #define __sugs_core_hpp__
 
 #include "corejs/corejs.h"
+#include "fs/fs.hpp"
 
 #endif

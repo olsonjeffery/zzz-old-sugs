@@ -38,15 +38,15 @@ spec_runScript(JSContext* cx, uintN argc, jsval* vp)
   char* pathStr = JS_EncodeString(cx, pathStrObj);
   JSObject* global = JS_GetGlobalObject(cx);
   predicateResult result;
-  if (fileExists(pathStr)) {
-    bool isCoffee = doesFilenameEndWithDotCoffee(pathStr);
+  if (sugs::core::fs::fileExists(pathStr)) {
+    bool isCoffee = sugs::core::fs::doesFilenameEndWithDotCoffee(pathStr);
     if (isCoffee)
     {
-      result = executeFullPathCoffeeScript(pathStr, cx, global);
+      result = sugs::core::js::executeFullPathCoffeeScript(pathStr, cx, global);
     }
     else
     {
-      result = executeFullPathJavaScript(pathStr, cx, global);
+      result = sugs::core::js::executeFullPathJavaScript(pathStr, cx, global);
     }
   }
   if (!result.result) {
