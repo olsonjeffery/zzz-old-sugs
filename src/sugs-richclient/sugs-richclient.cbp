@@ -81,26 +81,20 @@
 		</Build>
 		<Unit filename="frontendworker.cpp" />
 		<Unit filename="frontendworker.h" />
+		<Unit filename="gfx/gfx.hpp" />
 		<Unit filename="gfx/jscanvas.cpp" />
-		<Unit filename="gfx/jscanvas.hpp" />
 		<Unit filename="gfx/jscircle.cpp" />
-		<Unit filename="gfx/jscircle.hpp" />
 		<Unit filename="gfx/jsdrawable.cpp" />
-		<Unit filename="gfx/jsdrawable.hpp" />
 		<Unit filename="gfx/jsgraphics.cpp" />
-		<Unit filename="gfx/jsgraphics.hpp" />
 		<Unit filename="gfx/jsrect.cpp" />
-		<Unit filename="gfx/jsrect.hpp" />
 		<Unit filename="gfx/jssprite.cpp" />
-		<Unit filename="gfx/jssprite.hpp" />
 		<Unit filename="gfx/jstext.cpp" />
-		<Unit filename="gfx/jstext.hpp" />
 		<Unit filename="gfx/sfmlsetup.cpp" />
-		<Unit filename="gfx/sfmlsetup.hpp" />
 		<Unit filename="jsinput.cpp" />
 		<Unit filename="jsinput.hpp" />
 		<Unit filename="medialibrary.cpp" />
 		<Unit filename="medialibrary.hpp" />
+		<Unit filename="richclient.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

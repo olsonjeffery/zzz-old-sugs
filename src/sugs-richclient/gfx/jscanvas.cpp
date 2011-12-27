@@ -26,7 +26,10 @@
  *
  */
 
-#include "jscanvas.hpp"
+#include "gfx.hpp"
+namespace sugs {
+namespace richclient {
+namespace gfx {
 
 JSBool reformer_native_canvas_draw(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -78,3 +81,5 @@ JSObject* newCanvasFrom(sf::RenderWindow* window, JSContext* cx) {
 
   return canvas;
 }
+
+}}} // namespace sugs::richclient::gfx

@@ -25,7 +25,7 @@
  * or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
  *
  */
-#include "speccomponent.h"
+#include "speccomponent.hpp"
 
 static JSBool
 spec_runScript(JSContext* cx, uintN argc, jsval* vp)

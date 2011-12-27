@@ -1,4 +1,8 @@
-#include "jsrect.hpp"
+#include "gfx.hpp"
+
+namespace sugs {
+namespace richclient {
+namespace gfx {
 
 static JSBool
 native_rectangle_factory(JSContext* cx, uintN argc, jsval* vp) {
@@ -55,3 +59,5 @@ void
 registerRectangleFactory(JSContext* cx, JSObject* global) {
     JS_DefineFunction(cx, global, "__native_factory_rectangle", native_rectangle_factory, 4, 0);
 }
+
+}}} // namespace sugs::richclient::gfx

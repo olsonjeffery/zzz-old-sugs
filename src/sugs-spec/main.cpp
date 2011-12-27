@@ -11,7 +11,7 @@
 #include "../sugs-core/worker/backend.hpp"
 #include "../sugs-core/messaging/messageexchange.hpp"
 
-#include "speccomponent.h"
+#include "speccomponent.hpp"
 
 // gflags declaration
 #include <gflags/gflags.h>

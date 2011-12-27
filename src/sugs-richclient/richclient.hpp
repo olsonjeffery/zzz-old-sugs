@@ -26,24 +26,7 @@
  *
  */
 
-#ifndef __jsgraphics_hpp__
-#define __jsgraphics_hpp__
-
-#include <math.h>
-#include <jsapi.h>
-
-#include "../medialibrary.hpp"
-#include "../../sugs-core/common.hpp"
-#include "jssprite.hpp"
-#include "jsrect.hpp"
-#include "jscircle.hpp"
-#include "jstext.hpp"
-
-namespace sugs {
-namespace richclient {
-namespace gfx {
-
-void registerGraphicsNatives(JSContext* cx, JSObject* global);
-
-}}} // namespace sugs::richclient::graphics
-#endif
+ #include "gfx/gfx.hpp"
+ #include "frontendworker.h"
+ #include "medialibrary.hpp"
+ #include "jsinput.hpp"

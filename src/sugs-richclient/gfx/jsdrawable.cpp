@@ -1,4 +1,8 @@
-#include "jsdrawable.hpp"
+#include "gfx.hpp"
+
+namespace sugs {
+namespace richclient {
+namespace gfx {
 
 JSBool reformer_native_drawable_setPosition(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -205,3 +209,5 @@ getColorFrom(JSContext* cx, JSObject* colorParams, sf::Color* outColor) {
   *outColor = result;
   return JS_TRUE;
 }
+
+}}} // namespace sugs::richclient::gfx

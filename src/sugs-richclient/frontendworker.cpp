@@ -135,7 +135,7 @@ void FrontendWorker::componentDoWork(jsEnv jsEnv) {
   this->_gfxEnv.window->Clear();
 
   JSObject* inputObj = sugs::richclient::input::newInputFrom(this->_gfxEnv.window, jsEnv.cx);
-  JSObject* canvas = newCanvasFrom(this->_gfxEnv.window, jsEnv.cx);
+  JSObject* canvas = sugs::richclient::gfx::newCanvasFrom(this->_gfxEnv.window, jsEnv.cx);
   // run $.mainLoop() and $.render() callbacks in
   // user code
   callIntoJsRender(jsEnv, canvas, inputObj, msElapsed);

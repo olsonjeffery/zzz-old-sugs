@@ -73,7 +73,7 @@
 		</Compiler>
 		<Unit filename="main.cpp" />
 		<Unit filename="speccomponent.cpp" />
-		<Unit filename="speccomponent.h" />
+		<Unit filename="speccomponent.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

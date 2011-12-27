@@ -1,4 +1,8 @@
-#include "jstext.hpp"
+#include "gfx.hpp"
+
+namespace sugs {
+namespace richclient {
+namespace gfx {
 
 static JSBool
 native_text_setString(JSContext* cx, uintN argc, jsval*vp) {
@@ -73,3 +77,5 @@ void
 registerTextFactory(JSContext* cx, JSObject* global) {
     JS_DefineFunction(cx, global, "__native_factory_text", native_text_factory, 4, 0);
 }
+
+}}} // namespace sugs::richclient::gfx

@@ -1,4 +1,4 @@
-#include "sfmlsetup.hpp"
+#include "gfx.hpp"
 
 namespace sugs {
 namespace richclient {

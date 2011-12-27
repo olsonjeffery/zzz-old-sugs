@@ -26,19 +26,22 @@
  *
  */
 
-#ifndef __sfmlsetup_hpp__
-#define __sfmlsetup_hpp__
+#ifndef __sugs_richclient_gfx_hpp__
+#define __sugs_richclient_gfx_hpp__
 
 #include <SFML/Graphics.hpp>
 #include <stdio.h>
 #include <jsapi.h>
 
 #include "../../sugs-core/common.hpp"
-#include "jscanvas.hpp"
+#include "../medialibrary.hpp"
 
+/* pull the graphics natives into the current JSContext */
 namespace sugs {
 namespace richclient {
 namespace gfx {
+
+void registerGraphicsNatives(JSContext* cx, JSObject* global);
 
 struct GraphicsEnv {
   sf::RenderWindow* window;
@@ -48,6 +51,28 @@ struct GraphicsEnv {
 // graphics setup stuff
 GraphicsEnv initGraphics(JSContext* cx, sugsConfig config);
 void teardownGraphics(sf::RenderWindow* window, JSObject* canvas, JSContext* cx);
+
+/* JSCanvas setup */
+JSObject* newCanvasFrom(sf::RenderWindow* window, JSContext* cx);
+
+/* JSDrawable */
+JSClass* getDrawableClassDef();
+JSFunctionSpec* getDrawableFunctionSpec();
+JSBool getColorFrom(JSContext* cx, JSObject* colorParams, sf::Color* outColor);
+
+/* SFML setup */
+
+/* JSCircle */
+void registerCircleFactory(JSContext* cx, JSObject* global);
+
+/* JSRect */
+void registerRectangleFactory(JSContext* cx, JSObject* global);
+
+/* JSSprite */
+void registerSpriteFactory(JSContext* cx, JSObject* global);
+
+/* JSText */
+void registerTextFactory(JSContext* cx, JSObject* global);
 
 }}} // namespace sugs::richclient::gfx
 

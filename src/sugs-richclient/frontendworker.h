@@ -36,9 +36,7 @@
 #include "../sugs-core/common.hpp"
 #include "../sugs-core/common/jsutil.hpp"
 
-#include "gfx/sfmlsetup.hpp"
-#include "gfx/jsgraphics.hpp"
-#include "gfx/jscanvas.hpp"
+#include "gfx/gfx.hpp"
 #include "jsinput.hpp"
 #include "medialibrary.hpp"
 

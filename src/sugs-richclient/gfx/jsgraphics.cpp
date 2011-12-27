@@ -1,4 +1,4 @@
-#include "jsgraphics.hpp"
+#include "gfx.hpp"
 
 /*
  *

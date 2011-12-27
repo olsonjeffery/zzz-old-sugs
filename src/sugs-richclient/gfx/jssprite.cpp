@@ -1,4 +1,8 @@
-#include "jssprite.hpp"
+#include "gfx.hpp"
+
+namespace sugs {
+namespace richclient {
+namespace gfx {
 
 static JSBool
 native_sprite_factory(JSContext* cx, uintN argc, jsval* vp) {
@@ -38,3 +42,5 @@ void
 registerSpriteFactory(JSContext* cx, JSObject* global) {
     JS_DefineFunction(cx, global, "__native_factory_sprite", native_sprite_factory, 1, 0);
 }
+
+}}} // namespace sugs::richclient::gfx

@@ -26,7 +26,11 @@
  *
  */
 
-#include "jsrect.hpp"
+#include "gfx.hpp"
+
+namespace sugs {
+namespace richclient {
+namespace gfx {
 
 static JSBool
 native_circle_factory(JSContext* cx, uintN argc, jsval* vp) {
@@ -69,3 +73,5 @@ void
 registerCircleFactory(JSContext* cx, JSObject* global) {
     JS_DefineFunction(cx, global, "__native_factory_circle", native_circle_factory, 4, 0);
 }
+
+}}} // namespace sugs::richclient::gfx
