@@ -91,7 +91,7 @@ void FilesystemComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config
     printf("FAILURE TO DEFINE fsFuncs!\n");
   }
   printf("LOADING FILESYSTEM COMPONENT\n");
-  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugsNative.core", fsFuncsObj, "fs");
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugsNative.core.fs", fsFuncsObj);
 }
 
 void FilesystemComponent::doWork(jsEnv jsEnv, sugsConfig config)

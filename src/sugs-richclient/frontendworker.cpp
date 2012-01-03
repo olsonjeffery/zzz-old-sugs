@@ -74,7 +74,7 @@ void FrontendWorker::componentRegisterNativeFunctions(jsEnv jsEnv, sugsConfig co
     JS_ReportError(jsEnv.cx,"FrontendWorker::componentRegisterNativeFunctions: Unable to register window funcs obj functions...");
   }
 
-  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.richclient", windowFuncsObj, "window");
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.richclient.window", windowFuncsObj);
 }
 
 void FrontendWorker::initLibraries() {

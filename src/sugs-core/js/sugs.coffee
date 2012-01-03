@@ -116,6 +116,23 @@ global.embedObjectInNamespace = (outter, ns, inner, propName) ->
       else
         tail obj, _.first(rest), _.rest(rest)
     tail outter, _.first(all), _.rest(all)
+global.embedObjectInNamespace = (outerObj, ns, addedObj) ->
+  if ns == ""
+    throw "You must provide a valid namespace string to embed an object."
+  allNames = ns.split '.'
+  if allNames.length == 1
+    outerObj[allNames.first()] = addedObj
+  else
+    namespaceCreator = (currObj, names) ->
+      if names.length == 1
+        currObj[names.first()] = addedObj
+      else
+        currName = names.first()
+        remainingNames = names.from(1)
+        if (typeof currObj[currName]) == "undefined"
+          currObj[currName] = {}
+        namespaceCreator currObj[currName], remainingNames
+    namespaceCreator outerObj, allNames
 
 global.pullObjectFrom = (topLevel, nsPlusPath) ->
   all = ns.split '.'

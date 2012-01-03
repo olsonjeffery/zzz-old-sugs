@@ -37,7 +37,20 @@ namespace jsutil {
 
 JSClass* getDefaultClassDef();
 jsval pullPropertyFromSugsConfigInGlobal(JSContext* cx, JSObject* global, const char* propName);
-void embedObjectInNamespaceWithinObject(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner, const char* propName);
+
+// sugs::common::jsutil::embedObjectInNamespace() -- given a valid outerObj, a period-delimited string representing
+// a nested "namespace" within said outerObj, and an addedObj to be inserted, place the addedObj within the outerObj,
+// created "stub" objects as we go.
+//
+// params:
+// JSContext* cx -- current JS context
+// JSObject* global -- global JS obj for this context. used to access JS impl.
+// JSObject* outerObj -- the outer JS object that is being added to
+// const char* ns -- period-delimited string indicating the nested namespace being inserted into. If the object doesn't
+//   exist already, it will be created as we go.
+// JSObject* addedObj -- the object being added to the outerObj
+void embedObjectInNamespace(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner);
+
 bool newJSObjectFromFunctionSpec(JSContext* cx, JSFunctionSpec* spec, JSObject** out);
 }
 }

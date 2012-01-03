@@ -84,7 +84,7 @@ void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
   }
   std::string rawPaths = this->_rawPaths;
   storeSpecRunnerInputPath(jsEnv, rawPaths, specObj);
-  sugs::common::jsutil::embedObjectInNamespaceWithinObject(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs", specObj, "spec");
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.spec", specObj);
   printf("storing the rawPath! %s\n", rawPaths.c_str());
 }
 

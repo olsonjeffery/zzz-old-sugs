@@ -72,17 +72,16 @@ jsval pullPropertyFromSugsConfigInGlobal(JSContext* cx, JSObject* global, const 
   return propVal;
 }
 
-void embedObjectInNamespaceWithinObject(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner, const char* propName)
+void embedObjectInNamespace(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner)
 {
-  jsval argv[4];
+  jsval argv[3];
   argv[0] = OBJECT_TO_JSVAL(outter);
   JSString* nsString = JS_NewStringCopyZ(cx, ns);
   argv[1] = STRING_TO_JSVAL(nsString);
   argv[2] = OBJECT_TO_JSVAL(inner);
-  JSString* propNameString = JS_NewStringCopyZ(cx, propName);
-  argv[3] = STRING_TO_JSVAL(propNameString);
+
   jsval rVal;
-  JS_CallFunctionName(cx, global, "embedObjectInNamespace", 4, argv, &rVal);
+  JS_CallFunctionName(cx, global, "embedObjectInNamespace", 3, argv, &rVal);
 }
 
 bool newJSObjectFromFunctionSpec(JSContext* cx, JSFunctionSpec* spec, JSObject** obj)
