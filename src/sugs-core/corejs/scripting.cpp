@@ -87,6 +87,11 @@ predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObj
   return result;
 }
 
+predicateResult executeJavascriptSnippet(char* code, JSContext* cx, JSObject* global) {
+  int length = strlen(code);
+  return executeScriptFromSrc("snippet.js", &code, length, cx, global);
+}
+
 predicateResult executeFullPathCoffeeScript(const char* path, JSContext* cx, JSObject* global) {
   char* buffer;
   int length;

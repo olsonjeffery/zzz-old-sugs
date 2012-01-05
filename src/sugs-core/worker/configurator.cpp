@@ -1,4 +1,8 @@
-#include "configurator.hpp"
+#include "worker.hpp"
+
+namespace sugs {
+namespace core {
+namespace worker {
 
 void ConfiguratorWorker::parseConfigFile() {
   this->_config = sugs::core::js::execConfig(this->_jsEnv.cx, this->_jsEnv.global);
@@ -13,7 +17,4 @@ sugsConfig ConfiguratorWorker::getConfig() {
   return this->_config;
 }
 
-workerInfos ConfiguratorWorker::getWorkerInfos() {
-  this->_workers = sugs::core::js::getWorkerInfo(this->_jsEnv.cx, this->_jsEnv.global, this->_config);
-  return this->_workers;
-}
+}}} // namespace sugs::core::worker

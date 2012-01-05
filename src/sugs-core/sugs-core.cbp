@@ -102,10 +102,7 @@
 		<Unit filename="physics/sim.h" />
 		<Unit filename="physics/space.cpp" />
 		<Unit filename="physics/space.h" />
-		<Unit filename="worker/backend.cpp" />
-		<Unit filename="worker/backend.hpp" />
 		<Unit filename="worker/configurator.cpp" />
-		<Unit filename="worker/configurator.hpp" />
 		<Unit filename="worker/worker.cpp" />
 		<Unit filename="worker/worker.hpp" />
 		<Extensions>

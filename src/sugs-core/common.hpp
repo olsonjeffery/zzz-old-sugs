@@ -60,11 +60,10 @@ typedef struct {
 
 typedef struct {
   pathStrings paths;
-  char* moduleEntryPoint;
-  char* moduleDir;
   int screenWidth;
   int screenHeight;
   int colorDepth;
+  const char* customJson;
 } sugsConfig;
 
 typedef struct {

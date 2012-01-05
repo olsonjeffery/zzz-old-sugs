@@ -28,7 +28,42 @@
 
 #include "worker.hpp"
 
-void Worker::initLibraries() {}
+namespace sugs {
+namespace core {
+namespace worker {
+
+void Worker::initLibraries() {
+  // load core libs
+  this->loadConfig(this->_config);
+  this->loadSugsLibraries(this->_config.paths);
+
+  this->loadComponents(this->_config);
+
+  predicateResult result;
+  this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
+
+  // run $.startup() in user code
+  result = sugs::core::js::execStartupCallbacks(this->_jsEnv);
+  if (result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
+  }
+}
+
+void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
+  jsval argv[1];
+
+  argv[0] = INT_TO_JSVAL(msElapsed);
+  jsval rval;
+  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runMainLoop", 1, argv, &rval);
+}
+
+void Worker::doWork() {
+  time_t currMs = getCurrentMilliseconds();
+  this->processPendingMessages();
+  callIntoJsMainLoop(this->_jsEnv, currMs - this->_lastMs);
+  this->_lastMs = currMs;
+}
 
 static JSBool
 native_subscribe(JSContext* cx, uintN argc, jsval* vp)
@@ -199,19 +234,6 @@ void Worker::loadConfig(sugsConfig config) {
     exit(EXIT_FAILURE);
   }
 
-  JSString* moduleEntryPointStr = JS_NewStringCopyN(this->_jsEnv.cx, config.moduleEntryPoint, strlen(config.moduleEntryPoint));
-  jsval moduleEntryPointVal = STRING_TO_JSVAL(moduleEntryPointStr);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "moduleEntryPoint", &moduleEntryPointVal)) {
-    printf("Failed to convert native sugsConfig.moduleEntryPoint and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
-  JSString* moduleDirStr = JS_NewStringCopyN(this->_jsEnv.cx, config.moduleDir, strlen(config.moduleDir));
-  jsval moduleDirVal = STRING_TO_JSVAL(moduleDirStr);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "moduleDir", &moduleDirVal)) {
-    printf("Failed to convert native sugsConfig.moduleDir and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
-
   const char* agentIdCStr = this->_agentId.c_str();
   JSString* myAgentIdStr = JS_NewStringCopyN(this->_jsEnv.cx, agentIdCStr, strlen(agentIdCStr));
   jsval myAgentIdVal = STRING_TO_JSVAL(myAgentIdStr);
@@ -222,15 +244,24 @@ void Worker::loadConfig(sugsConfig config) {
 
   bindWorkerToConfig(this->_jsEnv.cx, sugsConfigObj, this);
 
+  JSString* customJsonStr = JS_NewStringCopyN(this->_jsEnv.cx, config.customJson, strlen(config.customJson));
+  jsval customJsonVal = STRING_TO_JSVAL(customJsonStr);
+  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "customJson", &customJsonVal)) {
+    printf("Failed to convert native sugsConfig.customJson and store in sugsConfig JSObject\n");
+    exit(EXIT_FAILURE);
+  }
+
   jsval sugsConfigVal = OBJECT_TO_JSVAL(sugsConfigObj);
   if(!JS_SetProperty(this->_jsEnv.cx, this->_jsEnv.global, "sugsConfig", &sugsConfigVal)) {
     printf("Failed to convert native sugsConfig and load into global object\n");
     exit(EXIT_FAILURE);
   }
+
+  // can't do this until after the config is bound to the global...
+  sugs::core::js::executeJavascriptSnippet("(function() {sugsConfig.custom = JSON.parse(sugsConfig.customJson);})();", this->_jsEnv.cx, this->_jsEnv.global);
+
   printf("sugsConfig added to global\n");
 }
-
-void Worker::doWork() { }
 
 void Worker::teardown() {
   sugs::core::js::teardownContext(this->_jsEnv.cx);
@@ -286,3 +317,5 @@ void Worker::loadComponents(sugsConfig config)
     c->registerNativeFunctions(this->_jsEnv, config);
   }
 }
+
+}}} // namespace sugs::core::worker

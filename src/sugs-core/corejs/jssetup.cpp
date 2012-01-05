@@ -305,29 +305,23 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
 
     printf("done parsing out paths...\n");
 
-    jsval moduleEntryPointVal;
-    if(!JS_GetProperty(cx, sugsConfig, "moduleEntryPoint", &moduleEntryPointVal)) {
-        printf("getCurrentConfig: failure to pull moduleEntryPoint from global.sugsConfig\n");
+    sugs::core::js::executeJavascriptSnippet("(function() {config.__customJson = (typeof config.custom) === 'undefined' ? '{}' : JSON.stringify(config.custom)})();", cx, global);
+
+    jsval customJsonVal;
+    if(!JS_GetProperty(cx, sugsConfig, "__customJson", &customJsonVal)) {
+        printf("getCurrentConfig: failure to pull __customJson from global.sugsConfig\n");
         exit(EXIT_FAILURE);
     }
-    JSString* moduleEntryPointObj = JSVAL_TO_STRING(moduleEntryPointVal);
-    char* moduleEntryPoint = JS_EncodeString(cx, moduleEntryPointObj);
-    jsval moduleDirVal;
-    if(!JS_GetProperty(cx, sugsConfig, "moduleDir", &moduleDirVal)) {
-        printf("getCurrentConfig: failure to pull moduleDir from global.sugsConfig\n");
-        exit(EXIT_FAILURE);
-    }
-    JSString* moduleDirObj = JSVAL_TO_STRING(moduleDirVal);
-    char* moduleDir = JS_EncodeString(cx, moduleDirObj);
+    JSString* customJsonObj = JSVAL_TO_STRING(customJsonVal);
+    char* customJson = JS_EncodeString(cx, customJsonObj);
 
     printf("successfully parsed config...\n");
     return {
         paths,
-        moduleEntryPoint,
-        moduleDir,
         width,
         height,
         colorDepth,
+        customJson
     };
 }
 
@@ -344,82 +338,6 @@ sugsConfig execConfig(JSContext* cx, JSObject* global)
   }
 
   return getCurrentConfig(cx, global);
-}
-
-
-workerInfos getWorkerInfo(JSContext* cx, JSObject* global, sugsConfig config)
-{
-  printf("gonna execute %s\n", config.moduleEntryPoint);
-
-  if (sugs::core::fs::fileExists(config.moduleEntryPoint)) {
-    if (sugs::core::fs::doesFilenameEndWithDotCoffee(config.moduleEntryPoint) == JS_TRUE) {
-      printf("entry point is .coffee: %s\n", config.moduleEntryPoint);
-      executeFullPathCoffeeScript(config.moduleEntryPoint, cx, global);
-    }
-    else {
-      printf("entry point is .js\n");
-      executeFullPathJavaScript(config.moduleEntryPoint, cx, global);
-    }
-  }
-  else {
-    printf("UNABLE TO FIND %s\n", config.moduleEntryPoint);
-    exit(EXIT_FAILURE);
-  }
-  printf("after executing config...?\n");
-  jsval workersVal;
-  if(!JS_GetProperty(cx, global, "__workers", &workersVal)) {
-    printf("getWorkerInfo: failed to pull workers out of global obj..\n");
-    exit(EXIT_FAILURE);
-  }
-  JSObject* workersObj = JSVAL_TO_OBJECT(workersVal);
-
-  jsval backendsVal;
-  if(!JS_GetProperty(cx, workersObj, "backends", &backendsVal)) {
-    printf("getWorkerInfo: failed to pull backends out of global obj..\n");
-    exit(EXIT_FAILURE);
-  }
-  JSObject* backendsObj = JSVAL_TO_OBJECT(backendsVal);
-
-  jsuint backendWorkersLength = 0;
-  if(!JS_GetArrayLength(cx, backendsObj, &backendWorkersLength)) {
-    printf("getWorkerInfo: unable to get array length of backends obj");
-    exit(EXIT_FAILURE);
-  }
-
-  printf("number of backend workers: %d\n", backendWorkersLength);
-  workerInfo* backendWorkers = new workerInfo[backendWorkersLength];
-  for(int ctr = 0; ctr < backendWorkersLength; ctr++) {
-    jsval backendScriptVal;
-    if(!JS_GetElement(cx, backendsObj, ctr, &backendScriptVal)) {
-      printf("can't pull element out of backendObj array\n");
-      exit(EXIT_FAILURE);
-    }
-    JSString* backendScript = JSVAL_TO_STRING(backendScriptVal);
-    workerInfo wi = {
-      JS_EncodeString(cx, backendScript),
-    };
-    printf("BACKEND SCRIPT: %s\n", wi.entryPoint);
-    backendWorkers[ctr] = wi;
-  }
-
-  jsval frontendVal;
-  if(!JS_GetProperty(cx, workersObj, "frontend", &frontendVal)) {
-    printf("getWorkerInfo: failed to pull frontends out of global obj..\n");
-    exit(EXIT_FAILURE);
-  }
-  JSString* frontendStr = JSVAL_TO_STRING(frontendVal);
-
-  workerInfo frontendWorker = {
-    JS_EncodeString(cx, frontendStr),
-  };
-
-  workerInfos wi =  {
-    backendWorkers,
-    backendWorkersLength,
-    frontendWorker
-  };
-  printf("FRONTEND SCRIPT: %s\n", wi.frontendWorker.entryPoint);
-  return wi;
 }
 
 }}} // namespace sugs::core::js

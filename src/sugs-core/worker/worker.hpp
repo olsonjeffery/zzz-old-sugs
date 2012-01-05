@@ -39,9 +39,14 @@
 
 #include "../corejs/corejs.h"
 
+namespace sugs {
+namespace core {
+namespace worker {
+
 class Worker
 {
   public:
+    // for use by child implementations..
     Worker(JSRuntime* rt, MessageExchange* msgEx, std::string prefix)
     {
       this->_jsEnv = sugs::core::js::initContext(rt);
@@ -50,8 +55,23 @@ class Worker
         this->_agentId = this->_msgEx->registerNewAgent(prefix);
       }
     }
+
+    Worker(JSRuntime* rt, MessageExchange* msgEx, std::string prefix, sugsConfig config, std::string entryPoint)
+    {
+      this->_jsEnv = sugs::core::js::initContext(rt);
+      if (msgEx != NULL) {
+        this->_msgEx = msgEx;
+        this->_agentId = this->_msgEx->registerNewAgent(prefix);
+      }
+      this->_entryPoint = entryPoint;
+      this->_config = config;
+      this->_lastMs = getCurrentMilliseconds();
+    }
+
     ~Worker() {
-      //printf("worker dtor\n");
+      jsval argv[0];
+      jsval rVal;
+      JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "showEntryPoints", 0, argv, &rVal);
       sugs::core::js::teardownContext(this->_jsEnv.cx);
     }
 
@@ -71,6 +91,34 @@ class Worker
     MessageExchange* _msgEx;
     std::string _agentId;
     std::list<sugs::ext::Component*> _components;
+  private:
+    std::string _entryPoint;
+    sugsConfig _config;
+    clock_t _lastMs;
 };
+
+class ConfiguratorWorker : public Worker
+{
+  public:
+    ConfiguratorWorker(JSRuntime* rt)
+    : Worker(rt, NULL, "")
+    {
+      this->parseConfigFile();
+    }
+
+    ~ConfiguratorWorker()
+    {
+      printf("configurator dtor...\n");
+    }
+    sugsConfig getConfig();
+    virtual void initLibraries();
+  private:
+    void parseConfigFile();
+    sugsConfig _config;
+    workerInfos _workers;
+    std::string _pathToExtLibs;
+};
+
+}}} // namespace sugs::core::worker
 
 #endif

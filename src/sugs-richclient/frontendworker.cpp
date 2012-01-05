@@ -28,6 +28,9 @@
 
 #include "frontendworker.h"
 
+namespace sugs {
+namespace richclient {
+
 void FrontendWorker::componentSetup(jsEnv jsEnv, sugsConfig config) {
   printf("initializing graphics.. sw: %d\n", config.screenWidth);
   // init graphics
@@ -158,3 +161,5 @@ void FrontendWorker::closeApp()
 bool FrontendWorker::isWindowClosed() {
   return this->_isClosed;
 }
+
+}} // namespace sugs::richclient

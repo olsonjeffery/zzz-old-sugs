@@ -40,7 +40,10 @@
 #include "jsinput.hpp"
 #include "medialibrary.hpp"
 
-class FrontendWorker : public Worker {
+namespace sugs {
+namespace richclient {
+
+class FrontendWorker : public sugs::core::worker::Worker {
   public:
     FrontendWorker(JSRuntime* rt, sugsConfig config, std::string entryPoint, MessageExchange* msgEx)
     : Worker(rt, msgEx, "frontend")
@@ -75,5 +78,7 @@ class FrontendWorker : public Worker {
 
     bool _isClosed;
 };
+
+}} // namespace sugs::richclient
 
 #endif
