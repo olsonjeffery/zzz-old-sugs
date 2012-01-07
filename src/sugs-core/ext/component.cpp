@@ -32,6 +32,6 @@ namespace sugs {
 namespace ext {
 
 void Component::registerNativeFunctions(jsEnv jsEnv, sugsConfig config) {}
-void Component::doWork(jsEnv jsEnv, sugsConfig config) {}
+bool Component::doWork(jsEnv jsEnv, sugsConfig config) { return true; }
 
 }} // namespace sugs::ext

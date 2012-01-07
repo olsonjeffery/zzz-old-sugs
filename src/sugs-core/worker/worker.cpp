@@ -32,7 +32,11 @@ namespace sugs {
 namespace core {
 namespace worker {
 
-void Worker::initLibraries() {
+const int vmMemSize = (((1024L) * 1024L) * 1024L);
+void Worker::init() {
+  JSRuntime* rt = sugs::core::js::initRuntime(vmMemSize);
+  this->_jsEnv = sugs::core::js::initContext(rt);
+
   // load core libs
   this->loadConfig(this->_config);
   this->loadSugsLibraries(this->_config.paths);
@@ -58,11 +62,56 @@ void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
   JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runMainLoop", 1, argv, &rval);
 }
 
-void Worker::doWork() {
-  time_t currMs = getCurrentMilliseconds();
-  this->processPendingMessages();
-  callIntoJsMainLoop(this->_jsEnv, currMs - this->_lastMs);
-  this->_lastMs = currMs;
+bool doComponentWork(jsEnv jsEnv, sugsConfig config, std::list<sugs::ext::Component*> comps)
+{
+  printf("LOADING COMPONENTS...\n");
+  std::list<sugs::ext::Component*>::iterator it;
+  for(it = comps.begin(); it != comps.end(); it++)
+  {
+    printf("FOUND COMPONENT TO LOAD..\n");
+    sugs::ext::Component* c = *it;
+    bool result = c->doWork(jsEnv, config);
+    if (result == false) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void Worker::kill() {
+  this->_receivedKillSignal = true;
+}
+
+bool Worker::receivedKillSignal() {
+  return this->_receivedKillSignal;
+}
+
+// still need to encapsulate threading in here
+void Worker::begin() {
+  bool continueIterating = true;
+  // we the loop processes incoming messages, and lets
+  // components "do their work". If any of the components,
+  // while being processed, return false, we short circuit
+  // the doComponentWork loop and return, then exit out,
+  // then this while loop will end, as well.
+  if (continueIterating && !this->receivedKillSignal()) {
+    printf("ENTERING BEGIN() ITERATION LOOP");
+    while (continueIterating && !this->receivedKillSignal()) {
+      printf("ITERATION BEGIN\n");
+      time_t currMs = getCurrentMilliseconds();
+      this->processPendingMessages();
+      continueIterating = doComponentWork(this->_jsEnv, this->_config, this->_components);
+      if (continueIterating) {
+        callIntoJsMainLoop(this->_jsEnv, currMs - this->_lastMs);
+        this->_lastMs = currMs;
+      }
+      printf("ITERATION COMPLETE\n");
+    }
+  }
+  else {
+    printf ("NEVER ENTERED BEGIN() LOOP\n");
+  }
+  printf("!!!!!!!!!!!!!!!!!!!! WORKER FINISHING BEGIN() !!!!!!!!!!!!!!!!!\n");
 }
 
 static JSBool

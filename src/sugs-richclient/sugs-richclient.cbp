@@ -79,8 +79,6 @@
 				</ExtraCommands>
 			</Target>
 		</Build>
-		<Unit filename="frontendworker.cpp" />
-		<Unit filename="frontendworker.h" />
 		<Unit filename="gfx/gfx.hpp" />
 		<Unit filename="gfx/jscanvas.cpp" />
 		<Unit filename="gfx/jscircle.cpp" />
@@ -95,6 +93,8 @@
 		<Unit filename="medialibrary.cpp" />
 		<Unit filename="medialibrary.hpp" />
 		<Unit filename="richclient.hpp" />
+		<Unit filename="richclientcomponent.cpp" />
+		<Unit filename="richclientcomponent.hpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

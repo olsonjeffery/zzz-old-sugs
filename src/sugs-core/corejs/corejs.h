@@ -42,7 +42,6 @@ namespace js {
 predicateResult findAndExecuteScript(const char* path, pathStrings paths, JSContext* cx, JSObject* global);
 predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObject* global);
 predicateResult executeFullPathCoffeeScript(const char* path, JSContext* cx, JSObject* global);
-predicateResult execStartupCallbacks(jsEnv jsEnv);
 // This is meant to be called with a string literal of JS to get something back from the runtime
 predicateResult executeJavascriptSnippet(char* code, JSContext* cx, JSObject* global);
 

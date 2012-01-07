@@ -77,9 +77,7 @@ typedef struct {
 } workerInfos;
 
 typedef struct {
-  std::string entryPoint;
-  sugsConfig config;
-  void* msgEx;
+  void* worker;
 } workerPayload;
 
 /* util functions */

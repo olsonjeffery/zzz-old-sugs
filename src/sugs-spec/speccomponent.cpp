@@ -88,8 +88,9 @@ void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
   printf("storing the rawPath! %s\n", rawPaths.c_str());
 }
 
-void SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)
+bool SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)
 {
+  return false;
 }
 
 }} // namespace sugs::spec

@@ -38,7 +38,7 @@ class Component
   public:
     Component() {}
     virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-    virtual void doWork(jsEnv jsEnv, sugsConfig config);
+    virtual bool doWork(jsEnv jsEnv, sugsConfig config);
 };
 }
 }

@@ -48,7 +48,6 @@ class FilesystemComponent : public sugs::ext::Component
   FilesystemComponent() {}
 
   virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-  virtual void doWork(jsEnv jsEnv, sugsConfig config);
 
   private:
 };

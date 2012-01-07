@@ -94,9 +94,4 @@ void FilesystemComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config
   sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugsNative.core.fs", fsFuncsObj);
 }
 
-void FilesystemComponent::doWork(jsEnv jsEnv, sugsConfig config)
-{
-
-}
-
 }}} // namespace sugs::core::fs

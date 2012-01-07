@@ -26,7 +26,12 @@
  *
  */
 
- #include "gfx/gfx.hpp"
- #include "frontendworker.h"
- #include "medialibrary.hpp"
- #include "jsinput.hpp"
+#ifndef __sugs_richclient_hpp__
+#define __sugs_richclient_hpp__
+
+#include "gfx/gfx.hpp"
+#include "medialibrary.hpp"
+#include "jsinput.hpp"
+#include "richclientcomponent.hpp"
+
+#endif

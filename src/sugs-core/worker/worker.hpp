@@ -47,6 +47,8 @@ class Worker
 {
   public:
     // for use by child implementations..
+    // if you're using this ctor, you'll prolly need to
+    // override init(), as well
     Worker(JSRuntime* rt, MessageExchange* msgEx, std::string prefix)
     {
       this->_jsEnv = sugs::core::js::initContext(rt);
@@ -56,13 +58,13 @@ class Worker
       }
     }
 
-    Worker(JSRuntime* rt, MessageExchange* msgEx, std::string prefix, sugsConfig config, std::string entryPoint)
+    Worker(MessageExchange* msgEx, std::string prefix, sugsConfig config, std::string entryPoint)
     {
-      this->_jsEnv = sugs::core::js::initContext(rt);
       if (msgEx != NULL) {
         this->_msgEx = msgEx;
         this->_agentId = this->_msgEx->registerNewAgent(prefix);
       }
+      this->_receivedKillSignal = false;
       this->_entryPoint = entryPoint;
       this->_config = config;
       this->_lastMs = getCurrentMilliseconds();
@@ -73,15 +75,20 @@ class Worker
       jsval rVal;
       JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "showEntryPoints", 0, argv, &rVal);
       sugs::core::js::teardownContext(this->_jsEnv.cx);
+      sugs::core::js::teardownRuntime(this->_jsEnv.rt);
     }
 
     void addComponent(sugs::ext::Component* c);
-    virtual void initLibraries();
+    virtual void init();
     virtual void teardown();
-    virtual void doWork();
+    virtual void begin();
+    void kill();
 
     MessageExchange* getMessageExchange();
+
+    bool receivedKillSignal();
   protected:
+    bool _receivedKillSignal;
     void loadComponents(sugsConfig config);
     void loadSugsLibraries(pathStrings paths);
     void loadConfig(sugsConfig config);
@@ -111,7 +118,7 @@ class ConfiguratorWorker : public Worker
       printf("configurator dtor...\n");
     }
     sugsConfig getConfig();
-    virtual void initLibraries();
+    virtual void init();
   private:
     void parseConfigFile();
     sugsConfig _config;

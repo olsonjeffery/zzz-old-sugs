@@ -8,7 +8,7 @@ void ConfiguratorWorker::parseConfigFile() {
   this->_config = sugs::core::js::execConfig(this->_jsEnv.cx, this->_jsEnv.global);
 }
 
-void ConfiguratorWorker::initLibraries() {
+void ConfiguratorWorker::init() {
   this->loadConfig(this->_config);
   this->loadSugsLibraries(this->_config.paths);
 }

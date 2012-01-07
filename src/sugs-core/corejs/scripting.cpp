@@ -174,14 +174,4 @@ predicateResult findAndExecuteScript(const char* relScriptLoc, pathStrings paths
   return result;
 }
 
-
-predicateResult execStartupCallbacks(jsEnv jsEnv) {
-  jsval argv[0];
-  jsval rval;
-  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
-    return {JS_FALSE, "error occured while called doStartup()\n"};
-  }
-  return { JS_TRUE, ""};
-}
-
 }}} // namespace sugs::core::js
