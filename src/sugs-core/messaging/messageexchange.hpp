@@ -45,24 +45,24 @@ class MessageExchange
     }
 
     std::string registerNewAgent(std::string prefix);
-    bool hasAgent(std::string agentId);
-    bool agentIsSubscribedTo(std::string agentId, std::string msgId);
+    bool hasAgent(std::string workerId);
+    bool workerIsSubscribedTo(std::string workerId, std::string msgId);
     bool hasSubscription(std::string subscriptionName);
-    void addSubscription(std::string agentId, std::string subscriptionName);
+    void addSubscription(std::string workerId, std::string subscriptionName);
     void publish(std::string senderAgentId, std::string msgId, std::string jsonData);
     void publish(std::string targetAgentId, std::string senderAgentId, std::string msgId, std::string jsonData);
 
-    bool messagesPendingFor(std::string agentId);
-    PubSubMsg unshiftNextMsgFor(std::string agentId);
+    bool messagesPendingFor(std::string workerId);
+    PubSubMsg unshiftNextMsgFor(std::string workerId);
   private:
     void pushToOrphanQueue(std::string sendingAgentName, std::string subscriptionName, std::string jsonData);
     void pushToOrphanQueueForAgent(std::string targetAgentName, std::string sendingAgentNAme, std::string msgId, std::string jsonData);
     bool hasOrphanedMsgId(std::string msgId);
-    bool agentHasOrphanedMsgId(std::string agentId, std::string msgId);
+    bool workerHasOrphanedMsgId(std::string workerId, std::string msgId);
     std::map<std::string, std::map<std::string, bool> > _subscriptionsByEvent;
     sf::Mutex _subscriptionLock;
     std::map<std::string, std::map<std::string, bool> > _subscriptionsByAgentId;
-    sf::Mutex _agentLock;
+    sf::Mutex _workerLock;
     std::map<std::string, std::list<PubSubMsg> > _messageBox;
     sf::Mutex _messageBoxLock;
     std::map<std::string, std::list<PubSubMsg> > _orphanedMessages;

@@ -54,7 +54,7 @@ class Worker
       this->_jsEnv = sugs::core::js::initContext(rt);
       if (msgEx != NULL) {
         this->_msgEx = msgEx;
-        this->_agentId = this->_msgEx->registerNewAgent(prefix);
+        this->_workerId = this->_msgEx->registerNewAgent(prefix);
       }
     }
 
@@ -62,7 +62,7 @@ class Worker
     {
       if (msgEx != NULL) {
         this->_msgEx = msgEx;
-        this->_agentId = this->_msgEx->registerNewAgent(prefix);
+        this->_workerId = this->_msgEx->registerNewAgent(prefix);
       }
       this->_receivedKillSignal = false;
       this->_entryPoint = entryPoint;
@@ -96,7 +96,7 @@ class Worker
     void processPendingMessages();
     jsEnv _jsEnv;
     MessageExchange* _msgEx;
-    std::string _agentId;
+    std::string _workerId;
     std::list<sugs::ext::Component*> _components;
   private:
     std::string _entryPoint;
