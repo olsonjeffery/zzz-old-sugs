@@ -32,6 +32,15 @@ namespace sugs {
 namespace core {
 namespace worker {
 
+predicateResult execStartupCallbacks(jsEnv jsEnv) {
+  jsval argv[0];
+  jsval rval;
+  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
+    return {JS_FALSE, "error occured while called doStartup()\n"};
+  }
+  return { JS_TRUE, ""};
+}
+
 const int vmMemSize = (((1024L) * 1024L) * 1024L);
 void Worker::init() {
   JSRuntime* rt = sugs::core::js::initRuntime(vmMemSize);
@@ -47,7 +56,7 @@ void Worker::init() {
   this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
 
   // run $.startup() in user code
-  result = sugs::core::js::execStartupCallbacks(this->_jsEnv);
+  result = execStartupCallbacks(this->_jsEnv);
   if (result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
@@ -64,11 +73,9 @@ void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
 
 bool doComponentWork(jsEnv jsEnv, sugsConfig config, std::list<sugs::ext::Component*> comps)
 {
-  printf("LOADING COMPONENTS...\n");
   std::list<sugs::ext::Component*>::iterator it;
   for(it = comps.begin(); it != comps.end(); it++)
   {
-    printf("FOUND COMPONENT TO LOAD..\n");
     sugs::ext::Component* c = *it;
     bool result = c->doWork(jsEnv, config);
     if (result == false) {
@@ -95,9 +102,7 @@ void Worker::begin() {
   // the doComponentWork loop and return, then exit out,
   // then this while loop will end, as well.
   if (continueIterating && !this->receivedKillSignal()) {
-    printf("ENTERING BEGIN() ITERATION LOOP");
     while (continueIterating && !this->receivedKillSignal()) {
-      printf("ITERATION BEGIN\n");
       time_t currMs = getCurrentMilliseconds();
       this->processPendingMessages();
       continueIterating = doComponentWork(this->_jsEnv, this->_config, this->_components);
@@ -105,13 +110,8 @@ void Worker::begin() {
         callIntoJsMainLoop(this->_jsEnv, currMs - this->_lastMs);
         this->_lastMs = currMs;
       }
-      printf("ITERATION COMPLETE\n");
     }
   }
-  else {
-    printf ("NEVER ENTERED BEGIN() LOOP\n");
-  }
-  printf("!!!!!!!!!!!!!!!!!!!! WORKER FINISHING BEGIN() !!!!!!!!!!!!!!!!!\n");
 }
 
 static JSBool

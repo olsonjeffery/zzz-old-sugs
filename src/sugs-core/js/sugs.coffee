@@ -90,17 +90,18 @@ global.doStartup = ->
 timePassed = 0
 lastTickForFps = {}
 global.runMainLoop = (msElapsed) ->
-  timePassed += msElapsed
-  gap = mainLoopCallback[0]
-  lastTime = lastTickForFps[gap]
-  sleepTime = (lastTime + gap) - timePassed
-  #puts "sleepTime: #{sleepTime} gap: #{gap} lastTime: #{lastTime} timePassed: #{timePassed}"
-  if sleepTime > 0
-    global.__native_thread_sleep sleepTime
-    msElapsed += sleepTime
-  lastTickForFps[gap] = timePassed
-  cb = mainLoopCallback[1]
-  cb msElapsed
+  if mainLoopCallback != null
+    timePassed += msElapsed
+    gap = mainLoopCallback[0]
+    lastTime = lastTickForFps[gap]
+    sleepTime = (lastTime + gap) - timePassed
+    #puts "sleepTime: #{sleepTime} gap: #{gap} lastTime: #{lastTime} timePassed: #{timePassed}"
+    if sleepTime > 0
+      global.__native_thread_sleep sleepTime
+      msElapsed += sleepTime
+    lastTickForFps[gap] = timePassed
+    cb = mainLoopCallback[1]
+    cb msElapsed
 
 global.embedObjectInNamespace = (outter, ns, inner, propName) ->
   all = ns.split '.'
