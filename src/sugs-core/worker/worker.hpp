@@ -54,7 +54,7 @@ class Worker
       this->_jsEnv = sugs::core::js::initContext(rt);
       if (msgEx != NULL) {
         this->_msgEx = msgEx;
-        this->_workerId = this->_msgEx->registerNewAgent(prefix);
+        this->_workerId = this->_msgEx->registerNewWorker(prefix);
       }
     }
 
@@ -62,7 +62,7 @@ class Worker
     {
       if (msgEx != NULL) {
         this->_msgEx = msgEx;
-        this->_workerId = this->_msgEx->registerNewAgent(prefix);
+        this->_workerId = this->_msgEx->registerNewWorker(prefix);
       }
       this->_receivedKillSignal = false;
       this->_entryPoint = entryPoint;

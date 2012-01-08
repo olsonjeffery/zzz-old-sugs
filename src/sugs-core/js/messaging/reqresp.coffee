@@ -53,7 +53,7 @@ registerRequestTicket = (ticketId, clientId, msgId, msg, respHandler) ->
   @reqTickets[ticketId] = respHandler
   wireMsg =
      msg: msg
-     clientId: sugsConfig.myAgentId
+     clientId: sugsConfig.myWorkerId
      ticketId: ticketId
      msgId: msgId
   @publish clientId, 'sugs:messaging:receive:req', wireMsg

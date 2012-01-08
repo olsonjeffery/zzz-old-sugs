@@ -34,14 +34,14 @@ publishFast = (targetAgentId, msgId, msg) ->
     data =
       msg: msgId
       meta:
-        sender: global.sugsConfig.myAgentId
+        sender: global.sugsConfig.myWorkerId
         msgId: targetAgentId
     global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
   else
     data =
       msg: msg
       meta:
-        sender: global.sugsConfig.myAgentId
+        sender: global.sugsConfig.myWorkerId
         msgId: msgId
     global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, isUdp
 
@@ -51,14 +51,14 @@ publishDurable = (targetAgentId, msgId, msg) ->
     data =
       msg: msgId
       meta:
-        sender: global.sugsConfig.myAgentId
+        sender: global.sugsConfig.myWorkerId
         msgId: targetAgentId
     global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
   else
     data =
       msg: msg
       meta:
-        sender: global.sugsConfig.myAgentId
+        sender: global.sugsConfig.myWorkerId
         msgId: msgId
     global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, isUdp
 

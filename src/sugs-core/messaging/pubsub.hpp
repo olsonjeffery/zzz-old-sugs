@@ -36,15 +36,15 @@
 
 class PubSubMsg {
   public:
-    PubSubMsg(std::string sendingAgentId, std::string msgId, std::string jsonData) {
-      this->_sendingAgentId = sendingAgentId;
+    PubSubMsg(std::string sendingWorkerId, std::string msgId, std::string jsonData) {
+      this->_sendingWorkerId = sendingWorkerId;
       this->_msgId = msgId;
       this->_jsonData = jsonData;
     }
     std::string getMsgId();
     std::string getJsonData();
   private:
-    std::string _sendingAgentId;
+    std::string _sendingWorkerId;
     std::string _msgId;
     std::string _jsonData;
 };

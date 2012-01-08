@@ -28,7 +28,7 @@
 
 #include "messageexchange.hpp"
 
-std::string MessageExchange::registerNewAgent(std::string prefix) {
+std::string MessageExchange::registerNewWorker(std::string prefix) {
   char buffer[32];
   sprintf(buffer, "%d", Rng::next());
   std::string randomComponent(buffer);
@@ -36,7 +36,7 @@ std::string MessageExchange::registerNewAgent(std::string prefix) {
 
   this->_workerLock.Lock();
   {
-    (this->_subscriptionsByAgentId[workerId]) = std::map<std::string, bool>();
+    (this->_subscriptionsByWorkerId[workerId]) = std::map<std::string, bool>();
   }
   this->_workerLock.Unlock();
   this->_messageBoxLock.Lock();
@@ -44,20 +44,20 @@ std::string MessageExchange::registerNewAgent(std::string prefix) {
     this->_messageBox[workerId] = std::list<PubSubMsg>();
   }
   this->_messageBoxLock.Unlock();
-  this->_orphanedMessagesForAgentLock.Lock();
+  this->_orphanedMessagesForWorkerLock.Lock();
   {
-    this->_orphanedMessagesForAgent[workerId] = std::map<std::string, std::list<PubSubMsg> >();
+    this->_orphanedMessagesForWorker[workerId] = std::map<std::string, std::list<PubSubMsg> >();
   }
-  this->_orphanedMessagesForAgentLock.Unlock();
+  this->_orphanedMessagesForWorkerLock.Unlock();
 
   return workerId;
 }
 
-bool MessageExchange::hasAgent(std::string workerId) {
+bool MessageExchange::hasWorker(std::string workerId) {
   bool result = false;
   this->_workerLock.Lock();
   {
-    result = !(this->_subscriptionsByAgentId.find(workerId) == this->_subscriptionsByAgentId.end());
+    result = !(this->_subscriptionsByWorkerId.find(workerId) == this->_subscriptionsByWorkerId.end());
   }
   this->_workerLock.Unlock();
   return result;
@@ -74,13 +74,13 @@ bool MessageExchange::hasSubscription(std::string workerId) {
 bool MessageExchange::workerIsSubscribedTo(std::string workerId, std::string msgId)
 {
   bool result = false;
-  bool hasAgent = this->hasAgent(workerId);
+  bool hasWorker = this->hasWorker(workerId);
   this->_subscriptionLock.Lock();
   {
-    if (hasAgent && this->hasSubscription(msgId))
+    if (hasWorker && this->hasSubscription(msgId))
     {
-      std::map<std::string, bool>* subscribingAgents = &(_subscriptionsByEvent[msgId]);
-      result = !(subscribingAgents->find(workerId) == subscribingAgents->end());
+      std::map<std::string, bool>* subscribingWorkers = &(_subscriptionsByEvent[msgId]);
+      result = !(subscribingWorkers->find(workerId) == subscribingWorkers->end());
     }
   }
   this->_subscriptionLock.Unlock();
@@ -99,24 +99,24 @@ bool MessageExchange::hasOrphanedMsgId(std::string msgId) {
 }
 bool MessageExchange::workerHasOrphanedMsgId(std::string workerId, std::string msgId) {
   bool result = false;
-  _orphanedMessagesForAgentLock.Lock();
+  _orphanedMessagesForWorkerLock.Lock();
   {
-    result = !(this->_orphanedMessagesForAgent[workerId].find(msgId) == this->_orphanedMessagesForAgent[workerId].end());
+    result = !(this->_orphanedMessagesForWorker[workerId].find(msgId) == this->_orphanedMessagesForWorker[workerId].end());
   }
-  _orphanedMessagesForAgentLock.Unlock();
+  _orphanedMessagesForWorkerLock.Unlock();
   return result;
 }
 
 void MessageExchange::addSubscription(std::string workerId, std::string subscriptionName)
 {
-  if (this->hasAgent(workerId))
+  if (this->hasWorker(workerId))
   {
     if (!this->hasSubscription(subscriptionName)) {
       this->_subscriptionsByEvent[subscriptionName] = std::map<std::string, bool>();
     }
     _workerLock.Lock();
     {
-      this->_subscriptionsByAgentId[workerId][subscriptionName] = true;
+      this->_subscriptionsByWorkerId[workerId][subscriptionName] = true;
     }
     _workerLock.Unlock();
     _subscriptionLock.Lock();
@@ -155,17 +155,17 @@ void MessageExchange::addSubscription(std::string workerId, std::string subscrip
     {
       std::list<PubSubMsg>* orphans;
       std::list<PubSubMsg> pendingMessages;
-      this->_orphanedMessagesForAgentLock.Lock();
+      this->_orphanedMessagesForWorkerLock.Lock();
       {
-        while(!this->_orphanedMessagesForAgent[workerId][subscriptionName].empty())
+        while(!this->_orphanedMessagesForWorker[workerId][subscriptionName].empty())
         {
-          orphans = &(this->_orphanedMessagesForAgent[workerId][subscriptionName]);
+          orphans = &(this->_orphanedMessagesForWorker[workerId][subscriptionName]);
           PubSubMsg msg = orphans->front();
           orphans->pop_front();
           pendingMessages.push_back(msg);
         }
       }
-      this->_orphanedMessagesForAgentLock.Unlock();
+      this->_orphanedMessagesForWorkerLock.Unlock();
       this->_messageBoxLock.Lock();
       {
         std::list<PubSubMsg>::iterator it;
@@ -180,14 +180,14 @@ void MessageExchange::addSubscription(std::string workerId, std::string subscrip
   }
 }
 
-void MessageExchange::publish(std::string senderAgentId, std::string msgId, std::string jsonData) {
+void MessageExchange::publish(std::string senderWorkerId, std::string msgId, std::string jsonData) {
   if (this->hasSubscription(msgId)) {
     std::map<std::string, bool>* workers = &(_subscriptionsByEvent[msgId]);
     std::map<std::string, bool>::iterator it;
     this->_messageBoxLock.Lock();
     {
       for(it = workers->begin(); it != workers->end(); it++) {
-        PubSubMsg msg(senderAgentId, msgId, jsonData);
+        PubSubMsg msg(senderWorkerId, msgId, jsonData);
         std::string workerId = it->first;
         this->_messageBox[workerId].push_back(msg);
       }
@@ -195,57 +195,57 @@ void MessageExchange::publish(std::string senderAgentId, std::string msgId, std:
     this->_messageBoxLock.Unlock();
   }
   else {
-    this->pushToOrphanQueue(senderAgentId, msgId, jsonData);
+    this->pushToOrphanQueue(senderWorkerId, msgId, jsonData);
   }
 }
-void MessageExchange::publish(std::string targetAgentId, std::string senderAgentId, std::string msgId, std::string jsonData) {
-  if (this->workerIsSubscribedTo(targetAgentId, msgId)) {
+void MessageExchange::publish(std::string targetWorkerId, std::string senderWorkerId, std::string msgId, std::string jsonData) {
+  if (this->workerIsSubscribedTo(targetWorkerId, msgId)) {
     this->_messageBoxLock.Lock();
     {
-      PubSubMsg msg(senderAgentId, msgId, jsonData);
-      _messageBox[targetAgentId].push_back(msg);
+      PubSubMsg msg(senderWorkerId, msgId, jsonData);
+      _messageBox[targetWorkerId].push_back(msg);
     }
     this->_messageBoxLock.Unlock();
   }
   else {
     // worker isn't subscribed to msg.. fail?
-    //printf("worker %s isn't subscribed to %s .. bailing!\n", targetAgentId.c_str(), msgId.c_str());
+    //printf("worker %s isn't subscribed to %s .. bailing!\n", targetWorkerId.c_str(), msgId.c_str());
     //exit(EXIT_FAILURE);
-    this->pushToOrphanQueueForAgent(targetAgentId, senderAgentId, msgId, jsonData);
+    this->pushToOrphanQueueForWorker(targetWorkerId, senderWorkerId, msgId, jsonData);
   }
 }
 
-void MessageExchange::pushToOrphanQueue(std::string senderAgentId, std::string msgId, std::string jsonData) {
+void MessageExchange::pushToOrphanQueue(std::string senderWorkerId, std::string msgId, std::string jsonData) {
   bool orphanedMsgIdExists = this->hasOrphanedMsgId(msgId);
   this->_orphanedMessagesLock.Lock();
   {
     if (!orphanedMsgIdExists) {
       this->_orphanedMessages[msgId] = std::list<PubSubMsg>();
     }
-    PubSubMsg msg(senderAgentId, msgId, jsonData);
+    PubSubMsg msg(senderWorkerId, msgId, jsonData);
     this->_orphanedMessages[msgId].push_back(msg);
   }
   this->_orphanedMessagesLock.Unlock();
 }
 
-void MessageExchange::pushToOrphanQueueForAgent(std::string targetAgentId, std::string senderAgentId, std::string msgId, std::string jsonData) {
-  bool orphanedMsgIdExists = this->workerHasOrphanedMsgId(targetAgentId, msgId);
-  this->_orphanedMessagesForAgentLock.Lock();
+void MessageExchange::pushToOrphanQueueForWorker(std::string targetWorkerId, std::string senderWorkerId, std::string msgId, std::string jsonData) {
+  bool orphanedMsgIdExists = this->workerHasOrphanedMsgId(targetWorkerId, msgId);
+  this->_orphanedMessagesForWorkerLock.Lock();
   {
     if (!orphanedMsgIdExists) {
-      this->_orphanedMessagesForAgent[targetAgentId][msgId] = std::list<PubSubMsg>();
+      this->_orphanedMessagesForWorker[targetWorkerId][msgId] = std::list<PubSubMsg>();
     }
-    PubSubMsg msg(senderAgentId, msgId, jsonData);
-    this->_orphanedMessagesForAgent[targetAgentId][msgId].push_back(msg);
+    PubSubMsg msg(senderWorkerId, msgId, jsonData);
+    this->_orphanedMessagesForWorker[targetWorkerId][msgId].push_back(msg);
   }
-  this->_orphanedMessagesForAgentLock.Unlock();
+  this->_orphanedMessagesForWorkerLock.Unlock();
 }
 
 bool MessageExchange::messagesPendingFor(std::string workerId)
 {
   bool result = false;
-  bool hasAgent = this->hasAgent(workerId);
-  if (hasAgent) {
+  bool hasWorker = this->hasWorker(workerId);
+  if (hasWorker) {
     this->_messageBoxLock.Lock();
     {
       result = !(this->_messageBox[workerId].empty());
