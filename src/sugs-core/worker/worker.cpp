@@ -58,8 +58,35 @@ bool doComponentWork(jsEnv jsEnv, sugsConfig config, std::list<sugs::core::ext::
   return true;
 }
 
+void workerCallback(void* wpP) {
+  workerPayload* payload = (workerPayload*)wpP;
+  sugs::core::worker::Worker* worker = (sugs::core::worker::Worker*)(payload->worker);
+
+  worker->init();
+  worker->begin();
+}
+
+void Worker::start(bool runInNewThread) {
+  this->_runInNewThread = runInNewThread;
+  workerPayload* wpP = new workerPayload;
+  workerPayload wp = { (void*)this };
+  *wpP = wp;
+
+  if(this->_runInNewThread) {
+    sf::Thread* workerThread;
+    this->_workerThread = new sf::Thread(&workerCallback, wpP);
+    this->_workerThread->Launch();
+  }
+  else {
+    workerCallback((void*)wpP);
+  }
+}
+
 void Worker::kill() {
   this->_receivedKillSignal = true;
+  if (this->_runInNewThread) {
+    this->_workerThread->Wait();
+  }
 }
 
 bool Worker::receivedKillSignal() {

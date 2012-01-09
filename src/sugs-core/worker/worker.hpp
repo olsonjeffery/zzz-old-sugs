@@ -29,6 +29,7 @@
 #ifndef __worker_hpp__
 #define __worker_hpp__
 
+#include <SFML/System.hpp>
 #include <list>
 
 #include <jsapi.h>
@@ -77,10 +78,12 @@ class Worker
     }
 
     void addComponent(sugs::core::ext::Component* c);
+
+    void start(bool runInNewThread);
     virtual void init();
-    virtual void teardown();
     virtual void begin();
     void kill();
+    virtual void teardown();
 
     MessageExchange* getMessageExchange();
 
@@ -95,8 +98,9 @@ class Worker
     MessageExchange* _msgEx;
     std::string _workerId;
     std::list<sugs::core::ext::Component*> _components;
-  private:
     sugsConfig _config;
+    bool _runInNewThread;
+    sf::Thread* _workerThread;
 };
 
 class ConfiguratorWorker : public Worker
