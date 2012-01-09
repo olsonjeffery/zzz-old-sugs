@@ -88,8 +88,13 @@ void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
   printf("storing the rawPath! %s\n", rawPaths.c_str());
 }
 
+bool runOnce = false;
 bool SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)
 {
+  if (!runOnce) {
+    runOnce = true;
+    return true;
+  }
   return false;
 }
 

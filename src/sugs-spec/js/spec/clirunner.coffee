@@ -21,7 +21,7 @@ $.mainLoop 1, ->
   testableList = []
   if dirs.length > 0
     for relPath in dirs
-      fullPath = sugsConfig.moduleDir + relPath
+      fullPath = sugsConfig.custom.moduleDir + relPath
       files = fs.ls fullPath
       if files.length > 0
         for f in files

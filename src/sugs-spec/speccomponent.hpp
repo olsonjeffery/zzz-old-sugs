@@ -35,13 +35,13 @@
 
 #include "../sugs-core/core.h"
 #include "../sugs-core/common.hpp"
-#include "../sugs-core/ext/component.h"
+#include "../sugs-core/ext/ext.hpp"
 #include "../sugs-core/common/jsutil.hpp"
 
 namespace sugs {
 namespace spec {
 
-class SpecComponent : public sugs::ext::Component
+class SpecComponent : public sugs::core::ext::Component
 {
   public:
   SpecComponent(std::string rawPaths)
@@ -50,7 +50,7 @@ class SpecComponent : public sugs::ext::Component
   }
 
   virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-  virtual void doWork(jsEnv jsEnv, sugsConfig config);
+  virtual bool doWork(jsEnv jsEnv, sugsConfig config);
 
   private:
   std::string _rawPaths;

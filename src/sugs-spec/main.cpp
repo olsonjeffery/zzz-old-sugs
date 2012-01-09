@@ -3,12 +3,10 @@
 #include <stdio.h>
 
 
-#include "../sugs-core/ext/component.h"
+#include "../sugs-core/ext/ext.hpp"
 #include "../sugs-core/common.hpp"
 
 #include "../sugs-core/core.h"
-#include "../sugs-core/worker/configurator.hpp"
-#include "../sugs-core/worker/backend.hpp"
 #include "../sugs-core/messaging/messageexchange.hpp"
 
 #include "speccomponent.hpp"
@@ -24,10 +22,11 @@ static const bool path_dummy = google::RegisterFlagValidator(&FLAGS_path, &Valid
 
 void getConfig(JSRuntime* rt, sugsConfig* config) {
   jsEnv jsEnv = sugs::core::js::initContext(rt);
-  ConfiguratorWorker configurator(rt);
-  configurator.initLibraries();
-  sugsConfig lConf = configurator.getConfig();
-  *config = configurator.getConfig();
+  sugs::core::worker::ConfiguratorWorker* configurator = new sugs::core::worker::ConfiguratorWorker(rt);
+  configurator->init();
+  sugsConfig lConf = configurator->getConfig();
+  *config = configurator->getConfig();
+  delete configurator;
 }
 
 const int vmMemSize = (((1024L) * 1024L) * 1024L);
@@ -50,21 +49,20 @@ int main(int argc, char *argv[])
   std::cout << "sugs-spec" << std::endl;
   std::cout << "path: '"<< FLAGS_path << "'" << std::endl;
 
-  sugs::ext::Component* fsComp = new sugs::core::fs::FilesystemComponent();
-  sugs::ext::Component* specComp = new sugs::spec::SpecComponent(FLAGS_path);
-
-  BackendWorker* worker = new BackendWorker(rt, config, "spec/clirunner.coffee", msgEx);
-
+  sugs::core::worker::Worker* worker = new sugs::core::worker::Worker(msgEx, "spec_runner", config);
+  sugs::core::ext::Component* fsComp = new sugs::core::ext::FilesystemComponent();
+  sugs::core::ext::Component* specComp = new sugs::spec::SpecComponent(FLAGS_path);
+  sugs::core::ext::Component* specRunnerScript = new sugs::core::ext::ScriptRunnerComponent("spec/clirunner.coffee");
   worker->addComponent(fsComp);
   worker->addComponent(specComp);
-  worker->initLibraries();
+  worker->addComponent(specRunnerScript);
+  worker->start(false);
 
   // run the $.mainLoop in runner.coffee
-  worker->doWork();
   delete worker;      // all of these deletes should go away w/ shared_ptr use
   delete specComp;
   delete msgEx;
-  sugs::core::js::teardownRuntime(rt);
+  delete specRunnerScript;
   sugs::core::js::shutdownSpidermonkey();
 
   return 0;
