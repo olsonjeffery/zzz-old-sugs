@@ -32,6 +32,6 @@
 #include "corejs/corejs.h"
 #include "fs/fs.hpp"
 #include "worker/worker.hpp"
-#include "ext/component.h"
+#include "ext/ext.hpp"
 
 #endif

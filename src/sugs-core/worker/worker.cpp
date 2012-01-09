@@ -32,15 +32,6 @@ namespace sugs {
 namespace core {
 namespace worker {
 
-predicateResult execStartupCallbacks(jsEnv jsEnv) {
-  jsval argv[0];
-  jsval rval;
-  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
-    return {JS_FALSE, "error occured while called doStartup()\n"};
-  }
-  return { JS_TRUE, ""};
-}
-
 const int vmMemSize = (((1024L) * 1024L) * 1024L);
 void Worker::init() {
   JSRuntime* rt = sugs::core::js::initRuntime(vmMemSize);
@@ -49,34 +40,16 @@ void Worker::init() {
   // load core libs
   this->loadConfig(this->_config);
   this->loadSugsLibraries(this->_config.paths);
-
   this->loadComponents(this->_config);
-
-  predicateResult result;
-  this->loadEntryPointScript(this->_entryPoint.c_str(), this->_config.paths);
-
-  // run $.startup() in user code
-  result = execStartupCallbacks(this->_jsEnv);
-  if (result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
-  }
 }
 
-void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
-  jsval argv[1];
 
-  argv[0] = INT_TO_JSVAL(msElapsed);
-  jsval rval;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runMainLoop", 1, argv, &rval);
-}
-
-bool doComponentWork(jsEnv jsEnv, sugsConfig config, std::list<sugs::ext::Component*> comps)
+bool doComponentWork(jsEnv jsEnv, sugsConfig config, std::list<sugs::core::ext::Component*> comps)
 {
-  std::list<sugs::ext::Component*>::iterator it;
+  std::list<sugs::core::ext::Component*>::iterator it;
   for(it = comps.begin(); it != comps.end(); it++)
   {
-    sugs::ext::Component* c = *it;
+    sugs::core::ext::Component* c = *it;
     bool result = c->doWork(jsEnv, config);
     if (result == false) {
       return false;
@@ -103,13 +76,8 @@ void Worker::begin() {
   // then this while loop will end, as well.
   if (continueIterating && !this->receivedKillSignal()) {
     while (continueIterating && !this->receivedKillSignal()) {
-      time_t currMs = getCurrentMilliseconds();
       this->processPendingMessages();
       continueIterating = doComponentWork(this->_jsEnv, this->_config, this->_components);
-      if (continueIterating) {
-        callIntoJsMainLoop(this->_jsEnv, currMs - this->_lastMs);
-        this->_lastMs = currMs;
-      }
     }
   }
 }
@@ -316,22 +284,6 @@ void Worker::teardown() {
   sugs::core::js::teardownContext(this->_jsEnv.cx);
 }
 
-void Worker::loadEntryPointScript(const char* entryPoint, pathStrings paths) {
-  predicateResult result;
-  result = sugs::core::js::findAndExecuteScript(entryPoint, paths, this->_jsEnv.cx, this->_jsEnv.global);
-  if(result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
-  }
-
-  JSString* epStr = JS_NewStringCopyN(this->_jsEnv.cx, entryPoint, strlen(entryPoint));
-  jsval epVal = STRING_TO_JSVAL(epStr);
-  jsval argv[1];
-  argv[0] = epVal;
-  jsval rVal;
-  JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "addEntryPoint", 1, argv, &rVal);
-}
-
 void Worker::processPendingMessages()
 {
   while(this->_msgEx->messagesPendingFor(this->_workerId))
@@ -350,7 +302,7 @@ void Worker::processPendingMessages()
   }
 }
 
-void Worker::addComponent(sugs::ext::Component* c)
+void Worker::addComponent(sugs::core::ext::Component* c)
 {
   this->_components.push_back(c);
 }
@@ -358,11 +310,11 @@ void Worker::addComponent(sugs::ext::Component* c)
 void Worker::loadComponents(sugsConfig config)
 {
   printf("LOADING COMPONENTS...\n");
-  std::list<sugs::ext::Component*>::iterator it;
+  std::list<sugs::core::ext::Component*>::iterator it;
   for(it = this->_components.begin(); it != this->_components.end(); it++)
   {
     printf("FOUND COMPONENT TO LOAD..\n");
-    sugs::ext::Component* c = *it;
+    sugs::core::ext::Component* c = *it;
     c->registerNativeFunctions(this->_jsEnv, config);
   }
 }

@@ -33,13 +33,13 @@
 #include <chipmunk.h>
 
 #include "../common.hpp"
-#include "../ext/component.h"
+#include "../ext/ext.hpp"
 
 #include "space.h"
 
 namespace sugs{
 namespace physics {
-class ChipmunkPhysicsComponent : public sugs::ext::Component
+class ChipmunkPhysicsComponent : public sugs::core::ext::Component
 {
   public:
     ChipmunkPhysicsComponent() {

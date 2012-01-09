@@ -32,7 +32,56 @@ namespace sugs {
 namespace core {
 namespace ext {
 
-void Component::registerNativeFunctions(jsEnv jsEnv, sugsConfig config) {}
-bool Component::doWork(jsEnv jsEnv, sugsConfig config) { return true; }
+predicateResult execStartupCallbacks(jsEnv jsEnv) {
+  jsval argv[0];
+  jsval rval;
+  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
+    return {JS_FALSE, "error occured while called doStartup()\n"};
+  }
+  return { JS_TRUE, ""};
+}
 
-}}} // namespace sugs::ext
+void ScriptRunnerComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+{
+  predicateResult result;
+  this->loadEntryPointScript(jsEnv, config.paths, this->_entryPoint.c_str()); // entry point should come from json
+
+  // run $.startup() in user code
+  result = execStartupCallbacks(jsEnv);
+  if (result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
+  }
+}
+
+void ScriptRunnerComponent::loadEntryPointScript(jsEnv jsEnv, pathStrings paths, const char* entryPoint) {
+  predicateResult result;
+  result = sugs::core::js::findAndExecuteScript(entryPoint, paths, jsEnv.cx, jsEnv.global);
+  if(result.result == JS_FALSE) {
+    printf(result.message);
+    exit(EXIT_FAILURE);
+  }
+
+  JSString* epStr = JS_NewStringCopyN(jsEnv.cx, entryPoint, strlen(entryPoint));
+  jsval epVal = STRING_TO_JSVAL(epStr);
+  jsval argv[1];
+  argv[0] = epVal;
+  jsval rVal;
+  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "addEntryPoint", 1, argv, &rVal);
+}
+
+void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
+  jsval argv[1];
+
+  argv[0] = INT_TO_JSVAL(msElapsed);
+  jsval rval;
+  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runMainLoop", 1, argv, &rval);
+}
+
+bool ScriptRunnerComponent::doWork(jsEnv jsEnv, sugsConfig config) {
+  time_t currMs = getCurrentMilliseconds();
+  callIntoJsMainLoop(jsEnv, currMs - this->_lastMs);
+  this->_lastMs = currMs;
+}
+
+}}} // namespace sugs::core::ext

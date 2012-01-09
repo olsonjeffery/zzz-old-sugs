@@ -26,21 +26,54 @@
  *
  */
 
-#ifndef __ext_component_h__
-#define __ext_component_h__
+#ifndef __sugs_core_ext_hpp__
+#define __sugs_core_ext_hpp__
 
 #include "../common.hpp"
+#include "../corejs/corejs.h"
+#include "../fs/fs.hpp"
 
 namespace sugs {
+namespace core {
 namespace ext {
+
 class Component
 {
   public:
-    Component() {}
-    virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-    virtual bool doWork(jsEnv jsEnv, sugsConfig config);
+  Component() {}
+  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
+  virtual bool doWork(jsEnv jsEnv, sugsConfig config);
 };
-}
-}
+
+class ScriptRunnerComponent : public Component
+{
+  public:
+  ScriptRunnerComponent(std::string entryPointScript)
+  {
+    this->_lastMs = getCurrentMilliseconds();
+    this->_entryPoint = entryPointScript;
+  }
+
+  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
+  virtual bool doWork(jsEnv jsEnv, sugsConfig config);
+
+  private:
+  time_t _lastMs;
+  std::string _entryPoint;
+
+  void loadEntryPointScript(jsEnv jsEnv, pathStrings paths, const char* path);
+};
+
+class FilesystemComponent : public sugs::core::ext::Component
+{
+  public:
+  FilesystemComponent() {}
+
+  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
+
+  private:
+};
+
+}}} // namespace sugs::core::ext
 
 #endif

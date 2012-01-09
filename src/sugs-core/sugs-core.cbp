@@ -86,8 +86,9 @@
 		<Unit filename="corejs/jssetup.cpp" />
 		<Unit filename="corejs/scripting.cpp" />
 		<Unit filename="ext/component.cpp" />
-		<Unit filename="ext/component.h" />
-		<Unit filename="fs/filesystemcomponent.cpp" />
+		<Unit filename="ext/ext.hpp" />
+		<Unit filename="ext/filesystemcomponent.cpp" />
+		<Unit filename="ext/scriptrunnercomponent.cpp" />
 		<Unit filename="fs/fs.cpp" />
 		<Unit filename="fs/fs.hpp" />
 		<Unit filename="messaging/messageexchange.cpp" />

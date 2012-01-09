@@ -26,7 +26,7 @@
  *
  */
 
-#include "fs.hpp"
+#include "ext.hpp"
 namespace fs = boost::filesystem;
 
 static JSBool
@@ -80,7 +80,7 @@ static JSFunctionSpec filesystemFuncs[] = {
 
 namespace sugs {
 namespace core {
-namespace fs {
+namespace ext {
 
 void FilesystemComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
 {

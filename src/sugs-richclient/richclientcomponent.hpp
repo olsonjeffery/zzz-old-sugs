@@ -37,7 +37,7 @@
 namespace sugs {
 namespace richclient {
 
-class RichClientComponent : public sugs::ext::Component
+class RichClientComponent : public sugs::core::ext::Component
 {
   public:
   ~RichClientComponent()

@@ -36,21 +36,10 @@
 #include <jsapi.h>
 
 #include "../common.hpp"
-#include "../ext/component.h"
 
 namespace sugs {
 namespace core {
 namespace fs {
-
-class FilesystemComponent : public sugs::ext::Component
-{
-  public:
-  FilesystemComponent() {}
-
-  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-
-  private:
-};
 
 void readEntireFile(const char* path, char** outBuffer, int* outLength);
 bool fileExists(const char * filename);

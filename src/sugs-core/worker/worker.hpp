@@ -33,7 +33,7 @@
 
 #include <jsapi.h>
 
-#include "../ext/component.h"
+#include "../ext/ext.hpp"
 #include "../common.hpp"
 #include "../messaging/messageexchange.hpp"
 
@@ -58,16 +58,14 @@ class Worker
       }
     }
 
-    Worker(MessageExchange* msgEx, std::string prefix, sugsConfig config, std::string entryPoint)
+    Worker(MessageExchange* msgEx, std::string prefix, sugsConfig config)
     {
       if (msgEx != NULL) {
         this->_msgEx = msgEx;
         this->_workerId = this->_msgEx->registerNewWorker(prefix);
       }
       this->_receivedKillSignal = false;
-      this->_entryPoint = entryPoint;
       this->_config = config;
-      this->_lastMs = getCurrentMilliseconds();
     }
 
     ~Worker() {
@@ -78,7 +76,7 @@ class Worker
       sugs::core::js::teardownRuntime(this->_jsEnv.rt);
     }
 
-    void addComponent(sugs::ext::Component* c);
+    void addComponent(sugs::core::ext::Component* c);
     virtual void init();
     virtual void teardown();
     virtual void begin();
@@ -92,16 +90,13 @@ class Worker
     void loadComponents(sugsConfig config);
     void loadSugsLibraries(pathStrings paths);
     void loadConfig(sugsConfig config);
-    void loadEntryPointScript(const char* path, pathStrings paths);
     void processPendingMessages();
     jsEnv _jsEnv;
     MessageExchange* _msgEx;
     std::string _workerId;
-    std::list<sugs::ext::Component*> _components;
+    std::list<sugs::core::ext::Component*> _components;
   private:
-    std::string _entryPoint;
     sugsConfig _config;
-    clock_t _lastMs;
 };
 
 class ConfiguratorWorker : public Worker
