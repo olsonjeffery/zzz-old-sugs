@@ -152,12 +152,6 @@ global.pullObjectFrom = (topLevel, nsPlusPath) ->
     else
       tail topLevel, all
 
-
-
-# global event registrar/util interface
-configHasRan = false
-sugsConfig = null
-
 global.$ = {
   moduleConfig: (conf) ->
     global.__workers =

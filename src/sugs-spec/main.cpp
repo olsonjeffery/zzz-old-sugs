@@ -46,23 +46,30 @@ int main(int argc, char *argv[])
   sugsConfig config;
   getConfig(rt, &config);
 
-  std::cout << "sugs-spec" << std::endl;
-  std::cout << "path: '"<< FLAGS_path << "'" << std::endl;
+  // register components
+  sugs::core::ext::ComponentFactory* scriptRunnerCf = new sugs::core::ext::ScriptRunnerComponentFactory();
+  sugs::core::ext::ComponentLibrary::registerComponentFactory(scriptRunnerCf);
+
+  sugs::core::ext::ComponentFactory* filesystemCf = new sugs::core::ext::FilesystemComponentFactory();
+  sugs::core::ext::ComponentLibrary::registerComponentFactory(filesystemCf);
+
+  sugs::core::ext::ComponentFactory* specCf = new sugs::spec::SpecComponentFactory();
+  sugs::core::ext::ComponentLibrary::registerComponentFactory(specCf);
 
   sugs::core::worker::Worker* worker = new sugs::core::worker::Worker(msgEx, "spec_runner", config);
-  sugs::core::ext::Component* fsComp = new sugs::core::ext::FilesystemComponent();
-  sugs::core::ext::Component* specComp = new sugs::spec::SpecComponent(FLAGS_path);
-  sugs::core::ext::Component* specRunnerScript = new sugs::core::ext::ScriptRunnerComponent("spec/clirunner.coffee");
-  worker->addComponent(fsComp);
-  worker->addComponent(specComp);
-  worker->addComponent(specRunnerScript);
+  sugs::core::ext::ComponentPair fsPair(filesystemCf, "{}");
+  std::string rawPathJson("{ rawPath: '" + FLAGS_path + "' }");
+  std::cout << "raw path: " << rawPathJson << std::endl;
+  sugs::core::ext::ComponentPair specPair(specCf, rawPathJson);
+  sugs::core::ext::ComponentPair scriptRunnerPair(scriptRunnerCf, "{entryPoint:'spec/clirunner.coffee'}");
+  worker->addComponentPair(fsPair);
+  worker->addComponentPair(specPair);
+  worker->addComponentPair(scriptRunnerPair);
   worker->start(false);
 
   // run the $.mainLoop in runner.coffee
   delete worker;      // all of these deletes should go away w/ shared_ptr use
-  delete specComp;
   delete msgEx;
-  delete specRunnerScript;
   sugs::core::js::shutdownSpidermonkey();
 
   return 0;

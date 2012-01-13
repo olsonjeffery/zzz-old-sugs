@@ -37,16 +37,23 @@
 
 #include "space.h"
 
-namespace sugs{
-namespace physics {
+namespace sugs
+{
+namespace physics
+{
 class ChipmunkPhysicsComponent : public sugs::core::ext::Component
 {
-  public:
-    ChipmunkPhysicsComponent() {
-    }
-
-    virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
+public:
+  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
 };
+
+class ChipmunkPhysicsComponentFactory : public sugs::core::ext::ComponentFactory
+{
+  public:
+  virtual sugs::core::ext::Component* create(jsEnv jsEnv, JSObject* configJson);
+  virtual std::string getName();
+};
+
 }
 }
 

@@ -29,25 +29,64 @@
 #ifndef __sugs_core_ext_hpp__
 #define __sugs_core_ext_hpp__
 
+#include <map>
+#include <jsapi.h>
 #include "../common.hpp"
 #include "../corejs/corejs.h"
 #include "../fs/fs.hpp"
 
-namespace sugs {
-namespace core {
-namespace ext {
+namespace sugs
+{
+namespace core
+{
+namespace ext
+{
 
 class Component
 {
-  public:
+public:
   Component() {}
   virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
   virtual bool doWork(jsEnv jsEnv, sugsConfig config);
 };
 
+class ComponentFactory
+{
+public:
+  virtual Component* create(jsEnv jsEnv, JSObject* configObj);
+  virtual std::string getName();
+};
+
+class ComponentLibrary
+{
+public:
+  static void registerComponentFactory(ComponentFactory* factory);
+  static ComponentFactory* getComponentFactory(std::string componentName);
+
+private:
+  static std::map<std::string, ComponentFactory*> _library;
+};
+
+class ComponentPair
+{
+public:
+  ComponentPair(ComponentFactory* factory, std::string configJson)
+  {
+    this->_factory = factory;
+    this->_configJson = configJson;
+  }
+
+  std::string getConfigJson();
+  ComponentFactory* getComponentFactory();
+
+private:
+  std::string _configJson;
+  ComponentFactory* _factory;
+};
+
 class ScriptRunnerComponent : public Component
 {
-  public:
+public:
   ScriptRunnerComponent(std::string entryPointScript)
   {
     this->_lastMs = getCurrentMilliseconds();
@@ -57,23 +96,39 @@ class ScriptRunnerComponent : public Component
   virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
   virtual bool doWork(jsEnv jsEnv, sugsConfig config);
 
-  private:
+private:
   time_t _lastMs;
   std::string _entryPoint;
 
   void loadEntryPointScript(jsEnv jsEnv, pathStrings paths, const char* path);
 };
 
-class FilesystemComponent : public sugs::core::ext::Component
+class ScriptRunnerComponentFactory : public ComponentFactory
 {
   public:
+    virtual Component* create(jsEnv jsEnv, JSObject* configObj);
+    virtual std::string getName();
+};
+
+class FilesystemComponent : public Component
+{
+public:
   FilesystemComponent() {}
 
   virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
 
-  private:
+private:
 };
 
-}}} // namespace sugs::core::ext
+class FilesystemComponentFactory : public ComponentFactory
+{
+  public:
+    virtual Component* create(jsEnv jsEnv, JSObject* configObj);
+    virtual std::string getName();
+};
+
+}
+}
+} // namespace sugs::core::ext
 
 #endif

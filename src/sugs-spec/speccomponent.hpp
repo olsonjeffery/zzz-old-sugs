@@ -56,6 +56,12 @@ class SpecComponent : public sugs::core::ext::Component
   std::string _rawPaths;
 };
 
+class SpecComponentFactory : public sugs::core::ext::ComponentFactory
+{
+  virtual sugs::core::ext::Component* create(jsEnv jsEnv, JSObject* configJson);
+  virtual std::string getName();
+};
+
 }} // namespace sugs::spec
 
 #endif

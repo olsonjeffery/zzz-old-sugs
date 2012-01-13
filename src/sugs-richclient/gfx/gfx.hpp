@@ -49,7 +49,7 @@ struct GraphicsEnv {
 };
 
 // graphics setup stuff
-GraphicsEnv initGraphics(JSContext* cx, sugsConfig config);
+GraphicsEnv initGraphics(JSContext* cx, sugsConfig config, int width, int height, int colorDepth);
 void teardownGraphics(sf::RenderWindow* window, JSObject* canvas, JSContext* cx);
 
 /* JSCanvas setup */

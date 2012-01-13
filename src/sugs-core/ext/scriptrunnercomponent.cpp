@@ -84,4 +84,21 @@ bool ScriptRunnerComponent::doWork(jsEnv jsEnv, sugsConfig config) {
   this->_lastMs = currMs;
 }
 
+Component* ScriptRunnerComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
+{
+  jsval epVal;
+  if (!JS_GetProperty(jsEnv.cx, configJson, "entryPoint", &epVal)) {
+    printf("ScriptRunnerComponentFactory::create() : failed to pull entryPoint val from config json object");
+    exit(EXIT_FAILURE);
+  }
+  JSString* epStr = JSVAL_TO_STRING(epVal);
+  std::string ep(JS_EncodeString(jsEnv.cx, epStr));
+  return new ScriptRunnerComponent(ep);
+}
+
+std::string ScriptRunnerComponentFactory::getName()
+{
+  return "ScriptRunner";
+}
+
 }}} // namespace sugs::core::ext

@@ -86,6 +86,7 @@
 		<Unit filename="corejs/jssetup.cpp" />
 		<Unit filename="corejs/scripting.cpp" />
 		<Unit filename="ext/component.cpp" />
+		<Unit filename="ext/componentfactory.cpp" />
 		<Unit filename="ext/ext.hpp" />
 		<Unit filename="ext/filesystemcomponent.cpp" />
 		<Unit filename="ext/scriptrunnercomponent.cpp" />

@@ -34,7 +34,7 @@ namespace sugs {
 namespace core {
 namespace js {
 
-predicateResult executeScriptFromSrc(const char* path, char** src, int length, JSContext* cx, JSObject* global) {
+predicateResult executeScriptFromSrc(const char* path, const char** src, int length, JSContext* cx, JSObject* global) {
   printf("executing %s from source!!!\n", path);
   /* Execute a script */
   JSObject *scriptObject;
@@ -82,12 +82,13 @@ predicateResult executeFullPathJavaScript(const char* path, JSContext* cx, JSObj
   }
   sugs::core::fs::readEntireFile(path, &srcBuffer, &length);
 
-  predicateResult result = executeScriptFromSrc(path, &srcBuffer, length, cx, global);
-  free(srcBuffer);
+  const char* srcBufferConst = srcBuffer;
+  predicateResult result = executeScriptFromSrc(path, &srcBufferConst, length, cx, global);
+  free((void*)srcBuffer);
   return result;
 }
 
-predicateResult executeJavascriptSnippet(char* code, JSContext* cx, JSObject* global) {
+predicateResult executeJavascriptSnippet(const char* code, JSContext* cx, JSObject* global) {
   int length = strlen(code);
   return executeScriptFromSrc("snippet.js", &code, length, cx, global);
 }
@@ -132,13 +133,13 @@ predicateResult executeFullPathCoffeeScript(const char* path, JSContext* cx, JSO
   JSString* jsSrcString;
   jsSrcString = JSVAL_TO_STRING(rVal);
 
-  char* srcString = JS_EncodeString(cx, jsSrcString);
+  const char* srcString = JS_EncodeString(cx, jsSrcString);
   if (srcString == NULL) {
     return { JS_FALSE, "failed to encode string when prepping to run coffee file.\n"};
   }
 
   predicateResult result = executeScriptFromSrc(path, &srcString, strlen(srcString) - sizeof(char), cx, global);
-  free(buffer);
+  free((void*)buffer);
   return result;
 }
 

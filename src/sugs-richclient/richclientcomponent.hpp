@@ -40,6 +40,12 @@ namespace richclient {
 class RichClientComponent : public sugs::core::ext::Component
 {
   public:
+  RichClientComponent(int width, int height, int colorDepth)
+  {
+    this->_screenWidth = width;
+    this->_screenHeight = height;
+    this->_colorDepth = colorDepth;
+  }
   ~RichClientComponent()
   {
     this->_isClosed = false;
@@ -57,6 +63,16 @@ class RichClientComponent : public sugs::core::ext::Component
   bool isWindowClosed();
   jsEnv _jsEnv;
   sugs::richclient::gfx::GraphicsEnv _gfxEnv;
+  int _screenWidth;
+  int _screenHeight;
+  int _colorDepth;
+};
+
+class RichClientComponentFactory : public sugs::core::ext::ComponentFactory
+{
+  public:
+  virtual sugs::core::ext::Component* create(jsEnv jsEnv, JSObject* configJson);
+  virtual std::string getName();
 };
 
 }} // namespace sugs::richclient

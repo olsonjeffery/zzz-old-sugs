@@ -42,7 +42,7 @@ void readEntireFile(const char* name, char** str, int* length) {
     *str = (char*)malloc((size_t)size + 1);
     if(!*str) break;
 
-    read = fread(*str, 1, (size_t)size, file);
+    read = fread((void*)*str, 1, (size_t)size, file);
     (*str)[read] = 0;
     *str = (char*)realloc(*str, read + 1);
 

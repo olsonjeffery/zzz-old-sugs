@@ -249,27 +249,6 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
     }
     JSObject* sugsConfig = JSVAL_TO_OBJECT(scVal);
 
-    jsval widthVal;
-    if(!JS_GetProperty(cx, sugsConfig, "screenWidth", &widthVal)) {
-        printf("getCurrentConfig: failure to pull screenWidth from global.sugsConfig\n");
-        exit(EXIT_FAILURE);
-    }
-    int width = SUGS_JSVAL_TO_NUMBER(widthVal);
-
-    jsval heightVal;
-    if(!JS_GetProperty(cx, sugsConfig, "screenHeight", &heightVal)) {
-        printf("getCurrentConfig: failure to pull screenHeight from global.sugsConfig\n");
-        exit(EXIT_FAILURE);
-    }
-    int height = SUGS_JSVAL_TO_NUMBER(heightVal);
-
-    jsval colorDepthVal;
-    if(!JS_GetProperty(cx, sugsConfig, "colorDepth", &colorDepthVal)) {
-        printf("getCurrentConfig: failure to pull colorDepth from global.sugsConfig\n");
-        exit(EXIT_FAILURE);
-    }
-    int colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
-
     jsval pathsVal;
     if(!JS_GetProperty(cx, sugsConfig, "paths", &pathsVal)) {
         printf("getCurrentConfig: failure to pull paths from global.sugsConfig\n");
@@ -318,9 +297,6 @@ sugsConfig getCurrentConfig(JSContext* cx, JSObject* global) {
     printf("successfully parsed config...\n");
     return {
         paths,
-        width,
-        height,
-        colorDepth,
         customJson
     };
 }

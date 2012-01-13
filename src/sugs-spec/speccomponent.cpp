@@ -98,4 +98,22 @@ bool SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)
   return false;
 }
 
+sugs::core::ext::Component* SpecComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
+{
+  jsval rawPathVal;
+  if (!JS_GetProperty(jsEnv.cx, configJson, "rawPath", &rawPathVal)) {
+    printf("ScriptRunnerComponentFactory::create() : failed to pull entryPoint val from config json object");
+    exit(EXIT_FAILURE);
+  }
+  JSString* rawPathStr = JSVAL_TO_STRING(rawPathVal);
+  std::string rawPath(JS_EncodeString(jsEnv.cx, rawPathStr));
+  printf("VALUE OF RAWPATH: %s", rawPath.c_str());
+  return new SpecComponent(rawPath);
+}
+
+std::string SpecComponentFactory::getName()
+{
+  return "Spec";
+}
+
 }} // namespace sugs::spec

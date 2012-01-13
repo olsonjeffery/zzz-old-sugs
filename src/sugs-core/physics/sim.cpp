@@ -54,7 +54,23 @@ static JSFunctionSpec reformer_chipmunk_native_functions[] = {
   JS_FS_END
 };
 
-void sugs::physics::ChipmunkPhysicsComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+namespace sugs {
+namespace physics {
+
+void ChipmunkPhysicsComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
 {
   JS_DefineFunctions(jsEnv.cx, jsEnv.global, reformer_chipmunk_native_functions);
 }
+
+
+sugs::core::ext::Component* ChipmunkPhysicsComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
+{
+  return new sugs::physics::ChipmunkPhysicsComponent();
+}
+
+std::string ChipmunkPhysicsComponentFactory::getName()
+{
+  return "ChipmunkPhysics";
+}
+
+}} // namespace sugs::physics

@@ -203,6 +203,122 @@ MessageExchange* Worker::getMessageExchange() {
   return this->_msgEx;
 }
 
+static JSBool
+native_worker_getId(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* global = JS_GetGlobalObject(cx);
+  JSObject* thisObj = JS_THIS_OBJECT(cx, vp);
+  Worker* worker = (Worker*)JS_GetPrivate(cx, thisObj);
+  JSString* workerIdStr = JS_NewStringCopyZ(cx, worker->getWorkerId().c_str());
+  jsval workerIdVal = STRING_TO_JSVAL(workerIdStr);
+  JS_SET_RVAL(cx, vp, workerIdVal);
+  return JS_TRUE;
+}
+
+static JSBool
+native_worker_kill(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* thisObj = JS_THIS_OBJECT(cx, vp);
+  Worker* worker = (Worker*)JS_GetPrivate(cx, thisObj);
+  worker->kill();
+  delete worker;
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec workerWrapperFunctionSpec[] = {
+  JS_FS("getId", native_worker_getId, 0, 0),
+  JS_FS("kill", native_worker_kill, 0, 0),
+  JS_FS_END
+};
+
+static JSBool
+native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSString* prefixStr;
+  JSObject* componentArr;
+  JSString* dataJsonStr;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "SoS", &prefixStr, &componentArr, &dataJsonStr)) {
+    JS_ReportError(cx, "native_worker_spawn: failed to convert arguments");
+    return JS_FALSE;
+  }
+  std::string prefix(JS_EncodeString(cx, prefixStr));
+  std::string dataJson(JS_EncodeString(cx, dataJsonStr));
+
+  // pull pointer to current Worker from global
+  JSObject* global = JS_GetGlobalObject(cx);
+  JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
+  Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
+  MessageExchange* msgEx = worker->getMessageExchange();
+  sugsConfig config = worker->getConfig();
+
+  // instantiate new worker
+  Worker* newWorker = new Worker(msgEx, prefix, config);
+  JSObject* workerWrapperObj;
+  if (!sugs::common::jsutil::newJSObjectFromFunctionSpec(cx, workerWrapperFunctionSpec, &workerWrapperObj)) {
+    JS_ReportError(cx, "native_worker_spawn: failed to create worker wrapper obj, aborting");
+    return JS_FALSE;
+  }
+  jsval workerWrapperVal = OBJECT_TO_JSVAL(workerWrapperObj);
+
+  // add components to new worker
+  jsuint compsLength;
+  if(!JS_GetArrayLength(cx, componentArr, &compsLength)) {
+    printf("native_worker_spawn: failure to pull camps length from camps obj\n");
+      exit(EXIT_FAILURE);
+  }
+  for(jsint ctr = 0;ctr < compsLength;ctr++) {
+      jsval entryVal;
+      if (!JS_GetElement(cx, componentArr, ctr, &entryVal)) {
+        printf("native_worker_spawn: failure to pull entryVal from compsObj.. ctr pos: %d\n", ctr);
+        exit(EXIT_FAILURE);
+      }
+      JSObject* componentObj = JSVAL_TO_OBJECT(entryVal);
+      jsval compNameVal;
+      if (!JS_GetProperty(cx, componentObj, "name", &compNameVal)) {
+        printf("native_worker_spawn: failed to pull name val from component object");
+        exit(EXIT_FAILURE);
+      }
+      JSString* compNameStr = JSVAL_TO_STRING(compNameVal);
+      std::string compName(JS_EncodeString(cx, compNameStr));
+
+      jsval compConfigJsonVal;
+      if (!JS_GetProperty(cx, componentObj, "configJson", &compConfigJsonVal)) {
+        printf("native_worker_spawn: failed to pull name val from component object");
+        exit(EXIT_FAILURE);
+      }
+      JSString* compConfigJsonStr = JSVAL_TO_STRING(compConfigJsonVal);
+      std::string compConfigJson(JS_EncodeString(cx, compConfigJsonStr));
+
+      sugs::core::ext::ComponentFactory* factory = sugs::core::ext::ComponentLibrary::getComponentFactory(compName);
+      sugs::core::ext::ComponentPair pair(factory, compConfigJson);
+
+      newWorker->addComponentPair(pair);
+  }
+
+  // start new worker in a new OS thread
+  newWorker->start(true);
+  JS_SET_RVAL(cx, vp, workerWrapperVal);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec workerSpawnFunctionSpec[] = {
+  JS_FS("spawn", native_worker_spawn, 3, 0),
+  JS_FS_END
+};
+
+void bindWorkerSpawnFunctions(jsEnv jsEnv) {
+}
+
+sugsConfig Worker::getConfig() {
+  return this->_config;
+}
+
+std::string Worker::getWorkerId() {
+  return this->_workerId;
+}
+
 void Worker::loadSugsLibraries(pathStrings paths) {
   predicateResult result;
   // Load up our core dependencies
@@ -229,6 +345,8 @@ void Worker::loadSugsLibraries(pathStrings paths) {
 
   bindMessageExchangeFunctions(this->_jsEnv.cx, this->_jsEnv.global);
 
+  bindWorkerSpawnFunctions(this->_jsEnv);
+
   printf(">>> finishing Worker::loadSugsLibraries()!\n");
 }
 
@@ -247,23 +365,6 @@ void bindWorkerToConfig(JSContext* cx, JSObject* sugsConfig, Worker* workerP) {
 
 void Worker::loadConfig(sugsConfig config) {
   JSObject* sugsConfigObj = JS_NewObject(this->_jsEnv.cx, NULL, NULL, NULL);
-
-  // the members of config that we're converting...
-  jsval screenWidthVal = INT_TO_JSVAL(config.screenWidth);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "screenWidth", &screenWidthVal)) {
-    printf("Failed to convert native sugsConfig.screenWidth and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
-  jsval screenHeightVal = INT_TO_JSVAL(config.screenHeight);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "screenHeight", &screenHeightVal)) {
-    printf("Failed to convert native sugsConfig.screenHeight and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
-  jsval colorDepthVal = INT_TO_JSVAL(config.colorDepth);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "colorDepth", &colorDepthVal)) {
-    printf("Failed to convert native sugsConfig.colorDepth and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
 
   jsval pathVals[config.paths.length];
   for(int ctr = 0; ctr < config.paths.length;ctr++) {
@@ -334,15 +435,31 @@ void Worker::addComponent(sugs::core::ext::Component* c)
   this->_components.push_back(c);
 }
 
+void Worker::addComponentPair(sugs::core::ext::ComponentPair pair)
+{
+  this->_componentPairs.push_back(pair);
+}
+
 void Worker::loadComponents(sugsConfig config)
 {
   printf("LOADING COMPONENTS...\n");
-  std::list<sugs::core::ext::Component*>::iterator it;
-  for(it = this->_components.begin(); it != this->_components.end(); it++)
+  std::list<sugs::core::ext::ComponentPair>::iterator it;
+  for(it = this->_componentPairs.begin(); it != this->_componentPairs.end(); it++)
   {
-    printf("FOUND COMPONENT TO LOAD..\n");
-    sugs::core::ext::Component* c = *it;
+    sugs::core::ext::ComponentPair pair = *it;
+    sugs::core::ext::ComponentFactory* factory = pair.getComponentFactory();
+    printf("LOADING %s COMPONENT\n", factory->getName().c_str());
+    std::string configJson = pair.getConfigJson();
+
+
+    // this is really hacky/not safe.. should probably turn the configJson into
+    // a proper JSObject* as a string and pass it in to JSON.parse, but I don't
+    // have anything in place to facilitate this. quite a kludge.
+    predicateResult result = sugs::core::js::executeJavascriptSnippet(std::string("(function() { return "+configJson+";})()").c_str(), this->_jsEnv.cx, this->_jsEnv.global);
+    JSObject* configJsonObj = JSVAL_TO_OBJECT(result.optionalRetVal);
+    sugs::core::ext::Component* c = factory->create(this->_jsEnv, configJsonObj);
     c->registerNativeFunctions(this->_jsEnv, config);
+    this->addComponent(c);
   }
 }
 

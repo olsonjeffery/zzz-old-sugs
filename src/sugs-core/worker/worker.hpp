@@ -77,7 +77,7 @@ class Worker
       sugs::core::js::teardownRuntime(this->_jsEnv.rt);
     }
 
-    void addComponent(sugs::core::ext::Component* c);
+    void addComponentPair(sugs::core::ext::ComponentPair pair);
 
     void start(bool runInNewThread);
     virtual void init();
@@ -86,9 +86,12 @@ class Worker
     virtual void teardown();
 
     MessageExchange* getMessageExchange();
+    sugsConfig getConfig();
+    std::string getWorkerId();
 
     bool receivedKillSignal();
   protected:
+    void addComponent(sugs::core::ext::Component* c);
     bool _receivedKillSignal;
     void loadComponents(sugsConfig config);
     void loadSugsLibraries(pathStrings paths);
@@ -98,6 +101,7 @@ class Worker
     MessageExchange* _msgEx;
     std::string _workerId;
     std::list<sugs::core::ext::Component*> _components;
+    std::list<sugs::core::ext::ComponentPair> _componentPairs;
     sugsConfig _config;
     bool _runInNewThread;
     sf::Thread* _workerThread;

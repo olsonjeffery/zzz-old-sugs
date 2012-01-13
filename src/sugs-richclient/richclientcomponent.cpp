@@ -27,19 +27,17 @@ windowFuncSpecs[] = {
   JS_FS_END
 };
 
-sugs::richclient::gfx::GraphicsEnv graphicsSetup(jsEnv jsEnv, sugsConfig config) {
-  printf("initializing graphics.. sw: %d\n", config.screenWidth);
-
+sugs::richclient::gfx::GraphicsEnv graphicsSetup(jsEnv jsEnv, sugsConfig config, int width, int height, int colorDepth) {
   // set up media repositories
   MediaLibrary::RegisterDefaultFont();
 
   // init graphics
-  return sugs::richclient::gfx::initGraphics(jsEnv.cx, config);
+  return sugs::richclient::gfx::initGraphics(jsEnv.cx, config, width, height, colorDepth);
 }
 
 void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config) {
   this->_jsEnv = jsEnv;
-  this->_gfxEnv = graphicsSetup(this->_jsEnv, config);
+  this->_gfxEnv = graphicsSetup(this->_jsEnv, config, this->_screenWidth, this->_screenHeight, this->_colorDepth);
 
   predicateResult result = sugs::core::js::findAndExecuteScript("richclient.coffee", config.paths, jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
@@ -112,6 +110,36 @@ void RichClientComponent::closeApp()
 
 bool RichClientComponent::isWindowClosed() {
   return this->_isClosed;
+}
+
+sugs::core::ext::Component* RichClientComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
+{
+  jsval widthVal;
+  if(!JS_GetProperty(jsEnv.cx, configJson, "screenWidth", &widthVal)) {
+      printf("RichClientComponentFactory.create(): failure to pull screenWidth from global.configJson\n");
+      exit(EXIT_FAILURE);
+  }
+  int width = SUGS_JSVAL_TO_NUMBER(widthVal);
+
+  jsval heightVal;
+  if(!JS_GetProperty(jsEnv.cx, configJson, "screenHeight", &heightVal)) {
+      printf("RichClientComponentFactory.create(): failure to pull screenHeight from global.configJson\n");
+      exit(EXIT_FAILURE);
+  }
+  int height = SUGS_JSVAL_TO_NUMBER(heightVal);
+
+  jsval colorDepthVal;
+  if(!JS_GetProperty(jsEnv.cx, configJson, "colorDepth", &colorDepthVal)) {
+      printf("RichClientComponentFactory.create(): failure to pull colorDepth from global.configJson\n");
+      exit(EXIT_FAILURE);
+  }
+  int colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
+  return new RichClientComponent(width, height, colorDepth);
+}
+
+std::string RichClientComponentFactory::getName()
+{
+  return "RichClient";
 }
 
 }} // namespace sugs::richclient

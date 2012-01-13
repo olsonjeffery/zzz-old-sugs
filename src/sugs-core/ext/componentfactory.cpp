@@ -26,22 +26,47 @@
  *
  */
 
-#ifndef __medialibrary_hpp__
-#define __medialibrary_hpp__
+#include "ext.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <stdio.h>
-
-class MediaLibrary
+namespace sugs
 {
-  public:
-    static sf::Image* LoadImage(std::string path);
-    static sf::Font* LoadFont(std::string path);
-    static void RegisterDefaultFont();
+namespace core
+{
+namespace ext
+{
 
-  private:
-    static std::map<std::string, sf::Image> _imageLibrary;
-    static std::map<std::string, sf::Font> _fontLibrary;
+Component* ComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
+{
+  return 0;
+}
+
+std::string ComponentFactory::getName()
+{
+  return "";
 };
 
-#endif
+std::map <std::string, ComponentFactory*> ComponentLibrary::_library;
+
+void ComponentLibrary::registerComponentFactory(ComponentFactory* factory)
+{
+  ComponentLibrary::_library[factory->getName()] = factory;
+}
+
+ComponentFactory* ComponentLibrary::getComponentFactory(std::string componentName)
+{
+  return ComponentLibrary::_library[componentName];
+}
+
+ComponentFactory* ComponentPair::getComponentFactory()
+{
+  return this->_factory;
+}
+
+std::string ComponentPair::getConfigJson()
+{
+  return this->_configJson;
+}
+
+}
+}
+} // namespace sugs::core::ext
