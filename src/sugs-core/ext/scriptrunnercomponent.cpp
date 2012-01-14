@@ -32,10 +32,13 @@ namespace sugs {
 namespace core {
 namespace ext {
 
-predicateResult execStartupCallbacks(jsEnv jsEnv) {
-  jsval argv[0];
+predicateResult execStartupCallbacks(jsEnv jsEnv, JSObject* data) {
+  jsval argv[1];
+  jsval dataVal = OBJECT_TO_JSVAL(data);
+  argv[0] = dataVal;
+
   jsval rval;
-  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
+  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 1, argv, &rval) == JS_FALSE) {
     return {JS_FALSE, "error occured while called doStartup()\n"};
   }
   return { JS_TRUE, ""};
@@ -47,7 +50,7 @@ void ScriptRunnerComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig conf
   this->loadEntryPointScript(jsEnv, config.paths, this->_entryPoint.c_str()); // entry point should come from json
 
   // run $.startup() in user code
-  result = execStartupCallbacks(jsEnv);
+  result = execStartupCallbacks(jsEnv, this->_data);
   if (result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
@@ -91,9 +94,27 @@ Component* ScriptRunnerComponentFactory::create(jsEnv jsEnv, JSObject* configJso
     printf("ScriptRunnerComponentFactory::create() : failed to pull entryPoint val from config json object");
     exit(EXIT_FAILURE);
   }
+  if (JSVAL_IS_VOID(epVal)) {
+    printf("need a valid entryPoint in component config to launch ScriptRunner\n");
+    exit(EXIT_FAILURE);
+  }
   JSString* epStr = JSVAL_TO_STRING(epVal);
   std::string ep(JS_EncodeString(jsEnv.cx, epStr));
-  return new ScriptRunnerComponent(ep);
+
+  jsval dataVal;
+  if (!JS_GetProperty(jsEnv.cx, configJson, "data", &dataVal)) {
+    printf("ScriptRunnerComponentFactory::create() : failed to pull entryPoint val from config json object");
+    exit(EXIT_FAILURE);
+  }
+  JSObject* data;
+  if (JSVAL_IS_VOID(dataVal)) {
+    data = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  }
+  else {
+    data = JSVAL_TO_OBJECT(dataVal);
+  }
+
+  return new ScriptRunnerComponent(ep, data);
 }
 
 std::string ScriptRunnerComponentFactory::getName()

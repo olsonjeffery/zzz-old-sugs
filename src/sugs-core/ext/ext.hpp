@@ -87,16 +87,18 @@ private:
 class ScriptRunnerComponent : public Component
 {
 public:
-  ScriptRunnerComponent(std::string entryPointScript)
+  ScriptRunnerComponent(std::string entryPointScript, JSObject* data)
   {
     this->_lastMs = getCurrentMilliseconds();
     this->_entryPoint = entryPointScript;
+    this->_data = data;
   }
 
   virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
   virtual bool doWork(jsEnv jsEnv, sugsConfig config);
 
 private:
+  JSObject* _data;
   time_t _lastMs;
   std::string _entryPoint;
 

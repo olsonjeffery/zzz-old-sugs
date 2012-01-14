@@ -238,13 +238,11 @@ native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
 {
   JSString* prefixStr;
   JSObject* componentArr;
-  JSString* dataJsonStr;
-  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "SoS", &prefixStr, &componentArr, &dataJsonStr)) {
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "So", &prefixStr, &componentArr)) {
     JS_ReportError(cx, "native_worker_spawn: failed to convert arguments");
     return JS_FALSE;
   }
   std::string prefix(JS_EncodeString(cx, prefixStr));
-  std::string dataJson(JS_EncodeString(cx, dataJsonStr));
 
   // pull pointer to current Worker from global
   JSObject* global = JS_GetGlobalObject(cx);
@@ -258,6 +256,10 @@ native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
   JSObject* workerWrapperObj;
   if (!sugs::common::jsutil::newJSObjectFromFunctionSpec(cx, workerWrapperFunctionSpec, &workerWrapperObj)) {
     JS_ReportError(cx, "native_worker_spawn: failed to create worker wrapper obj, aborting");
+    return JS_FALSE;
+  }
+  if (!JS_SetPrivate(cx, workerWrapperObj, (void*)newWorker)) {
+    printf ("native_worker_spawn: failure to set private worker pointer on wrapper obj\n");
     return JS_FALSE;
   }
   jsval workerWrapperVal = OBJECT_TO_JSVAL(workerWrapperObj);
@@ -304,11 +306,14 @@ native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
 }
 
 static JSFunctionSpec workerSpawnFunctionSpec[] = {
-  JS_FS("spawn", native_worker_spawn, 3, 0),
+  JS_FS("spawn", native_worker_spawn, 2, 0),
   JS_FS_END
 };
 
 void bindWorkerSpawnFunctions(jsEnv jsEnv) {
+  JSObject* workerNativeObj;
+  sugs::common::jsutil::newJSObjectFromFunctionSpec(jsEnv.cx, workerSpawnFunctionSpec, &workerNativeObj);
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.worker", workerNativeObj);
 }
 
 sugsConfig Worker::getConfig() {
