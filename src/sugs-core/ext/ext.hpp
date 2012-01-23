@@ -46,8 +46,8 @@ class Component
 {
 public:
   Component() {}
-  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-  virtual bool doWork(jsEnv jsEnv, sugsConfig config);
+  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 };
 
 class ComponentFactory
@@ -94,8 +94,8 @@ public:
     this->_data = data;
   }
 
-  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-  virtual bool doWork(jsEnv jsEnv, sugsConfig config);
+  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 
 private:
   JSObject* _data;
@@ -117,7 +117,7 @@ class FilesystemComponent : public Component
 public:
   FilesystemComponent() {}
 
-  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
+  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
 
 private:
 };

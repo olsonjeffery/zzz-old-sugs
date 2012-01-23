@@ -52,8 +52,8 @@ class RichClientComponent : public sugs::core::ext::Component
     this->componentTeardown(this->_jsEnv);
   }
 
-  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-  virtual bool doWork(jsEnv jsEnv, sugsConfig config);
+  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 
   void closeApp();
 

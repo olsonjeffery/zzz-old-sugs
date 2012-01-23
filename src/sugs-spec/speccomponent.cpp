@@ -75,7 +75,7 @@ void storeSpecRunnerInputPath(jsEnv jsEnv, std::string rawPaths, JSObject* specO
 namespace sugs {
 namespace spec {
 
-void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+void SpecComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths)
 {
   JSObject* specObj;
   if(!sugs::common::jsutil::newJSObjectFromFunctionSpec(jsEnv.cx, specFuncs, &specObj)) {
@@ -89,7 +89,7 @@ void SpecComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
 }
 
 bool runOnce = false;
-bool SpecComponent::doWork(jsEnv jsEnv, sugsConfig config)
+bool SpecComponent::doWork(jsEnv jsEnv, pathStrings paths)
 {
   if (!runOnce) {
     runOnce = true;

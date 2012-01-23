@@ -4,7 +4,7 @@ namespace sugs {
 namespace richclient {
 namespace gfx {
 
-GraphicsEnv initGraphics(JSContext* cx, sugsConfig config, int width, int height, int colorDepth) {
+GraphicsEnv initGraphics(JSContext* cx, int width, int height, int colorDepth) {
   printf("initializing graphics environment.. conf: w:%d h:%d c:%d\n",width, height, colorDepth);
   sf::RenderWindow* win = new sf::RenderWindow(sf::VideoMode(width,
                                                              height,

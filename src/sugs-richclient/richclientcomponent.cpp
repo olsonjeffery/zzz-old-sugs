@@ -27,19 +27,19 @@ windowFuncSpecs[] = {
   JS_FS_END
 };
 
-sugs::richclient::gfx::GraphicsEnv graphicsSetup(jsEnv jsEnv, sugsConfig config, int width, int height, int colorDepth) {
+sugs::richclient::gfx::GraphicsEnv graphicsSetup(jsEnv jsEnv, int width, int height, int colorDepth) {
   // set up media repositories
   MediaLibrary::RegisterDefaultFont();
 
   // init graphics
-  return sugs::richclient::gfx::initGraphics(jsEnv.cx, config, width, height, colorDepth);
+  return sugs::richclient::gfx::initGraphics(jsEnv.cx, width, height, colorDepth);
 }
 
-void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config) {
+void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths) {
   this->_jsEnv = jsEnv;
-  this->_gfxEnv = graphicsSetup(this->_jsEnv, config, this->_screenWidth, this->_screenHeight, this->_colorDepth);
+  this->_gfxEnv = graphicsSetup(this->_jsEnv, this->_screenWidth, this->_screenHeight, this->_colorDepth);
 
-  predicateResult result = sugs::core::js::findAndExecuteScript("richclient.coffee", config.paths, jsEnv.cx, jsEnv.global);
+  predicateResult result = sugs::core::js::findAndExecuteScript("richclient.coffee", paths, jsEnv.cx, jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
@@ -72,7 +72,7 @@ void callIntoJsRichClientRender(jsEnv jsEnv, JSObject* canvas, JSObject* input, 
 }
 
 int msElapsed = 0;
-bool RichClientComponent::doWork(jsEnv jsEnv, sugsConfig config) {
+bool RichClientComponent::doWork(jsEnv jsEnv, pathStrings paths) {
   sf::Event ev;
 
   msElapsed = this->_gfxEnv.window->GetFrameTime();

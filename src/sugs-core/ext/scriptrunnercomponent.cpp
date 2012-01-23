@@ -44,10 +44,10 @@ predicateResult execStartupCallbacks(jsEnv jsEnv, JSObject* data) {
   return { JS_TRUE, ""};
 }
 
-void ScriptRunnerComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+void ScriptRunnerComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths)
 {
   predicateResult result;
-  this->loadEntryPointScript(jsEnv, config.paths, this->_entryPoint.c_str()); // entry point should come from json
+  this->loadEntryPointScript(jsEnv, paths, this->_entryPoint.c_str()); // entry point should come from json
 
   // run $.startup() in user code
   result = execStartupCallbacks(jsEnv, this->_data);
@@ -81,7 +81,7 @@ void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
   JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runMainLoop", 1, argv, &rval);
 }
 
-bool ScriptRunnerComponent::doWork(jsEnv jsEnv, sugsConfig config) {
+bool ScriptRunnerComponent::doWork(jsEnv jsEnv, pathStrings paths) {
   time_t currMs = getCurrentMilliseconds();
   callIntoJsMainLoop(jsEnv, currMs - this->_lastMs);
   this->_lastMs = currMs;

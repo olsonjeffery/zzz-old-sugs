@@ -59,14 +59,15 @@ class Worker
       }
     }
 
-    Worker(MessageExchange* msgEx, std::string prefix, sugsConfig config)
+    Worker(MessageExchange* msgEx, std::string prefix, pathStrings paths, std::string dataJson)
     {
       if (msgEx != NULL) {
         this->_msgEx = msgEx;
         this->_workerId = this->_msgEx->registerNewWorker(prefix);
       }
       this->_receivedKillSignal = false;
-      this->_config = config;
+      this->_paths = paths;
+      this->_dataJson = dataJson;
     }
 
     ~Worker() {
@@ -86,23 +87,26 @@ class Worker
     virtual void teardown();
 
     MessageExchange* getMessageExchange();
-    sugsConfig getConfig();
+    pathStrings getPaths();
     std::string getWorkerId();
 
     bool receivedKillSignal();
   protected:
     void addComponent(sugs::core::ext::Component* c);
     bool _receivedKillSignal;
-    void loadComponents(sugsConfig config);
+    void loadComponents(pathStrings paths);
     void loadSugsLibraries(pathStrings paths);
-    void loadConfig(sugsConfig config);
+    void loadConfig(pathStrings paths, std::string dataJsonStr);
     void processPendingMessages();
     jsEnv _jsEnv;
     MessageExchange* _msgEx;
     std::string _workerId;
     std::list<sugs::core::ext::Component*> _components;
     std::list<sugs::core::ext::ComponentPair> _componentPairs;
-    sugsConfig _config;
+
+    pathStrings _paths;
+    std::string _dataJson;
+
     bool _runInNewThread;
     sf::Thread* _workerThread;
 };

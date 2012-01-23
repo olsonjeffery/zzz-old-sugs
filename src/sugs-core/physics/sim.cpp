@@ -57,7 +57,7 @@ static JSFunctionSpec reformer_chipmunk_native_functions[] = {
 namespace sugs {
 namespace physics {
 
-void ChipmunkPhysicsComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+void ChipmunkPhysicsComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths)
 {
   JS_DefineFunctions(jsEnv.cx, jsEnv.global, reformer_chipmunk_native_functions);
 }

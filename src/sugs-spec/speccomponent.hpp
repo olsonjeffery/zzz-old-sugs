@@ -49,8 +49,8 @@ class SpecComponent : public sugs::core::ext::Component
     this->_rawPaths = rawPaths;
   }
 
-  virtual void registerNativeFunctions(jsEnv jsEnv, sugsConfig config);
-  virtual bool doWork(jsEnv jsEnv, sugsConfig config);
+  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 
   private:
   std::string _rawPaths;

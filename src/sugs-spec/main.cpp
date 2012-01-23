@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
   sugs::core::ext::ComponentFactory* specCf = new sugs::spec::SpecComponentFactory();
   sugs::core::ext::ComponentLibrary::registerComponentFactory(specCf);
 
-  sugs::core::worker::Worker* worker = new sugs::core::worker::Worker(msgEx, "spec_runner", config);
+  sugs::core::worker::Worker* worker = new sugs::core::worker::Worker(msgEx, "spec_runner", config.paths, config.customJson);
   sugs::core::ext::ComponentPair fsPair(filesystemCf, "{}");
   std::string rawPathJson("{ rawPath: '" + FLAGS_path + "' }");
   std::cout << "raw path: " << rawPathJson << std::endl;

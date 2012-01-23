@@ -6,6 +6,9 @@ thisModule =
       if typeof configObj == 'undefined'
         configObj = {}
       { name: entry.name, configJson: JSON.stringify(configObj) }
-    sugs.api.worker.spawn prefix, componentJson
+    dataJson = "{}"
+    if typeof(config.data) != 'undefined'
+      dataJson = JSON.stringify config.data
+    sugs.api.worker.spawn prefix, componentJson, dataJson
 
 return thisModule

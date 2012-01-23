@@ -38,19 +38,19 @@ void Worker::init() {
   this->_jsEnv = sugs::core::js::initContext(rt);
 
   // load core libs
-  this->loadConfig(this->_config);
-  this->loadSugsLibraries(this->_config.paths);
-  this->loadComponents(this->_config);
+  this->loadConfig(this->_paths, this->_dataJson);
+  this->loadSugsLibraries(this->_paths);
+  this->loadComponents(this->_paths);
 }
 
 
-bool doComponentWork(jsEnv jsEnv, sugsConfig config, std::list<sugs::core::ext::Component*> comps)
+bool doComponentWork(jsEnv jsEnv, pathStrings paths, std::list<sugs::core::ext::Component*> comps)
 {
   std::list<sugs::core::ext::Component*>::iterator it;
   for(it = comps.begin(); it != comps.end(); it++)
   {
     sugs::core::ext::Component* c = *it;
-    bool result = c->doWork(jsEnv, config);
+    bool result = c->doWork(jsEnv, paths);
     if (result == false) {
       return false;
     }
@@ -104,7 +104,7 @@ void Worker::begin() {
   if (continueIterating && !this->receivedKillSignal()) {
     while (continueIterating && !this->receivedKillSignal()) {
       this->processPendingMessages();
-      continueIterating = doComponentWork(this->_jsEnv, this->_config, this->_components);
+      continueIterating = doComponentWork(this->_jsEnv, this->_paths, this->_components);
     }
   }
 }
@@ -227,9 +227,31 @@ native_worker_kill(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+static JSBool
+native_worker_getPaths(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* thisObj = JS_THIS_OBJECT(cx, vp);
+  Worker* worker = (Worker*)JS_GetPrivate(cx, thisObj);
+  pathStrings paths = worker->getPaths();
+
+  jsval elems[paths.length];
+  for(int ctr = 0;ctr < paths.length;ctr++)
+  {
+    std::string path = paths.paths[ctr];
+    elems[ctr] = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, path.c_str()));
+  }
+
+  JSObject* pathsArrObj = JS_NewArrayObject(cx, paths.length, elems);
+  jsval pathsVal = OBJECT_TO_JSVAL(pathsArrObj);
+
+  JS_SET_RVAL(cx, vp, pathsVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec workerWrapperFunctionSpec[] = {
   JS_FS("getId", native_worker_getId, 0, 0),
   JS_FS("kill", native_worker_kill, 0, 0),
+  JS_FS("getPaths", native_worker_getPaths, 0, 0),
   JS_FS_END
 };
 
@@ -238,7 +260,8 @@ native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
 {
   JSString* prefixStr;
   JSObject* componentArr;
-  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "So", &prefixStr, &componentArr)) {
+  JSString* dataJson;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "SoS", &prefixStr, &componentArr, &dataJson)) {
     JS_ReportError(cx, "native_worker_spawn: failed to convert arguments");
     return JS_FALSE;
   }
@@ -249,10 +272,10 @@ native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
   JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
   Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
   MessageExchange* msgEx = worker->getMessageExchange();
-  sugsConfig config = worker->getConfig();
+  pathStrings paths = worker->getPaths();
 
   // instantiate new worker
-  Worker* newWorker = new Worker(msgEx, prefix, config);
+  Worker* newWorker = new Worker(msgEx, prefix, paths, std::string(JS_EncodeString(cx, dataJson)));
   JSObject* workerWrapperObj;
   if (!sugs::common::jsutil::newJSObjectFromFunctionSpec(cx, workerWrapperFunctionSpec, &workerWrapperObj)) {
     JS_ReportError(cx, "native_worker_spawn: failed to create worker wrapper obj, aborting");
@@ -316,8 +339,8 @@ void bindWorkerSpawnFunctions(jsEnv jsEnv) {
   sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.worker", workerNativeObj);
 }
 
-sugsConfig Worker::getConfig() {
-  return this->_config;
+pathStrings Worker::getPaths() {
+  return this->_paths;
 }
 
 std::string Worker::getWorkerId() {
@@ -368,16 +391,16 @@ void bindWorkerToConfig(JSContext* cx, JSObject* sugsConfig, Worker* workerP) {
   }
 }
 
-void Worker::loadConfig(sugsConfig config) {
+void Worker::loadConfig(pathStrings paths, std::string dataJsonStr) {
   JSObject* sugsConfigObj = JS_NewObject(this->_jsEnv.cx, NULL, NULL, NULL);
 
-  jsval pathVals[config.paths.length];
-  for(int ctr = 0; ctr < config.paths.length;ctr++) {
-    const char* cStr = config.paths.paths[ctr].c_str();
+  jsval pathVals[paths.length];
+  for(int ctr = 0; ctr < paths.length;ctr++) {
+    const char* cStr = paths.paths[ctr].c_str();
     JSString* pathStr = JS_NewStringCopyN(this->_jsEnv.cx, cStr, strlen(cStr));
     pathVals[ctr] =STRING_TO_JSVAL(pathStr);
   }
-  JSObject* pathsArrObj = JS_NewArrayObject(this->_jsEnv.cx, config.paths.length, pathVals);
+  JSObject* pathsArrObj = JS_NewArrayObject(this->_jsEnv.cx, paths.length, pathVals);
   jsval pathsArrVal = OBJECT_TO_JSVAL(pathsArrObj);
   if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "paths", &pathsArrVal)) {
     printf("Failed to convert native sugsConfig.paths and store in sugsConfig JSObject\n");
@@ -394,7 +417,8 @@ void Worker::loadConfig(sugsConfig config) {
 
   bindWorkerToConfig(this->_jsEnv.cx, sugsConfigObj, this);
 
-  JSString* customJsonStr = JS_NewStringCopyN(this->_jsEnv.cx, config.customJson, strlen(config.customJson));
+  const char* dataJson = dataJsonStr.c_str();
+  JSString* customJsonStr = JS_NewStringCopyN(this->_jsEnv.cx, dataJson, strlen(dataJson));
   jsval customJsonVal = STRING_TO_JSVAL(customJsonStr);
   if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "customJson", &customJsonVal)) {
     printf("Failed to convert native sugsConfig.customJson and store in sugsConfig JSObject\n");
@@ -445,7 +469,7 @@ void Worker::addComponentPair(sugs::core::ext::ComponentPair pair)
   this->_componentPairs.push_back(pair);
 }
 
-void Worker::loadComponents(sugsConfig config)
+void Worker::loadComponents(pathStrings paths)
 {
   printf("LOADING COMPONENTS...\n");
   std::list<sugs::core::ext::ComponentPair>::iterator it;
@@ -463,7 +487,7 @@ void Worker::loadComponents(sugsConfig config)
     predicateResult result = sugs::core::js::executeJavascriptSnippet(std::string("(function() { return "+configJson+";})()").c_str(), this->_jsEnv.cx, this->_jsEnv.global);
     JSObject* configJsonObj = JSVAL_TO_OBJECT(result.optionalRetVal);
     sugs::core::ext::Component* c = factory->create(this->_jsEnv, configJsonObj);
-    c->registerNativeFunctions(this->_jsEnv, config);
+    c->registerNativeFunctions(this->_jsEnv, paths);
     this->addComponent(c);
   }
 }

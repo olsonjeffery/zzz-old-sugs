@@ -82,7 +82,7 @@ namespace sugs {
 namespace core {
 namespace ext {
 
-void FilesystemComponent::registerNativeFunctions(jsEnv jsEnv, sugsConfig config)
+void FilesystemComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths)
 {
   JSObject* fsFuncsObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
   if(!JS_DefineFunctions(jsEnv.cx, fsFuncsObj, filesystemFuncs)) {
