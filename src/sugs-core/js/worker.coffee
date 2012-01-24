@@ -1,3 +1,5 @@
+currentWorker = sugs.api.worker.getCurrent()
+
 thisModule =
   spawn: (config) ->
     prefix = config.prefix
@@ -10,5 +12,6 @@ thisModule =
     if typeof(config.data) != 'undefined'
       dataJson = JSON.stringify config.data
     sugs.api.worker.spawn prefix, componentJson, dataJson
+  current: currentWorker
 
 return thisModule

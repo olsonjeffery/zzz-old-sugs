@@ -3,7 +3,6 @@ config = {
     "js/"
   ],
 	custom: {
-		moduleEntryPoint: "",
-  	moduleDir: "./"
+  	mxoduleDir: "./"
 	}
 };

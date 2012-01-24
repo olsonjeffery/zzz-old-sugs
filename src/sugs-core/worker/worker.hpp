@@ -76,6 +76,7 @@ class Worker
       JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "showEntryPoints", 0, argv, &rVal);
       sugs::core::js::teardownContext(this->_jsEnv.cx);
       sugs::core::js::teardownRuntime(this->_jsEnv.rt);
+      std::cout << "FINISHING DTOR FOR " << this->_workerId << std::endl;
     }
 
     void addComponentPair(sugs::core::ext::ComponentPair pair);
@@ -89,6 +90,7 @@ class Worker
     MessageExchange* getMessageExchange();
     pathStrings getPaths();
     std::string getWorkerId();
+    bool runningInNewThread();
 
     bool receivedKillSignal();
   protected:
@@ -132,6 +134,10 @@ class ConfiguratorWorker : public Worker
     workerInfos _workers;
     std::string _pathToExtLibs;
 };
+
+typedef struct {
+  Worker* worker;
+} contextPrivateData;
 
 }}} // namespace sugs::core::worker
 

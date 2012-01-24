@@ -37,6 +37,10 @@ void Worker::init() {
   JSRuntime* rt = sugs::core::js::initRuntime(vmMemSize);
   this->_jsEnv = sugs::core::js::initContext(rt);
 
+  contextPrivateData* cxData = new contextPrivateData();
+  cxData->worker = this;
+  JS_SetContextPrivate(this->_jsEnv.cx, cxData);
+
   // load core libs
   this->loadConfig(this->_paths, this->_dataJson);
   this->loadSugsLibraries(this->_paths);
@@ -64,6 +68,7 @@ void workerCallback(void* wpP) {
 
   worker->init();
   worker->begin();
+  std::cout << "NOW EXITING " << worker->getWorkerId() << std::endl;
 }
 
 void Worker::start(bool runInNewThread) {
@@ -203,6 +208,11 @@ MessageExchange* Worker::getMessageExchange() {
   return this->_msgEx;
 }
 
+bool Worker::runningInNewThread()
+{
+  return this->_runInNewThread;
+}
+
 static JSBool
 native_worker_getId(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -221,7 +231,13 @@ native_worker_kill(JSContext* cx, uintN argc, jsval* vp)
   JSObject* thisObj = JS_THIS_OBJECT(cx, vp);
   Worker* worker = (Worker*)JS_GetPrivate(cx, thisObj);
   worker->kill();
-  delete worker;
+  // don't delete the Worker if it's running as blocking
+  // the thread (should only be the worker running on
+  // the main thread), let application code handle
+  // cleanup..
+  if (worker->runningInNewThread()) {
+    delete worker;
+  }
 
   JS_SET_RVAL(cx, vp, JSVAL_VOID);
   return JS_TRUE;
@@ -255,6 +271,22 @@ static JSFunctionSpec workerWrapperFunctionSpec[] = {
   JS_FS_END
 };
 
+static JSObject*
+createWrapperForWorker(JSContext* cx, Worker* newWorker)
+{
+  JSObject* workerWrapperObj;
+  if (!sugs::common::jsutil::newJSObjectFromFunctionSpec(cx, workerWrapperFunctionSpec, &workerWrapperObj)) {
+    JS_ReportError(cx, "native_worker_spawn: failed to create worker wrapper obj, aborting");
+    return JS_FALSE;
+  }
+  if (!JS_SetPrivate(cx, workerWrapperObj, (void*)newWorker)) {
+    printf ("native_worker_spawn: failure to set private worker pointer on wrapper obj\n");
+    return JS_FALSE;
+  }
+
+  return workerWrapperObj;
+}
+
 static JSBool
 native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -276,15 +308,8 @@ native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
 
   // instantiate new worker
   Worker* newWorker = new Worker(msgEx, prefix, paths, std::string(JS_EncodeString(cx, dataJson)));
-  JSObject* workerWrapperObj;
-  if (!sugs::common::jsutil::newJSObjectFromFunctionSpec(cx, workerWrapperFunctionSpec, &workerWrapperObj)) {
-    JS_ReportError(cx, "native_worker_spawn: failed to create worker wrapper obj, aborting");
-    return JS_FALSE;
-  }
-  if (!JS_SetPrivate(cx, workerWrapperObj, (void*)newWorker)) {
-    printf ("native_worker_spawn: failure to set private worker pointer on wrapper obj\n");
-    return JS_FALSE;
-  }
+
+  JSObject* workerWrapperObj = createWrapperForWorker(cx, newWorker);
   jsval workerWrapperVal = OBJECT_TO_JSVAL(workerWrapperObj);
 
   // add components to new worker
@@ -328,8 +353,19 @@ native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+static JSBool
+native_worker_getCurrentWorker(JSContext* cx, uintN argc, jsval* vp)
+{
+  contextPrivateData* cxData = (contextPrivateData*)JS_GetContextPrivate(cx);
+  JSObject* wrapper = createWrapperForWorker(cx, cxData->worker);
+  jsval wrapperVal = OBJECT_TO_JSVAL(wrapper);
+  JS_SET_RVAL(cx, vp, wrapperVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec workerSpawnFunctionSpec[] = {
   JS_FS("spawn", native_worker_spawn, 2, 0),
+  JS_FS("getCurrent", native_worker_getCurrentWorker, 2, 0),
   JS_FS_END
 };
 
@@ -384,6 +420,7 @@ void bindWorkerToConfig(JSContext* cx, JSObject* sugsConfig, Worker* workerP) {
     printf("bindWorkerToConfig: unable to bind Worker pointer to wrapper obj\n");
     exit(EXIT_FAILURE);
   }
+
   jsval wrapperVal = OBJECT_TO_JSVAL(workerWrapperObj);
   if(!JS_SetProperty(cx, sugsConfig, "workerRef", &wrapperVal)) {
     printf("bindWorkerToConfig: unable to add Worker wrapper to sugsConfig\n");
