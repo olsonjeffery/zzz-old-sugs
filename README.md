@@ -32,7 +32,7 @@
 * Everything else is implemented via _Components_
 * Components allow a Worker to take on additional capabilities
 * This includes things like:
-  - Running a user script (`ScriptRunnerComponent`
+  - Running a user script (`ScriptRunnerComponent`)
   - Bindings for various 3rd part libraries (`ChipmunkPhysicsComponent`, `RichClientComponent`)
   - General-purpose filesystem access (`FilesystemComponent`)
 * As hinted at by the examples above, Components serve to both:
@@ -40,7 +40,16 @@
   - Provide a way to deliberately compartmentalize/manage those capabilities
 * A Worker's Components are specified at spawn-time
 
-### JavaScript libraries out-of-the-box
+### A big list of dependencies
+
+Native libs
+
+* SpiderMonkey
+* boost
+* SFML
+* Chipmunk
+
+JavaScript Libs
 
 * [CoffeeScript](http://coffee-script.org) 1.1.1
 * [Underscore.js](http://documentcloud.github.com/underscore/) 1.1.7
@@ -50,7 +59,7 @@
 
 Hells yeah, we do. It's called `sugs-spec` and follows the rather blah but useful _Context/Specification_ format.
 
-### Things that sugs should be all about at some point in the future:
+### Coming soon:
 
 * Transparent, inter-process/network messaging
   - the existing abstraction ought to scale out with the addition of an onConnect type handler so that the 'receiver' of a new connection can be notified of remote Worker(s) trying to make contact with it
