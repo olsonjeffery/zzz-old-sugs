@@ -35,6 +35,7 @@ class DuplicateResponseHandlerError
 class NoTicketForResponseError
   constructor: ->
 
+worker = require 'worker'
 pubsub = require 'messaging/pubsub'
 global = this
 
@@ -53,7 +54,7 @@ registerRequestTicket = (ticketId, clientId, msgId, msg, respHandler) ->
   @reqTickets[ticketId] = respHandler
   wireMsg =
      msg: msg
-     clientId: sugsConfig.myWorkerId
+     clientId: worker.current.getId()
      ticketId: ticketId
      msgId: msgId
   @publish clientId, 'sugs:messaging:receive:req', wireMsg

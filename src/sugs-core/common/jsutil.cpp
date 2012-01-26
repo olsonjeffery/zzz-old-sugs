@@ -56,22 +56,6 @@ JSClass* getDefaultClassDef() {
   return &defaultClassDefWithPrivateMember;
 }
 
-jsval pullPropertyFromSugsConfigInGlobal(JSContext* cx, JSObject* global, const char* propName) {
-  jsval sugsConfigVal;
-  if(!JS_GetProperty(cx, global, "sugsConfig", &sugsConfigVal)) {
-    printf("unable to pull sugsConfig from global obj\n");
-    exit(EXIT_FAILURE);
-  }
-  JSObject* sugsConfigObj = JSVAL_TO_OBJECT(sugsConfigVal);
-
-  jsval propVal;
-  if(!JS_GetProperty(cx, sugsConfigObj, propName, &propVal)) {
-    printf("unable to pull prop '%s' from sugsConfig obj\n", propName);
-    exit(EXIT_FAILURE);
-  }
-  return propVal;
-}
-
 void embedObjectInNamespace(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner)
 {
   jsval argv[3];

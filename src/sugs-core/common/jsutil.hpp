@@ -36,7 +36,6 @@ namespace common {
 namespace jsutil {
 
 JSClass* getDefaultClassDef();
-jsval pullPropertyFromSugsConfigInGlobal(JSContext* cx, JSObject* global, const char* propName);
 
 // sugs::common::jsutil::embedObjectInNamespace() -- given a valid outerObj, a period-delimited string representing
 // a nested "namespace" within said outerObj, and an addedObj to be inserted, place the addedObj within the outerObj,

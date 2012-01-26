@@ -90,6 +90,7 @@ class Worker
     MessageExchange* getMessageExchange();
     pathStrings getPaths();
     std::string getWorkerId();
+    JSObject* getData();
     bool runningInNewThread();
 
     bool receivedKillSignal();
@@ -99,6 +100,7 @@ class Worker
     void loadComponents(pathStrings paths);
     void loadSugsLibraries(pathStrings paths);
     void loadConfig(pathStrings paths, std::string dataJsonStr);
+    void setupEnvironment();
     void processPendingMessages();
     jsEnv _jsEnv;
     MessageExchange* _msgEx;
@@ -108,6 +110,7 @@ class Worker
 
     pathStrings _paths;
     std::string _dataJson;
+    JSObject* _dataObj;
 
     bool _runInNewThread;
     sf::Thread* _workerThread;
@@ -117,9 +120,12 @@ class ConfiguratorWorker : public Worker
 {
   public:
     ConfiguratorWorker(JSRuntime* rt)
-    : Worker(rt, NULL, "")
+    : Worker(rt, NULL, "configurator")
     {
+      std::string noPaths[0];
+
       this->parseConfigFile();
+      this->_paths = this->_config.paths;
     }
 
     ~ConfiguratorWorker()

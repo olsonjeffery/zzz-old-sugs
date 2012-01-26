@@ -27,6 +27,7 @@ or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
 ###
 global = this
 msgExMsgHandlers = {}
+worker = require 'worker'
 
 publishFast = (targetAgentId, msgId, msg) ->
   isUdp = true
@@ -34,14 +35,14 @@ publishFast = (targetAgentId, msgId, msg) ->
     data =
       msg: msgId
       meta:
-        sender: global.sugsConfig.myWorkerId
+        sender: worker.current.getId()
         msgId: targetAgentId
     global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
   else
     data =
       msg: msg
       meta:
-        sender: global.sugsConfig.myWorkerId
+        sender: worker.current.getId()
         msgId: msgId
     global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, isUdp
 
@@ -51,14 +52,14 @@ publishDurable = (targetAgentId, msgId, msg) ->
     data =
       msg: msgId
       meta:
-        sender: global.sugsConfig.myWorkerId
+        sender: worker.current.getId()
         msgId: targetAgentId
     global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
   else
     data =
       msg: msg
       meta:
-        sender: global.sugsConfig.myWorkerId
+        sender: worker.current.getId()
         msgId: msgId
     global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, isUdp
 

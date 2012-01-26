@@ -33,10 +33,13 @@ global.pathEndsInDotCoffee = (path) ->
 global.pathEndsInDotJs = (path) ->
   path.match(/\.js$/)
 
+currentWorkerPaths = sugs.api.core.getPaths()
+
 resolveScriptPath = (path) ->
   result = null
+
   if global.pathEndsInDotCoffee(path) or global.pathEndsInDotJs(path)
-    for p in global.sugsConfig.paths
+    for p in currentWorkerPaths
       fullPath = "#{p}/#{path}"
       if __native_fileExists fullPath
         result = fullPath
@@ -52,7 +55,7 @@ scriptLoadCache = {}
 # load(path) -- load an external javascript file
 global.fileIsInPath = (path) ->
   result = false
-  for p in global.sugsConfig.paths
+  for p in currentWorkerPaths
     fullPath = "#{p}/#{path}"
     if __native_fileExists fullPath
       result = true
@@ -178,3 +181,7 @@ entryPointsInContext = []
 global.showEntryPoints = ->
 global.addEntryPoint = (ep) ->
   entryPointsInContext.push ep
+
+#populate this value initialized above
+#worker = require 'worker'
+#currentWorkerPaths = worker.current.getPaths()

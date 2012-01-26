@@ -34,19 +34,22 @@ namespace worker {
 
 const int vmMemSize = (((1024L) * 1024L) * 1024L);
 void Worker::init() {
+  // load core libs
+  this->setupEnvironment();
+  this->loadConfig(this->_paths, this->_dataJson);
+  this->loadSugsLibraries(this->_paths);
+  this->loadComponents(this->_paths);
+}
+
+void Worker::setupEnvironment()
+{
   JSRuntime* rt = sugs::core::js::initRuntime(vmMemSize);
   this->_jsEnv = sugs::core::js::initContext(rt);
 
   contextPrivateData* cxData = new contextPrivateData();
   cxData->worker = this;
   JS_SetContextPrivate(this->_jsEnv.cx, cxData);
-
-  // load core libs
-  this->loadConfig(this->_paths, this->_dataJson);
-  this->loadSugsLibraries(this->_paths);
-  this->loadComponents(this->_paths);
 }
-
 
 bool doComponentWork(jsEnv jsEnv, pathStrings paths, std::list<sugs::core::ext::Component*> comps)
 {
@@ -127,12 +130,10 @@ native_subscribe(JSContext* cx, uintN argc, jsval* vp)
   char* msgIdCStr = JS_EncodeString(cx, msgIdStr);
   std::string msgId(msgIdCStr);
 
-  JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
-  Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
+  Worker* worker = ((contextPrivateData*)JS_GetContextPrivate(cx))->worker;
   MessageExchange* msgEx = worker->getMessageExchange();
 
-  JSString* workerIdStr = JSVAL_TO_STRING(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "myWorkerId"));
-  std::string myWorkerId(JS_EncodeString(cx, workerIdStr));
+  std::string myWorkerId = worker->getWorkerId();
 
   msgEx->addSubscription(myWorkerId, msgId);
 
@@ -154,10 +155,8 @@ native_publish_broadcast(JSContext* cx, uintN argc, jsval* vp)
   std::string msgId(JS_EncodeString(cx, msgIdStr));
   std::string jsonData(JS_EncodeString(cx, jsonDataStr));
 
-  JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
-  Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
-  JSString* workerIdStr = JSVAL_TO_STRING(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "myWorkerId"));
-  std::string myWorkerId(JS_EncodeString(cx, workerIdStr));
+  Worker* worker = ((contextPrivateData*)JS_GetContextPrivate(cx))->worker;
+  std::string myWorkerId = worker->getWorkerId();
 
   worker->getMessageExchange()->publish(myWorkerId, msgId, jsonData);
 
@@ -181,10 +180,8 @@ native_publish_single_target(JSContext* cx, uintN argc, jsval* vp)
   std::string msgId(JS_EncodeString(cx, msgIdStr));
   std::string jsonData(JS_EncodeString(cx, jsonDataStr));
 
-  JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
-  Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
-  JSString* workerIdStr = JSVAL_TO_STRING(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "myWorkerId"));
-  std::string myWorkerId(JS_EncodeString(cx, workerIdStr));
+  Worker* worker = ((contextPrivateData*)JS_GetContextPrivate(cx))->worker;
+  std::string myWorkerId = worker->getWorkerId();
 
   worker->getMessageExchange()->publish(target, myWorkerId, msgId, jsonData);
 
@@ -198,6 +195,55 @@ static JSFunctionSpec messagingFunctionSpec[] = {
   JS_FS("__native_publish_single_target", native_publish_single_target, 3, 0),
   JS_FS_END
 };
+
+static JSBool
+native_global_getPaths(JSContext* cx, uintN argc, jsval* vp)
+{
+  printf("entering sugs.api.core.getPaths()\n");
+  contextPrivateData* data = (contextPrivateData*)JS_GetContextPrivate(cx);
+  printf("gonna dive into worker..");
+  pathStrings paths = data->worker->getPaths();
+  printf ("Number of paths from our worker? %d\n", paths.length);
+
+  jsval elems[paths.length];
+  for(int ctr = 0;ctr < paths.length;ctr++)
+  {
+    std::string path = paths.paths[ctr];
+    elems[ctr] = STRING_TO_JSVAL(JS_NewStringCopyZ(cx, path.c_str()));
+  }
+
+  JSObject* pathsArrObj = JS_NewArrayObject(cx, paths.length, elems);
+  jsval pathsVal = OBJECT_TO_JSVAL(pathsArrObj);
+
+  JS_SET_RVAL(cx, vp, pathsVal);
+  return JS_TRUE;
+}
+
+static JSFunctionSpec coreUtilFunctionSpec[] = {
+  JS_FS("getPaths", native_global_getPaths, 0, 0),
+  JS_FS_END
+};
+
+void bindCoreUtilFunctions(jsEnv jsEnv)
+{
+  printf("binding core util funcs..\n");
+
+  // this all needs to generalized and/or encapsulated in a pure-native
+  // embedObjectsInNamespace..
+  JSObject* sugsObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  JSObject* apiObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  JSObject* coreObj;
+  sugs::common::jsutil::newJSObjectFromFunctionSpec(jsEnv.cx, coreUtilFunctionSpec, &coreObj);
+
+  jsval coreVal = OBJECT_TO_JSVAL(coreObj);
+  JS_SetProperty(jsEnv.cx, apiObj, "core", &coreVal);
+  jsval apiVal = OBJECT_TO_JSVAL(apiObj);
+  JS_SetProperty(jsEnv.cx, sugsObj, "api", &apiVal);
+  jsval sugsVal = OBJECT_TO_JSVAL(sugsObj);
+  JS_SetProperty(jsEnv.cx, jsEnv.global, "sugs", &sugsVal);
+  //sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.core", coreObj);
+  printf("done binding core util funcs...\n");
+}
 
 void bindMessageExchangeFunctions(JSContext* cx, JSObject* global) {
   printf("binding message exchange funcions..\n");
@@ -264,10 +310,21 @@ native_worker_getPaths(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+static JSBool
+native_worker_getData(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* thisObj = JS_THIS_OBJECT(cx, vp);
+  Worker* worker = (Worker*)JS_GetPrivate(cx, thisObj);
+  jsval dataVal = OBJECT_TO_JSVAL(worker->getData());
+  JS_SET_RVAL(cx, vp, dataVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec workerWrapperFunctionSpec[] = {
-  JS_FS("getId", native_worker_getId, 0, 0),
   JS_FS("kill", native_worker_kill, 0, 0),
   JS_FS("getPaths", native_worker_getPaths, 0, 0),
+  JS_FS("getId", native_worker_getId, 0, 0),
+  JS_FS("getData", native_worker_getData, 0, 0),
   JS_FS_END
 };
 
@@ -299,10 +356,9 @@ native_worker_spawn(JSContext* cx, uintN argc, jsval* vp)
   }
   std::string prefix(JS_EncodeString(cx, prefixStr));
 
-  // pull pointer to current Worker from global
   JSObject* global = JS_GetGlobalObject(cx);
-  JSObject* workerWrapper = JSVAL_TO_OBJECT(sugs::common::jsutil::pullPropertyFromSugsConfigInGlobal(cx, global, "workerRef"));
-  Worker* worker = (Worker*)JS_GetPrivate(cx, workerWrapper);
+  Worker* worker = ((contextPrivateData*)JS_GetContextPrivate(cx))->worker;
+
   MessageExchange* msgEx = worker->getMessageExchange();
   pathStrings paths = worker->getPaths();
 
@@ -383,6 +439,11 @@ std::string Worker::getWorkerId() {
   return this->_workerId;
 }
 
+JSObject* Worker::getData()
+{
+  return this->_dataObj;
+}
+
 void Worker::loadSugsLibraries(pathStrings paths) {
   predicateResult result;
   // Load up our core dependencies
@@ -401,6 +462,9 @@ void Worker::loadSugsLibraries(pathStrings paths) {
     printf(result.message);
     exit(EXIT_FAILURE);
   }
+
+  bindCoreUtilFunctions(this->_jsEnv);
+
   result = sugs::core::js::findAndExecuteScript("sugs.coffee", paths, this->_jsEnv.cx, this->_jsEnv.global);
   if(result.result == JS_FALSE) {
     printf(result.message);
@@ -408,68 +472,18 @@ void Worker::loadSugsLibraries(pathStrings paths) {
   }
 
   bindMessageExchangeFunctions(this->_jsEnv.cx, this->_jsEnv.global);
-
   bindWorkerSpawnFunctions(this->_jsEnv);
 
   printf(">>> finishing Worker::loadSugsLibraries()!\n");
 }
 
-void bindWorkerToConfig(JSContext* cx, JSObject* sugsConfig, Worker* workerP) {
-  JSObject* workerWrapperObj = JS_NewObject(cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
-  if(!JS_SetPrivate(cx, workerWrapperObj,workerP)) {
-    printf("bindWorkerToConfig: unable to bind Worker pointer to wrapper obj\n");
-    exit(EXIT_FAILURE);
-  }
-
-  jsval wrapperVal = OBJECT_TO_JSVAL(workerWrapperObj);
-  if(!JS_SetProperty(cx, sugsConfig, "workerRef", &wrapperVal)) {
-    printf("bindWorkerToConfig: unable to add Worker wrapper to sugsConfig\n");
-    exit(EXIT_FAILURE);
-  }
-}
-
 void Worker::loadConfig(pathStrings paths, std::string dataJsonStr) {
-  JSObject* sugsConfigObj = JS_NewObject(this->_jsEnv.cx, NULL, NULL, NULL);
-
-  jsval pathVals[paths.length];
-  for(int ctr = 0; ctr < paths.length;ctr++) {
-    const char* cStr = paths.paths[ctr].c_str();
-    JSString* pathStr = JS_NewStringCopyN(this->_jsEnv.cx, cStr, strlen(cStr));
-    pathVals[ctr] =STRING_TO_JSVAL(pathStr);
-  }
-  JSObject* pathsArrObj = JS_NewArrayObject(this->_jsEnv.cx, paths.length, pathVals);
-  jsval pathsArrVal = OBJECT_TO_JSVAL(pathsArrObj);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "paths", &pathsArrVal)) {
-    printf("Failed to convert native sugsConfig.paths and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
-
-  const char* workerIdCStr = this->_workerId.c_str();
-  JSString* myWorkerIdStr = JS_NewStringCopyN(this->_jsEnv.cx, workerIdCStr, strlen(workerIdCStr));
-  jsval myWorkerIdVal = STRING_TO_JSVAL(myWorkerIdStr);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "myWorkerId", &myWorkerIdVal)) {
-    printf("Failed to convert worker's _workerId and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
-
-  bindWorkerToConfig(this->_jsEnv.cx, sugsConfigObj, this);
-
-  const char* dataJson = dataJsonStr.c_str();
-  JSString* customJsonStr = JS_NewStringCopyN(this->_jsEnv.cx, dataJson, strlen(dataJson));
-  jsval customJsonVal = STRING_TO_JSVAL(customJsonStr);
-  if(!JS_SetProperty(this->_jsEnv.cx, sugsConfigObj, "customJson", &customJsonVal)) {
-    printf("Failed to convert native sugsConfig.customJson and store in sugsConfig JSObject\n");
-    exit(EXIT_FAILURE);
-  }
-
-  jsval sugsConfigVal = OBJECT_TO_JSVAL(sugsConfigObj);
-  if(!JS_SetProperty(this->_jsEnv.cx, this->_jsEnv.global, "sugsConfig", &sugsConfigVal)) {
-    printf("Failed to convert native sugsConfig and load into global object\n");
-    exit(EXIT_FAILURE);
-  }
-
-  // can't do this until after the config is bound to the global...
-  sugs::core::js::executeJavascriptSnippet("(function() {sugsConfig.custom = JSON.parse(sugsConfig.customJson);})();", this->_jsEnv.cx, this->_jsEnv.global);
+  // just keeping this for when we make this the (data) passed
+  // into a startup.. ?
+  predicateResult customResult = sugs::core::js::executeJavascriptSnippet(std::string("(function() { return "+dataJsonStr+";})()").c_str(), this->_jsEnv.cx, this->_jsEnv.global);
+  jsval customVal = customResult.optionalRetVal;
+  JSObject* dataObj = JSVAL_TO_OBJECT(customVal);
+  this->_dataObj = dataObj;
 
   printf("sugsConfig added to global\n");
 }
@@ -521,6 +535,7 @@ void Worker::loadComponents(pathStrings paths)
     // this is really hacky/not safe.. should probably turn the configJson into
     // a proper JSObject* as a string and pass it in to JSON.parse, but I don't
     // have anything in place to facilitate this. quite a kludge.
+
     predicateResult result = sugs::core::js::executeJavascriptSnippet(std::string("(function() { return "+configJson+";})()").c_str(), this->_jsEnv.cx, this->_jsEnv.global);
     JSObject* configJsonObj = JSVAL_TO_OBJECT(result.optionalRetVal);
     sugs::core::ext::Component* c = factory->create(this->_jsEnv, configJsonObj);

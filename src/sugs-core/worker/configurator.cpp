@@ -10,6 +10,7 @@ void ConfiguratorWorker::parseConfigFile() {
 }
 
 void ConfiguratorWorker::init() {
+  this->setupEnvironment();
   this->loadConfig(this->_paths, "{}");
   this->loadSugsLibraries(this->_paths);
 }
