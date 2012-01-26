@@ -12,11 +12,11 @@
   - Zero-or-more additional Workers running on separate threads, as needed
 * Communication between Workers via a JSON-based, asynchronous message passing scheme
 * All messages originate from a Worker to another known Worker, like:
-  - _Worker-A_ _subscribes_ to a message via a string URI
-  - _Worker-B_ (who may actually be Worker-A) _publishes_ a message for Worker-A (by it's unique identifier) _and the same URI_
-  - Worker-A gets the message and processes it, eventually, in addition to any other work it may be doing
+  1. _Worker-A_ _subscribes_ to a message via a string URI, providing a callback to handle messages for that URI
+  2. _Worker-B_ (who may actually be Worker-A) _publishes_ a JSON message for Worker-A (by it's unique identifier) _and the same URI_
+  3. Worker-A gets the message and processes it (using the supplied callback), eventually, in addition to any other work it may be doing
 * Consequently, spawning order is important and natural parent/child hierarchies will form
-* Each Worker is completely synchronous (and single-threaded) without the context of *its own lifetime*
+* Each Worker is completely synchronous (and single-threaded) within the context of *its own lifetime*
 
 ### You also get:
 * [CoffeeScript](http://coffee-script.org) as a first class language (and vanilla [ECMAScript 5.1](http://en.wikipedia.org/wiki/ECMAScript#Versions), as well)
