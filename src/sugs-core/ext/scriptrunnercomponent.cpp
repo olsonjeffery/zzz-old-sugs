@@ -32,13 +32,11 @@ namespace sugs {
 namespace core {
 namespace ext {
 
-predicateResult execStartupCallbacks(jsEnv jsEnv, JSObject* data) {
-  jsval argv[1];
-  jsval dataVal = OBJECT_TO_JSVAL(data);
-  argv[0] = dataVal;
+predicateResult execStartupCallbacks(jsEnv jsEnv) {
+  jsval argv[0];
 
   jsval rval;
-  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 1, argv, &rval) == JS_FALSE) {
+  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
     return {JS_FALSE, "error occured while called doStartup()\n"};
   }
   return { JS_TRUE, ""};
@@ -50,7 +48,7 @@ void ScriptRunnerComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings pat
   this->loadEntryPointScript(jsEnv, paths, this->_entryPoint.c_str()); // entry point should come from json
 
   // run $.startup() in user code
-  result = execStartupCallbacks(jsEnv, this->_data);
+  result = execStartupCallbacks(jsEnv);
   if (result.result == JS_FALSE) {
     printf(result.message);
     exit(EXIT_FAILURE);
@@ -101,20 +99,7 @@ Component* ScriptRunnerComponentFactory::create(jsEnv jsEnv, JSObject* configJso
   JSString* epStr = JSVAL_TO_STRING(epVal);
   std::string ep(JS_EncodeString(jsEnv.cx, epStr));
 
-  jsval dataVal;
-  if (!JS_GetProperty(jsEnv.cx, configJson, "data", &dataVal)) {
-    printf("ScriptRunnerComponentFactory::create() : failed to pull entryPoint val from config json object");
-    exit(EXIT_FAILURE);
-  }
-  JSObject* data;
-  if (JSVAL_IS_VOID(dataVal)) {
-    data = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
-  }
-  else {
-    data = JSVAL_TO_OBJECT(dataVal);
-  }
-
-  return new ScriptRunnerComponent(ep, data);
+  return new ScriptRunnerComponent(ep);
 }
 
 std::string ScriptRunnerComponentFactory::getName()

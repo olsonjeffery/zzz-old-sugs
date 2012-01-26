@@ -87,8 +87,8 @@ mainLoopCallback = null
 # doStartup() -- Called from native code once on startup to run
 # all of the registered callbacks to be ran on startup. Graphics
 # has been set up, along with environments.
-global.doStartup = (data)->
-  _.each startupCallbacks, (cb) -> cb(data)
+global.doStartup = ->
+  _.each startupCallbacks, (cb) -> cb()
 
 timePassed = 0
 lastTickForFps = {}
