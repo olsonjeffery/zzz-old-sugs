@@ -1,23 +1,27 @@
 # sugs
 
-`sugs` is a JavaScript *platform* (ala [node.js](http://nodejs.org), [narwhal](http://nawwhaljs.org), the browser, etc) that targets multiuser, rich media applications. It is released under the ["Simplified", 2-clause BSD License](http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29).
+...is a JavaScript _platform_ (ala [node.js](http://nodejs.org), [narwhal](http://nawwhaljs.org), the browser, etc) that targets multiuser, rich media applications. It is released under the ["Simplified", 2-clause BSD License](http://en.wikipedia.org/wiki/BSD_licenses#2-clause_license_.28.22Simplified_BSD_License.22_or_.22FreeBSD_License.22.29).
 
-### Sugs is, at its core:
+### It is, at its core:
 
 * A hybrid native/JavaScript platform, comprised of one-or-more _Workers_
 * Workers are shared-nothing, isolated JavaScript VMs
+* [SpiderMonkey](http://developer.mozilla.org/en/SpiderMonkey) (that _other_ JavaScript engine) is the library used for JS execution
 * Each Worker runs in its own OS thread, like:
   - One Worker blocking the main thread and managing the overall process lifecycle
   - Zero-or-more additional Workers running on separate threads, as needed
 * Communication between Workers via a JSON-based, asynchronous message passing scheme
-* All messages are from a known Worker to another known Worker
-* So Worker spawn order is important and a natural parent/child hierarchy will form)
+* All messages originate from a Worker to another known Worker, like:
+  - _Worker-A_ _subscribes_ to a message via a string URI
+  - _Worker-B_ (who may actually be Worker-A) _publishes_ a message for Worker A (by it's unique identifier) _and the same URI_
+  - Worker-A gets the message and processes it, eventually, in addition to any other work it may be doing
+* Consequently, spawning order is important and natural parent/child hierarchies will form
 
 ### You also get:
 * [CoffeeScript](http://coffee-script.org) as a first class language.
 * JavaScript is supported as well, if that's your thing
 * Bindings for 2D graphics using the SFML library (sugs-richclient)
-* 2D, rigid body physics via the [Chipmunk Game Dynamics](http://code.google.com/p/chipmunk-physics/) engine (currently in sugs-core as the ChipmunkPhysicsComponent, soon to broken into its own lib)
+* 2D, rigid body physics via the [Chipmunk Game Dynamics](http://code.google.com/p/chipmunk-physics/) engine (currently in `sugs-core` as the `ChipmunkPhysicsComponent`, soon to broken into its own lib)
 
 ### A tad more on Workers (and Components):
 
@@ -34,6 +38,7 @@
 * As hinted at by the examples above, Components serve to both:
   - Embed new capabilities within a Worker besides the defaults (thread asynchronicity, JavaScript-execution and inter-Worker messaging)
   - Provide a way to deliberately compartmentalize/manage those capabilities
+* A Worker's Components are specified at spawn-time
 
 ### JavaScript libraries out-of-the-box
 
