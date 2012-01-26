@@ -59,12 +59,12 @@ JavaScript Libs
 
 Hells yeah, we do. It's called `sugs-spec` and follows the rather blah but useful _Context/Specification_ format.
 
-### Coming soon:
+### Coming soon...
 
 * Transparent, inter-process/network messaging
   - the existing abstraction ought to scale out with the addition of an onConnect type handler so that the 'receiver' of a new connection can be notified of remote Worker(s) trying to make contact with it
-* WebGL abstractions that closely track how things work in the browser with 3D-capable canvases (this will be fun)
-* Persistance support (google's [leveldb](http://code.google.com/leveldb) and/or [sqlite](http://sqlite.org)
+* A WebGL abstraction, hewing close to existing browser APIs
+* Persistance support (google's [leveldb](http://code.google.com/leveldb) and/or [sqlite](http://sqlite.org))
 * Windows and OSX support
   - currently all development is happening in a 64bit Ubuntu VM, but the above-named platforms are intended targets
 * [libuv](http://github.com/joyent/libuv)-based event loops for all Workers (we truly are converging on [node.js](http://nodejs.org), heh)
