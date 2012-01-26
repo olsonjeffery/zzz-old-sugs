@@ -19,7 +19,7 @@
 * Each Worker is completely synchronous (and single-threaded) without the context of *its own lifetime*
 
 ### You also get:
-* [CoffeeScript](http://coffee-script.org) as a first class language (and vanilla [EcmaScript 5.1](http://en.wikipedia.org/wiki/ECMAScript#Versions), as well)
+* [CoffeeScript](http://coffee-script.org) as a first class language (and vanilla [ECMAScript 5.1](http://en.wikipedia.org/wiki/ECMAScript#Versions), as well)
 * Bindings for 2D graphics and keyboard/mouse input using the SFML v2 library (`sugs-richclient`)
 * 2D, rigid body physics via the [Chipmunk Game Dynamics](http://code.google.com/p/chipmunk-physics/) engine (currently in `sugs-core` as the `ChipmunkPhysicsComponent`, soon to broken into its own lib)
 
