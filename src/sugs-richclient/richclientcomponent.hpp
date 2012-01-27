@@ -40,32 +40,11 @@ namespace richclient {
 class RichClientComponent : public sugs::core::ext::Component
 {
   public:
-  RichClientComponent(int width, int height, int colorDepth)
-  {
-    this->_screenWidth = width;
-    this->_screenHeight = height;
-    this->_colorDepth = colorDepth;
-  }
-  ~RichClientComponent()
-  {
-    this->_isClosed = false;
-    this->componentTeardown(this->_jsEnv);
-  }
+  RichClientComponent() { }
+  ~RichClientComponent() { }
 
   virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
   virtual bool doWork(jsEnv jsEnv, pathStrings paths);
-
-  void closeApp();
-
-  private:
-  void componentTeardown(jsEnv jsEnv);
-  bool _isClosed;
-  bool isWindowClosed();
-  jsEnv _jsEnv;
-
-  int _screenWidth;
-  int _screenHeight;
-  int _colorDepth;
 };
 
 class RichClientComponentFactory : public sugs::core::ext::ComponentFactory

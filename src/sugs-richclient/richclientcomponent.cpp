@@ -3,18 +3,6 @@
 namespace sugs {
 namespace richclient {
 
-void RichClientComponent::componentTeardown(jsEnv jsEnv) {
-  printf("frontend dtor...\n");
-  jsval argv[0];
-  jsval rVal;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "showEntryPoints", 0, argv, &rVal);
-}
-
-sugs::richclient::gfx::GraphicsEnv createGraphicsEnv(JSContext* cx, int width, int height, int colorDepth) {
-  // init graphics
-  return sugs::richclient::gfx::initGraphics(cx, width, height, colorDepth);
-}
-
 static JSBool
 native_create2DAcceleratedCanvas(JSContext* cx, uintN argc, jsval* vp)
 {
@@ -46,7 +34,7 @@ native_create2DAcceleratedCanvas(JSContext* cx, uintN argc, jsval* vp)
   }
   double colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
 
-  sugs::richclient::gfx::GraphicsEnv gfxEnv = createGraphicsEnv(cx, width, height, colorDepth);
+  sugs::richclient::gfx::GraphicsEnv gfxEnv = sugs::richclient::gfx::initGraphics(cx, width, height, colorDepth);
   JSObject* canvas = gfxEnv.canvas;
 
   jsval rVal = OBJECT_TO_JSVAL(canvas);
@@ -70,52 +58,27 @@ void bindGraphicsSetupEnvironments(jsEnv jsEnv, RichClientComponent* rc) {
     JS_ReportError(jsEnv.cx,"RichClientComponent/componentRegisterNativeFunctions: Unable to register window funcs obj functions...");
   }
 
+  // probably should combine all of these into one global namespace object
   sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.richclient", richClientObj);
-}
-
-void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths) {
-  this->_jsEnv = jsEnv;
-
-  // this needs to go away..
-  MediaLibrary::RegisterDefaultFont();
-
-  // some other useful global
-  bindGraphicsSetupEnvironments(this->_jsEnv, this);
-
-  // init sfml bindings for the frontend
   sugs::richclient::gfx::registerGraphicsNatives(jsEnv.cx, jsEnv.global);
   sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
 }
 
-int msElapsed = 0;
+void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths) {
+  // this needs to go away..
+  MediaLibrary::RegisterDefaultFont();
+
+  // some other useful global
+  bindGraphicsSetupEnvironments(jsEnv, this);
+}
+
 bool RichClientComponent::doWork(jsEnv jsEnv, pathStrings paths) {
   return true;
 }
 
-
 sugs::core::ext::Component* RichClientComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
 {
-  jsval widthVal;
-  if(!JS_GetProperty(jsEnv.cx, configJson, "screenWidth", &widthVal)) {
-      printf("RichClientComponentFactory.create(): failure to pull screenWidth from global.configJson\n");
-      exit(EXIT_FAILURE);
-  }
-  int width = SUGS_JSVAL_TO_NUMBER(widthVal);
-
-  jsval heightVal;
-  if(!JS_GetProperty(jsEnv.cx, configJson, "screenHeight", &heightVal)) {
-      printf("RichClientComponentFactory.create(): failure to pull screenHeight from global.configJson\n");
-      exit(EXIT_FAILURE);
-  }
-  int height = SUGS_JSVAL_TO_NUMBER(heightVal);
-
-  jsval colorDepthVal;
-  if(!JS_GetProperty(jsEnv.cx, configJson, "colorDepth", &colorDepthVal)) {
-      printf("RichClientComponentFactory.create(): failure to pull colorDepth from global.configJson\n");
-      exit(EXIT_FAILURE);
-  }
-  int colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
-  return new RichClientComponent(width, height, colorDepth);
+  return new RichClientComponent();
 }
 
 std::string RichClientComponentFactory::getName()
