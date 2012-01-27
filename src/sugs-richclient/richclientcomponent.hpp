@@ -62,7 +62,7 @@ class RichClientComponent : public sugs::core::ext::Component
   bool _isClosed;
   bool isWindowClosed();
   jsEnv _jsEnv;
-  sugs::richclient::gfx::GraphicsEnv _gfxEnv;
+
   int _screenWidth;
   int _screenHeight;
   int _colorDepth;

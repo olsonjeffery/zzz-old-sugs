@@ -43,7 +43,7 @@ struct EventEnv {
 
 JSObject* newInputFrom(sf::RenderWindow* window, JSContext* cx);
 void registerInputNatives(JSContext* cx, JSObject* global);
-void pushKeyUpEvent(JSContext* cx, JSObject* global, sf::Key::Code code);
+void pushKeyUpEvent(JSContext* cx, JSObject* target, sf::Key::Code code);
 
 }}}
 #endif

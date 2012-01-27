@@ -26,19 +26,37 @@ authors and should not be interpreted as representing official policies, either 
 or implied, of Jeffery Olson <olson.jeffery@gmail.com>.
 ###
 
-keyUpHandlers = {}
 global = this
-global.__pushOnKeyUpEvent = (key) ->
-  if typeof(keyUpHandlers[key.toString()]) != "undefined"
-    _.each keyUpHandlers[key.toString()], (cb) ->
-      cb()
+class InputManager
+  constructor: (@rawInput) ->
+    @keyUpHandlers = {}
+
+  __pushOnKeyUpEvent: (key) ->
+    if typeof(@keyUpHandlers[key.toString()]) != "undefined"
+      _.each @keyUpHandlers[key.toString()], (cb) ->
+        cb()
+
+  onKeyUp: (key, handler) ->
+    if typeof(@keyUpHandlers[key.toString()]) == "undefined"
+      @keyUpHandlers[key.toString()] = []
+    @keyUpHandlers[key.toString()].push handler
+
+  isKeyDown: (key) ->
+    @rawInput.isKeyDown key
+
+  getMousePos: ->
+    @rawInput.getMousePos()
+
+  pollEvents: ->
+    @rawInput.pollEvents this
+
+
 
 return {
   # Input class -- provides a means to poll for key/mouse button presses
   # and mouse position. An instance is provided to callbacks registered
   # in $.render(). Instances are *only* available during the render loop.
-  onKeyUp: (key, handler) ->
-    if typeof(keyUpHandlers[key.toString()]) == "undefined"
-      keyUpHandlers[key.toString()] = []
-    keyUpHandlers[key.toString()].push handler
+  manageInputFor: (canvas) ->
+    rawInput = canvas.getRawInput()
+    new InputManager rawInput
 }

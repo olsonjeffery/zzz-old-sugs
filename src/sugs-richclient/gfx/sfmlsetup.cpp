@@ -16,9 +16,4 @@ GraphicsEnv initGraphics(JSContext* cx, int width, int height, int colorDepth) {
   return gfxEnv;
 }
 
-void teardownGraphics(sf::RenderWindow* window, JSObject* canvas, JSContext* cx) {
-  JS_RemoveObjectRoot(cx, &canvas);
-  delete window;
-}
-
 }}}

@@ -97,13 +97,27 @@ JSBool canvas_getInput(JSContext* cx, uintN argc, jsval* vp)
   sf::RenderWindow* win = (sf::RenderWindow*)(JS_GetPrivate(cx, This));
 
   JSObject* input = sugs::richclient::input::newInputFrom(win, cx);
+  jsval inputVal = OBJECT_TO_JSVAL(input);
+  JS_SET_RVAL(cx, vp, inputVal);
+  return JS_TRUE;
+}
+
+JSBool canvas_getFrameTime(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* This = JS_THIS_OBJECT(cx, vp);
+  sf::RenderWindow* win = (sf::RenderWindow*)(JS_GetPrivate(cx, This));
+  int frameTime = win->GetFrameTime();
+
+  jsval retVal = INT_TO_JSVAL(frameTime);
+  JS_SET_RVAL(cx, vp, retVal);
+  return JS_TRUE;
 }
 
 static void
-classdef_canvas_finalize(JSContext* cx, JSObject* sp) {
-  /*sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, sp);
+classdef_canvas_finalize(JSContext* cx, JSObject* canvas) {
+  sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, canvas);
   printf("About to try and delete an sf::RenderWindow...\n");
-  delete window;*/
+  delete window;
 }
 
 static JSClass
@@ -118,7 +132,8 @@ static JSFunctionSpec canvas_native_functions[] = {
   JS_FS("draw", canvas_draw, 1, 0),
   JS_FS("clear", canvas_clear, 1, 0),
   JS_FS("display", canvas_display, 0, 0),
-  JS_FS("getInput", canvas_getInput, 0, 0),
+  JS_FS("getRawInput", canvas_getInput, 0, 0),
+  JS_FS("getFrameTime", canvas_getFrameTime, 0, 0),
   JS_FS_END
 };
 

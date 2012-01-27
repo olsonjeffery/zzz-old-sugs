@@ -286,9 +286,43 @@ JSBool reformer_native_input_getMousePos(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+JSBool input_pollInputEvents(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* This = JS_THIS_OBJECT(cx, vp);
+  sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, This);
+  if(window == NULL)
+  {
+    JS_ReportError(cx, "input_pollInputEvents: unable to pull RenderWindow from This's private prop");
+    return JS_FALSE;
+  }
+
+  JSObject* jsInputMgr;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &jsInputMgr)) {
+    JS_ReportError(cx, "input_pollInputEvents: unable to parse args");
+    return JS_FALSE;
+  }
+
+  sf::Event ev;
+  // check for window close/quit event..
+
+  while(window->PollEvent(ev)) {
+    if (ev.Type == sf::Event::Closed) { // what to do here?
+      //window->Close();                  // guess i need to add onClose..
+      //this->_isClosed = JS_TRUE;
+    }
+    if (ev.Type == sf::Event::KeyReleased) {
+      sf::Key::Code code = ev.Key.Code;
+      sugs::richclient::input::pushKeyUpEvent(cx, jsInputMgr, code);
+    }
+  }
+
+  return JS_TRUE;
+}
+
 static JSFunctionSpec input_native_functions[] = {
   JS_FS("isKeyDown", reformer_native_input_isKeyDown, 1, 0),
   JS_FS("getMousePos", reformer_native_input_getMousePos, 0, 0),
+  JS_FS("pollEvents", input_pollInputEvents, 1, 0),
   JS_FS_END
 };
 
@@ -336,11 +370,11 @@ void sugs::richclient::input::registerInputNatives(JSContext* cx, JSObject* glob
   JS_SetProperty(cx, global, "Keys", &kfVal);
 }
 
-void sugs::richclient::input::pushKeyUpEvent(JSContext* cx, JSObject* global, sf::Key::Code code)
+void sugs::richclient::input::pushKeyUpEvent(JSContext* cx, JSObject* target, sf::Key::Code code)
 {
   JSObject* keyObj = getKeyObjectFor(cx, code);
   jsval argv[1];
   argv[0] = OBJECT_TO_JSVAL(keyObj);
   jsval rVal;
-  JS_CallFunctionName(cx, global, "__pushOnKeyUpEvent", 1, argv, &rVal);
+  JS_CallFunctionName(cx, target, "__pushOnKeyUpEvent", 1, argv, &rVal);
 }
