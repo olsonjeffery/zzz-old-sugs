@@ -31,20 +31,26 @@ namespace sugs {
 namespace richclient {
 namespace gfx {
 
-JSBool reformer_native_canvas_draw(JSContext* cx, uintN argc, jsval* vp)
+JSBool canvas_draw(JSContext* cx, uintN argc, jsval* vp)
 {
-  JSObject* This;
-  JSObject* spriteObj;
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oo", &This, &spriteObj)) {
+  JSObject* This = JS_THIS_OBJECT(cx, vp);
+  JSObject* drawableShellObj;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &drawableShellObj)) {
       /* Throw a JavaScript exception. */
       JS_ReportError(cx, "wtf can't parse arguments for pos obj", 1);
       return JS_FALSE;
   }
+  jsval drawableObjVal;
+  if(!JS_GetProperty(cx, drawableShellObj, "nativeDrawable", &drawableObjVal)) {
+      JS_ReportError(cx, "canvas_draw: can't pull nativeDrawable from provided drawable obj", 1);
+      return JS_FALSE;
+  }
+  JSObject* drawableObj = JSVAL_TO_OBJECT(drawableObjVal);
 
   // need error check
-  sf::Sprite* sprite = (sf::Sprite*)(JS_GetPrivate(cx, spriteObj));
+  sf::Drawable* drawable = (sf::Drawable*)(JS_GetPrivate(cx, drawableObj));
   sf::RenderWindow* win = (sf::RenderWindow*)(JS_GetPrivate(cx, This));
-  win->Draw(*sprite);
+  win->Draw(*drawable);
 
   JS_SET_RVAL(cx, vp, JSVAL_VOID);
   return JS_TRUE;
@@ -64,7 +70,7 @@ native_canvas_classdef = {
 };
 
 static JSFunctionSpec canvas_native_functions[] = {
-  JS_FS("__native_draw", reformer_native_canvas_draw, 2, 0),
+  JS_FS("draw", canvas_draw, 1, 0),
   JS_FS_END
 };
 

@@ -21,22 +21,80 @@ native_window_exit(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+sugs::richclient::gfx::GraphicsEnv createGraphicsEnv(JSContext* cx, int width, int height, int colorDepth) {
+  // init graphics
+  return sugs::richclient::gfx::initGraphics(cx, width, height, colorDepth);
+}
+
+static JSBool
+native_create2DAcceleratedCanvas(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* optionsObj;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &optionsObj)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "native_create2DAcceleratedCanvas: can't parse arguments");
+      return JS_FALSE;
+  }
+
+  jsval widthVal;
+  if(!JS_GetProperty(cx, optionsObj, "width", &widthVal)) {
+    JS_ReportError(cx, "native_rectangle_factory: failed to pull width val from rectParams");
+    return JS_FALSE;
+  }
+  double width = SUGS_JSVAL_TO_NUMBER(widthVal);
+
+  jsval heightVal;
+  if(!JS_GetProperty(cx, optionsObj, "height", &heightVal)) {
+    JS_ReportError(cx, "native_rectangle_factory: failed to pull height val from rectParams");
+    return JS_FALSE;
+  }
+  double height = SUGS_JSVAL_TO_NUMBER(heightVal);
+
+  jsval colorDepthVal;
+  if(!JS_GetProperty(cx, optionsObj, "colorDepth", &colorDepthVal)) {
+    JS_ReportError(cx, "native_rectangle_factory: failed to pull height val from rectParams");
+    return JS_FALSE;
+  }
+  double colorDepth = SUGS_JSVAL_TO_NUMBER(colorDepthVal);
+
+  sugs::richclient::gfx::GraphicsEnv gfxEnv = createGraphicsEnv(cx, width, height, colorDepth);
+  JSObject* canvas = gfxEnv.canvas;
+
+  jsval rVal = OBJECT_TO_JSVAL(canvas);
+  JS_SET_RVAL(cx, vp, rVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec
-windowFuncSpecs[] = {
+richclientGlobalFuncSpecs[] = {
   JS_FS("exit", native_window_exit, 0, 0),
+  JS_FS("create2DAcceleratedCanvas", native_create2DAcceleratedCanvas, 3, 0),
   JS_FS_END
 };
+
+void bindGraphicsSetupEnvironments(jsEnv jsEnv, RichClientComponent* rc) {
+  // general richclient functions...
+  JSObject* richClientObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  if(!JS_SetPrivate(jsEnv.cx, richClientObj, rc)) {
+      JS_ReportError(jsEnv.cx,"RichClientComponent::componentRegisterNativeFunctions: Unable to set privite obj on windowFuncsObj...");
+  }
+  if(!JS_DefineFunctions(jsEnv.cx, richClientObj, richclientGlobalFuncSpecs)) {
+    JS_ReportError(jsEnv.cx,"RichClientComponent/componentRegisterNativeFunctions: Unable to register window funcs obj functions...");
+  }
+
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.richclient", richClientObj);
+}
 
 sugs::richclient::gfx::GraphicsEnv graphicsSetup(jsEnv jsEnv, int width, int height, int colorDepth) {
   // set up media repositories
   MediaLibrary::RegisterDefaultFont();
-
-  // init graphics
-  return sugs::richclient::gfx::initGraphics(jsEnv.cx, width, height, colorDepth);
+  return createGraphicsEnv(jsEnv.cx, width, height, colorDepth);
 }
 
 void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths) {
   this->_jsEnv = jsEnv;
+
+  // this needs to go away..
   this->_gfxEnv = graphicsSetup(this->_jsEnv, this->_screenWidth, this->_screenHeight, this->_colorDepth);
 
   predicateResult result = sugs::core::js::findAndExecuteScript("richclient.coffee", paths, jsEnv.cx, jsEnv.global);
@@ -45,20 +103,12 @@ void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths
     exit(EXIT_FAILURE);
   }
 
+  // some other useful global
+  bindGraphicsSetupEnvironments(this->_jsEnv, this);
+
   // init sfml bindings for the frontend
   sugs::richclient::gfx::registerGraphicsNatives(jsEnv.cx, jsEnv.global);
   sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
-
-  // general richclient functions...
-  JSObject* windowFuncsObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
-  if(!JS_SetPrivate(jsEnv.cx, windowFuncsObj, this)) {
-      JS_ReportError(jsEnv.cx,"RichClientComponent::componentRegisterNativeFunctions: Unable to set privite obj on windowFuncsObj...");
-  }
-  if(!JS_DefineFunctions(jsEnv.cx, windowFuncsObj, windowFuncSpecs)) {
-    JS_ReportError(jsEnv.cx,"RichClientComponent/componentRegisterNativeFunctions: Unable to register window funcs obj functions...");
-  }
-
-  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.richclient.window", windowFuncsObj);
 }
 
 void callIntoJsRichClientRender(jsEnv jsEnv, JSObject* canvas, JSObject* input, int msElapsed) {

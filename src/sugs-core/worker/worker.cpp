@@ -38,6 +38,13 @@ void Worker::init() {
   this->setupEnvironment();
   this->loadConfig(this->_paths, this->_dataJson);
   this->loadSugsLibraries(this->_paths);
+
+  // so we should have bound all of the core native stuff
+  // we need to by now, and components are about to
+  // be loaded. most likely, the last component is
+  // our ScriptRunner.. so everything needs to loaded
+  // by then, since its sole jerb is to run the entry
+  // point script.
   this->loadComponents(this->_paths);
 }
 
