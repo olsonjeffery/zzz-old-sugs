@@ -37,7 +37,7 @@ JSBool canvas_draw(JSContext* cx, uintN argc, jsval* vp)
   JSObject* drawableShellObj;
   if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &drawableShellObj)) {
       /* Throw a JavaScript exception. */
-      JS_ReportError(cx, "wtf can't parse arguments for pos obj", 1);
+      JS_ReportError(cx, "canvas_draw: wtf can't parse arguments for pos obj", 1);
       return JS_FALSE;
   }
   jsval drawableObjVal;
@@ -55,12 +55,57 @@ JSBool canvas_draw(JSContext* cx, uintN argc, jsval* vp)
   JS_SET_RVAL(cx, vp, JSVAL_VOID);
   return JS_TRUE;
 }
+
+JSBool canvas_clear(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* This = JS_THIS_OBJECT(cx, vp);
+  sf::RenderWindow* win = (sf::RenderWindow*)(JS_GetPrivate(cx, This));
+
+  JSObject* colorObj;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &colorObj)) {
+      /* Throw a JavaScript exception. */
+      JS_ReportError(cx, "canvas_clear: wtf can't parse arguments for pos obj", 1);
+      return JS_FALSE;
+  }
+
+  sf::Color clearColor;
+  if (!getColorFrom(cx, colorObj, &clearColor)) {
+    JS_ReportError(cx, "native_Circle_factory: failed to parse out lineColor");
+    return JS_FALSE;
+  }
+
+  win->Clear(clearColor);
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+
+JSBool canvas_display(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* This = JS_THIS_OBJECT(cx, vp);
+  sf::RenderWindow* win = (sf::RenderWindow*)(JS_GetPrivate(cx, This));
+
+  win->Display();
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+
+JSBool canvas_getInput(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* This = JS_THIS_OBJECT(cx, vp);
+  sf::RenderWindow* win = (sf::RenderWindow*)(JS_GetPrivate(cx, This));
+
+  JSObject* input = sugs::richclient::input::newInputFrom(win, cx);
+}
+
 static void
 classdef_canvas_finalize(JSContext* cx, JSObject* sp) {
   /*sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, sp);
   printf("About to try and delete an sf::RenderWindow...\n");
   delete window;*/
 }
+
 static JSClass
 native_canvas_classdef = {
   "NativeCanvas",
@@ -71,6 +116,9 @@ native_canvas_classdef = {
 
 static JSFunctionSpec canvas_native_functions[] = {
   JS_FS("draw", canvas_draw, 1, 0),
+  JS_FS("clear", canvas_clear, 1, 0),
+  JS_FS("display", canvas_display, 0, 0),
+  JS_FS("getInput", canvas_getInput, 0, 0),
   JS_FS_END
 };
 

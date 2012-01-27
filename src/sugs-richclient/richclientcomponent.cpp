@@ -139,7 +139,7 @@ bool RichClientComponent::doWork(jsEnv jsEnv, pathStrings paths) {
   }
 
   // BEGINNING OF THE DRAW/RENDER LOOP
-  this->_gfxEnv.window->Clear();
+  //this->_gfxEnv.window->Clear();
 
   JSObject* inputObj = sugs::richclient::input::newInputFrom(this->_gfxEnv.window, jsEnv.cx);
   JSObject* canvas = sugs::richclient::gfx::newCanvasFrom(this->_gfxEnv.window, jsEnv.cx);
@@ -147,7 +147,7 @@ bool RichClientComponent::doWork(jsEnv jsEnv, pathStrings paths) {
   // user code
   callIntoJsRichClientRender(jsEnv, canvas, inputObj, msElapsed);
 
-  this->_gfxEnv.window->Display();
+  //this->_gfxEnv.window->Display();
   // END OF DRAW/RENDER LOOP
 
   return !this->_isClosed;

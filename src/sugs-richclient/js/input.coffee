@@ -37,15 +37,6 @@ return {
   # Input class -- provides a means to poll for key/mouse button presses
   # and mouse position. An instance is provided to callbacks registered
   # in $.render(). Instances are *only* available during the render loop.
-  CurrentInputState: class
-    constructor: (@nativeInput) ->
-
-    isKeyDown: (key) ->
-      @nativeInput.__native_isKeyDown @nativeInput, key
-
-    getMousePos: ->
-      @nativeInput.__native_getMousePos(@nativeInput)
-
   onKeyUp: (key, handler) ->
     if typeof(keyUpHandlers[key.toString()]) == "undefined"
       keyUpHandlers[key.toString()] = []

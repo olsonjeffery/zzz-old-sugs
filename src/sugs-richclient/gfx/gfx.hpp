@@ -35,6 +35,7 @@
 
 #include "../../sugs-core/common.hpp"
 #include "../medialibrary.hpp"
+#include "../jsinput.hpp"
 
 /* pull the graphics natives into the current JSContext */
 namespace sugs {

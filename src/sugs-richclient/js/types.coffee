@@ -30,10 +30,4 @@ return {
   # Canvas class -- The "display surface" that a user draws to during the
   # render loop (callbacks registered to $.render() ). Instances of this
   # class are *only* available during the render loop.
-  Canvas: class
-    constructor: (nativeCanvas) ->
-      @nativeCanvas = nativeCanvas
-
-    draw: (sprite) ->
-      @nativeCanvas.draw sprite
 }

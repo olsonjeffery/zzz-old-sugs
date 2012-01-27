@@ -14,9 +14,7 @@ renderCallbacks = []
 # This is, pretty much, the main hook into the user code's side
 # of the main game loop
 global.runRender = (nativeCanvas, nativeInput, msElapsed) ->
-  canvas = new types.Canvas(nativeCanvas)
-  currentInput = new input.CurrentInputState(nativeInput)
-  _.each renderCallbacks, (cb) -> cb currentInput, canvas, msElapsed
+  _.each renderCallbacks, (cb) -> cb nativeInput, nativeCanvas, msElapsed
 
 # $.render() -- callbacks registered with this function will be called
 # once at the beginning of every render loop. The display is Clear()'d

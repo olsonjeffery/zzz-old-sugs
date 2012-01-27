@@ -225,10 +225,10 @@ JSObject* getKeyObjectFor(JSContext* cx, sf::Key::Code keyCode) {
 // Input funcs
 JSBool reformer_native_input_isKeyDown(JSContext* cx, uintN argc, jsval* vp)
 {
-  JSObject* This;
+  JSObject* This = JS_THIS_OBJECT(cx, vp);
   JSObject* kfResult;
 
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oo", &This, &kfResult)) {
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &kfResult)) {
     JS_ReportError(cx, "reformer_native_input_isKeyDown: unable to parse args");
     return JS_FALSE;
   }
@@ -258,12 +258,7 @@ JSBool reformer_native_input_isKeyDown(JSContext* cx, uintN argc, jsval* vp)
 
 JSBool reformer_native_input_getMousePos(JSContext* cx, uintN argc, jsval* vp)
 {
-  JSObject* This;
-  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "o", &This))
-  {
-    JS_ReportError(cx, "reformer_native_input_getMousePos: unable to parse args");
-    return JS_FALSE;
-  }
+  JSObject* This = JS_THIS_OBJECT(cx, vp);
   sf::RenderWindow* window = (sf::RenderWindow*)JS_GetPrivate(cx, This);
   if(window == NULL)
   {
@@ -292,8 +287,8 @@ JSBool reformer_native_input_getMousePos(JSContext* cx, uintN argc, jsval* vp)
 }
 
 static JSFunctionSpec input_native_functions[] = {
-  JS_FS("__native_isKeyDown", reformer_native_input_isKeyDown, 2, 0),
-  JS_FS("__native_getMousePos", reformer_native_input_getMousePos, 1, 0),
+  JS_FS("isKeyDown", reformer_native_input_isKeyDown, 1, 0),
+  JS_FS("getMousePos", reformer_native_input_getMousePos, 0, 0),
   JS_FS_END
 };
 
