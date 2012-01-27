@@ -73,7 +73,6 @@ class Worker
     ~Worker() {
       jsval argv[0];
       jsval rVal;
-      JS_CallFunctionName(this->_jsEnv.cx,this->_jsEnv.global, "showEntryPoints", 0, argv, &rVal);
       sugs::core::js::teardownContext(this->_jsEnv.cx);
       sugs::core::js::teardownRuntime(this->_jsEnv.rt);
       std::cout << "FINISHING DTOR FOR " << this->_workerId << std::endl;

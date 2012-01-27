@@ -49,7 +49,7 @@ class SpecComponent : public sugs::core::ext::Component
     this->_rawPaths = rawPaths;
   }
 
-  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual void setup(jsEnv jsEnv, pathStrings paths);
   virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 
   private:

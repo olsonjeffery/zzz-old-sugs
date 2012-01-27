@@ -78,6 +78,7 @@ void workerCallback(void* wpP) {
 
   worker->init();
   worker->begin();
+  worker->teardown();
   std::cout << "NOW EXITING " << worker->getWorkerId() << std::endl;
 }
 
@@ -496,7 +497,14 @@ void Worker::loadConfig(pathStrings paths, std::string dataJsonStr) {
 }
 
 void Worker::teardown() {
-  sugs::core::js::teardownContext(this->_jsEnv.cx);
+  printf("TEARING DOWN COMPONENTS...\n");
+
+  std::list<sugs::core::ext::Component*>::iterator it;
+  for(it = this->_components.begin(); it != this->_components.end(); it++)
+  {
+    sugs::core::ext::Component* c = *it;
+    c->finish(this->_jsEnv, this->_paths);
+  }
 }
 
 void Worker::processPendingMessages()
@@ -546,7 +554,7 @@ void Worker::loadComponents(pathStrings paths)
     predicateResult result = sugs::core::js::executeJavascriptSnippet(std::string("(function() { return "+configJson+";})()").c_str(), this->_jsEnv.cx, this->_jsEnv.global);
     JSObject* configJsonObj = JSVAL_TO_OBJECT(result.optionalRetVal);
     sugs::core::ext::Component* c = factory->create(this->_jsEnv, configJsonObj);
-    c->registerNativeFunctions(this->_jsEnv, paths);
+    c->setup(this->_jsEnv, paths);
     this->addComponent(c);
   }
 }

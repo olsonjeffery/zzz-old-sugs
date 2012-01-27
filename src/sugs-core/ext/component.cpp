@@ -32,7 +32,8 @@ namespace sugs {
 namespace core {
 namespace ext {
 
-void Component::registerNativeFunctions(jsEnv jsEnv, pathStrings paths) {}
+void Component::setup(jsEnv jsEnv, pathStrings paths) {}
 bool Component::doWork(jsEnv jsEnv, pathStrings paths) { return true; }
+void Component::finish(jsEnv jsEnv, pathStrings paths) {}
 
 }}} // namespace sugs::ext

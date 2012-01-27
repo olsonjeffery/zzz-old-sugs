@@ -46,8 +46,9 @@ class Component
 {
 public:
   Component() {}
-  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual void setup(jsEnv jsEnv, pathStrings paths);
   virtual bool doWork(jsEnv jsEnv, pathStrings paths);
+  virtual void finish(jsEnv jsEnv, pathStrings paths);
 };
 
 class ComponentFactory
@@ -93,7 +94,7 @@ public:
     this->_entryPoint = entryPointScript;
   }
 
-  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual void setup(jsEnv jsEnv, pathStrings paths);
   virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 
 private:
@@ -115,7 +116,7 @@ class FilesystemComponent : public Component
 public:
   FilesystemComponent() {}
 
-  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual void setup(jsEnv jsEnv, pathStrings paths);
 
 private:
 };

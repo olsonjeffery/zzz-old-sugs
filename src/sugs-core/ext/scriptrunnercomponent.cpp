@@ -42,17 +42,10 @@ predicateResult execStartupCallbacks(jsEnv jsEnv) {
   return { JS_TRUE, ""};
 }
 
-void ScriptRunnerComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths)
+void ScriptRunnerComponent::setup(jsEnv jsEnv, pathStrings paths)
 {
   predicateResult result;
   this->loadEntryPointScript(jsEnv, paths, this->_entryPoint.c_str()); // entry point should come from json
-
-  // run $.startup() in user code
-  result = execStartupCallbacks(jsEnv);
-  if (result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
-  }
 }
 
 void ScriptRunnerComponent::loadEntryPointScript(jsEnv jsEnv, pathStrings paths, const char* entryPoint) {
@@ -68,7 +61,6 @@ void ScriptRunnerComponent::loadEntryPointScript(jsEnv jsEnv, pathStrings paths,
   jsval argv[1];
   argv[0] = epVal;
   jsval rVal;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "addEntryPoint", 1, argv, &rVal);
 }
 
 void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {

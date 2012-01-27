@@ -37,7 +37,6 @@ currentWorkerPaths = sugs.api.core.getPaths()
 
 resolveScriptPath = (path) ->
   result = null
-
   if global.pathEndsInDotCoffee(path) or global.pathEndsInDotJs(path)
     for p in currentWorkerPaths
       fullPath = "#{p}/#{path}"
@@ -79,32 +78,8 @@ global.require = (path) ->
     result = scriptLoadCache[fullPath]
   result
 
-# callbacks registered via $.startup()
-startupCallbacks = []
-# callbacks registered via $.mainLoop()
-mainLoopCallback = null
-
-# doStartup() -- Called from native code once on startup to run
-# all of the registered callbacks to be ran on startup. Graphics
-# has been set up, along with environments.
-global.doStartup = ->
-  _.each startupCallbacks, (cb) -> cb()
-
 timePassed = 0
 lastTickForFps = {}
-global.runMainLoop = (msElapsed) ->
-  if mainLoopCallback != null
-    timePassed += msElapsed
-    gap = mainLoopCallback[0]
-    lastTime = lastTickForFps[gap]
-    sleepTime = (lastTime + gap) - timePassed
-    #puts "sleepTime: #{sleepTime} gap: #{gap} lastTime: #{lastTime} timePassed: #{timePassed}"
-    if sleepTime > 0
-      global.__native_thread_sleep sleepTime
-      msElapsed += sleepTime
-    lastTickForFps[gap] = timePassed
-    cb = mainLoopCallback[1]
-    cb msElapsed
 
 global.embedObjectInNamespace = (outter, ns, inner, propName) ->
   all = ns.split '.'
@@ -155,20 +130,22 @@ global.pullObjectFrom = (topLevel, nsPlusPath) ->
     else
       tail topLevel, all
 
+mainLoopCallback = null
+global.runMainLoop = (msElapsed) ->
+  if mainLoopCallback != null
+    timePassed += msElapsed
+    gap = mainLoopCallback[0]
+    lastTime = lastTickForFps[gap]
+    sleepTime = (lastTime + gap) - timePassed
+    #puts "sleepTime: #{sleepTime} gap: #{gap} lastTime: #{lastTime} timePassed: #{timePassed}"
+    if sleepTime > 0
+      global.__native_thread_sleep sleepTime
+      msElapsed += sleepTime
+    lastTickForFps[gap] = timePassed
+    cb = mainLoopCallback[1]
+    cb msElapsed
+
 global.$ = {
-  moduleConfig: (conf) ->
-    global.__workers =
-      backends: _.map(conf.backends, (b) -> resolveScriptPath b)
-      frontend: resolveScriptPath conf.frontend
-    puts conf.backends.toString()
-
-  # $.startup() -- callbacks msElapsed, registered in this function are called
-  # after the graphics system is initialized, but before the render
-  # loop begins. Maybe do some sprite/graphics pre-loading here (but
-  # there's no canvas to draw to at this point)
-  startup: (callback) ->
-    startupCallbacks.push callback
-
   # $.mainLoop() -- callbacks registered here are called with the input
   # object before the $.render(). Intended for game logic.
   mainLoop: (fps, callback) ->
@@ -176,12 +153,3 @@ global.$ = {
     lastTickForFps[gap] = 0
     mainLoopCallback = [ gap, callback ]
 }
-
-entryPointsInContext = []
-global.showEntryPoints = ->
-global.addEntryPoint = (ep) ->
-  entryPointsInContext.push ep
-
-#populate this value initialized above
-#worker = require 'worker'
-#currentWorkerPaths = worker.current.getPaths()

@@ -48,28 +48,20 @@ richclientGlobalFuncSpecs[] = {
   JS_FS_END
 };
 
-void bindGraphicsSetupEnvironments(jsEnv jsEnv, RichClientComponent* rc) {
-  // general richclient functions...
-  JSObject* richClientObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
-  if(!JS_SetPrivate(jsEnv.cx, richClientObj, rc)) {
-      JS_ReportError(jsEnv.cx,"RichClientComponent::componentRegisterNativeFunctions: Unable to set privite obj on windowFuncsObj...");
-  }
-  if(!JS_DefineFunctions(jsEnv.cx, richClientObj, richclientGlobalFuncSpecs)) {
-    JS_ReportError(jsEnv.cx,"RichClientComponent/componentRegisterNativeFunctions: Unable to register window funcs obj functions...");
-  }
-
-  // probably should combine all of these into one global namespace object
-  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.richclient", richClientObj);
-  sugs::richclient::gfx::registerGraphicsNatives(jsEnv.cx, jsEnv.global);
-  sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
-}
-
-void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths) {
+void RichClientComponent::setup(jsEnv jsEnv, pathStrings paths) {
   // this needs to go away..
   MediaLibrary::RegisterDefaultFont();
 
-  // some other useful global
-  bindGraphicsSetupEnvironments(jsEnv, this);
+  // general richclient functions...
+  JSObject* richClientObj = JS_NewObject(jsEnv.cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+  if(!JS_DefineFunctions(jsEnv.cx, richClientObj, richclientGlobalFuncSpecs)) {
+    JS_ReportError(jsEnv.cx,"RichClientComponent/componentRegisterNativeFunctions: Unable to register window funcs obj functions...");
+  }
+  // probably should combine all of these into one global namespace object
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.richclient", richClientObj);
+
+  sugs::richclient::gfx::registerGraphicsNatives(jsEnv.cx, jsEnv.global);
+  sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
 }
 
 bool RichClientComponent::doWork(jsEnv jsEnv, pathStrings paths) {

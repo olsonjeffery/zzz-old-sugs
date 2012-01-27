@@ -44,7 +44,7 @@ namespace physics
 class ChipmunkPhysicsComponent : public sugs::core::ext::Component
 {
 public:
-  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual void setup(jsEnv jsEnv, pathStrings paths);
 };
 
 class ChipmunkPhysicsComponentFactory : public sugs::core::ext::ComponentFactory

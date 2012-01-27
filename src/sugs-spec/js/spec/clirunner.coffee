@@ -2,8 +2,7 @@ fs = require 'fs'
 spec = require 'spec'
 
 # called from native code
-$.startup ->
-  puts "hello world from the startup!"
+puts "hello world from the startup!"
 
 isATempFile = (p)->
   result = p.endsWith('~') or (p.startsWith('#') and p.endsWith('#'))

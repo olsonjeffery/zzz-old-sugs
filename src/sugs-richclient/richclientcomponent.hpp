@@ -43,7 +43,7 @@ class RichClientComponent : public sugs::core::ext::Component
   RichClientComponent() { }
   ~RichClientComponent() { }
 
-  virtual void registerNativeFunctions(jsEnv jsEnv, pathStrings paths);
+  virtual void setup(jsEnv jsEnv, pathStrings paths);
   virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 };
 
