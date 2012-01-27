@@ -10,16 +10,6 @@ void RichClientComponent::componentTeardown(jsEnv jsEnv) {
   JS_CallFunctionName(jsEnv.cx, jsEnv.global, "showEntryPoints", 0, argv, &rVal);
 }
 
-static JSBool
-native_window_exit(JSContext* cx, uintN argc, jsval* vp)
-{
-  JSObject* thisObj = JS_THIS_OBJECT(cx, vp);
-  RichClientComponent* rcc = (RichClientComponent*)JS_GetPrivate(cx, thisObj);
-  rcc->closeApp();
-  JS_SET_RVAL(cx, vp, JSVAL_VOID);
-  return JS_TRUE;
-}
-
 sugs::richclient::gfx::GraphicsEnv createGraphicsEnv(JSContext* cx, int width, int height, int colorDepth) {
   // init graphics
   return sugs::richclient::gfx::initGraphics(cx, width, height, colorDepth);
@@ -66,7 +56,6 @@ native_create2DAcceleratedCanvas(JSContext* cx, uintN argc, jsval* vp)
 
 static JSFunctionSpec
 richclientGlobalFuncSpecs[] = {
-  JS_FS("exit", native_window_exit, 0, 0),
   JS_FS("create2DAcceleratedCanvas", native_create2DAcceleratedCanvas, 3, 0),
   JS_FS_END
 };
@@ -90,12 +79,6 @@ void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths
   // this needs to go away..
   MediaLibrary::RegisterDefaultFont();
 
-  predicateResult result = sugs::core::js::findAndExecuteScript("richclient.coffee", paths, jsEnv.cx, jsEnv.global);
-  if(result.result == JS_FALSE) {
-    printf(result.message);
-    exit(EXIT_FAILURE);
-  }
-
   // some other useful global
   bindGraphicsSetupEnvironments(this->_jsEnv, this);
 
@@ -104,38 +87,11 @@ void RichClientComponent::registerNativeFunctions(jsEnv jsEnv, pathStrings paths
   sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
 }
 
-void callIntoJsRichClientRender(jsEnv jsEnv, JSObject* canvas, JSObject* input, int msElapsed) {
-  jsval argv[3];
-
-  argv[0] = OBJECT_TO_JSVAL(canvas);
-  argv[1] = OBJECT_TO_JSVAL(input);
-  argv[2] = INT_TO_JSVAL(msElapsed);
-  jsval rval;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runRender", 3, argv, &rval);
-}
-
 int msElapsed = 0;
 bool RichClientComponent::doWork(jsEnv jsEnv, pathStrings paths) {
-  msElapsed = getCurrentMilliseconds();
-
-  //JSObject* canvas = sugs::richclient::gfx::newCanvasFrom(this->_gfxEnv.window, jsEnv.cx);
-  JSObject* canvas = JS_NewObject(this->_jsEnv.cx, NULL, NULL, NULL);
-  JSObject* inputObj = JS_NewObject(this->_jsEnv.cx, NULL, NULL, NULL);
-  // run $.mainLoop() and $.render() callbacks in
-  // user code
-  callIntoJsRichClientRender(jsEnv, canvas, inputObj, msElapsed);
-
-  return !this->_isClosed;
+  return true;
 }
 
-void RichClientComponent::closeApp()
-{
-  this->_isClosed = true;
-}
-
-bool RichClientComponent::isWindowClosed() {
-  return this->_isClosed;
-}
 
 sugs::core::ext::Component* RichClientComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
 {
