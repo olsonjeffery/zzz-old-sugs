@@ -64,10 +64,6 @@ void RichClientComponent::setup(jsEnv jsEnv, pathStrings paths) {
   sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);
 }
 
-bool RichClientComponent::doWork(jsEnv jsEnv, pathStrings paths) {
-  return true;
-}
-
 sugs::core::ext::Component* RichClientComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
 {
   return new RichClientComponent();

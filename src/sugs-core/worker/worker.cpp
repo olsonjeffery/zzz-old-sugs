@@ -58,20 +58,6 @@ void Worker::setupEnvironment()
   JS_SetContextPrivate(this->_jsEnv.cx, cxData);
 }
 
-bool doComponentWork(jsEnv jsEnv, pathStrings paths, std::list<sugs::core::ext::Component*> comps)
-{
-  std::list<sugs::core::ext::Component*>::iterator it;
-  for(it = comps.begin(); it != comps.end(); it++)
-  {
-    sugs::core::ext::Component* c = *it;
-    bool result = c->doWork(jsEnv, paths);
-    if (result == false) {
-      return false;
-    }
-  }
-  return true;
-}
-
 void workerCallback(void* wpP) {
   workerPayload* payload = (workerPayload*)wpP;
   sugs::core::worker::Worker* worker = (sugs::core::worker::Worker*)(payload->worker);
@@ -111,17 +97,13 @@ bool Worker::receivedKillSignal() {
 
 // still need to encapsulate threading in here
 void Worker::begin() {
-  bool continueIterating = true;
   // we the loop processes incoming messages, and lets
   // components "do their work". If any of the components,
   // while being processed, return false, we short circuit
   // the doComponentWork loop and return, then exit out,
   // then this while loop will end, as well.
-  if (continueIterating && !this->receivedKillSignal()) {
-    while (continueIterating && !this->receivedKillSignal()) {
-      this->processPendingMessages();
-      continueIterating = doComponentWork(this->_jsEnv, this->_paths, this->_components);
-    }
+  if (!this->receivedKillSignal()) {
+    this->processPendingMessages();
   }
 }
 
@@ -227,8 +209,19 @@ native_global_getPaths(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
+static JSBool
+native_global_getCurrentTimeInMs(JSContext* cx, uintN argc, jsval* vp)
+{
+  time_t currTime = getCurrentMilliseconds();
+  jsval timeVal = INT_TO_JSVAL(currTime);
+
+  JS_SET_RVAL(cx, vp, timeVal);
+  return JS_TRUE;
+}
+
 static JSFunctionSpec coreUtilFunctionSpec[] = {
   JS_FS("getPaths", native_global_getPaths, 0, 0),
+  JS_FS("getCurrentTimeInMs", native_global_getCurrentTimeInMs, 0, 0),
   JS_FS_END
 };
 
@@ -436,7 +429,7 @@ static JSFunctionSpec workerSpawnFunctionSpec[] = {
 void bindWorkerSpawnFunctions(jsEnv jsEnv) {
   JSObject* workerNativeObj;
   sugs::common::jsutil::newJSObjectFromFunctionSpec(jsEnv.cx, workerSpawnFunctionSpec, &workerNativeObj);
-  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.worker", workerNativeObj);
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.core.worker", workerNativeObj);
 }
 
 pathStrings Worker::getPaths() {
@@ -509,7 +502,7 @@ void Worker::teardown() {
 
 void Worker::processPendingMessages()
 {
-  while(this->_msgEx->messagesPendingFor(this->_workerId))
+  while(this->_msgEx->messagesPendingFor(this->_workerId) && !this->_receivedKillSignal)
   {
     PubSubMsg msg = this->_msgEx->unshiftNextMsgFor(this->_workerId);
     const char* msgIdCStr = msg.getMsgId().c_str();

@@ -78,9 +78,6 @@ global.require = (path) ->
     result = scriptLoadCache[fullPath]
   result
 
-timePassed = 0
-lastTickForFps = {}
-
 global.embedObjectInNamespace = (outter, ns, inner, propName) ->
   all = ns.split '.'
   if ns == ""
@@ -112,44 +109,3 @@ global.embedObjectInNamespace = (outerObj, ns, addedObj) ->
           currObj[currName] = {}
         namespaceCreator currObj[currName], remainingNames
     namespaceCreator outerObj, allNames
-
-global.pullObjectFrom = (topLevel, nsPlusPath) ->
-  all = ns.split '.'
-  if ns == ""
-    return topLevel
-  else
-    tail = (obj, l) ->
-      if not obj?
-        obj
-      if l.length == 1
-        obj[_.first(l)]
-      else
-        tail _.first l, _.rest l
-    if not Array.isArray l
-      topLevel
-    else
-      tail topLevel, all
-
-mainLoopCallback = null
-global.runMainLoop = (msElapsed) ->
-  if mainLoopCallback != null
-    timePassed += msElapsed
-    gap = mainLoopCallback[0]
-    lastTime = lastTickForFps[gap]
-    sleepTime = (lastTime + gap) - timePassed
-    #puts "sleepTime: #{sleepTime} gap: #{gap} lastTime: #{lastTime} timePassed: #{timePassed}"
-    if sleepTime > 0
-      global.__native_thread_sleep sleepTime
-      msElapsed += sleepTime
-    lastTickForFps[gap] = timePassed
-    cb = mainLoopCallback[1]
-    cb msElapsed
-
-global.$ = {
-  # $.mainLoop() -- callbacks registered here are called with the input
-  # object before the $.render(). Intended for game logic.
-  mainLoop: (fps, callback) ->
-    gap = 1000 / fps
-    lastTickForFps[gap] = 0
-    mainLoopCallback = [ gap, callback ]
-}

@@ -1,4 +1,57 @@
 mixins = require 'mixins'
+pubsub = require 'messaging/pubsub'
+worker = require 'worker'
+
+class AsyncLoop
+  constructor: ->
+    @gap = 1000 / 60 #assume default fps of 60
+    @fps = 60
+    @instKeepGoing = true
+    @loopCallback = ->
+    @errCallback = ->
+    @exitCallback = ->
+
+  setFps: (@fps) ->
+    @gap = 1000 / @fps
+  onLoop: (@loopCallback) ->
+  onError: (@errCallback) ->
+  onExit: (@exitCallback) ->
+  stop: ->
+    @instKeepGoing = false
+  start: ->
+    cbid = __native_random_uuid()
+    endpoint = "async_loop_#{cbid}"
+    workerId = worker.current.getId()
+
+    startingTime = sugs.api.core.getCurrentTimeInMs()
+    lastTime = startingTime
+    timePassed = 0
+    self = this
+
+    pubsub.subscribe endpoint, (msg) ->
+      try
+        localKeepGoing = true
+        currentTime = sugs.api.core.getCurrentTimeInMs()
+        msElapsed = currentTime - lastTime
+        timePassed += msElapsed
+        sleepTime = lastTime + self.gap - timePassed
+        if sleepTime > 0
+          __native_thread_sleep sleepTime
+          msElapsed += sleepTime
+        lastTime = timePassed
+        self.loopCallback msElapsed
+      catch e
+        self.errCallback e
+        localKeepGoing = false
+      if localKeepGoing and self.instKeepGoing
+        pubsub.publish workerId, endpoint, {}
+      else
+        self.exitCallback()
+    pubsub.publish workerId, endpoint, {}
+
+
+
+
 thisModule =
   DeferredActionProcessor : class
     constructor: ->
@@ -82,5 +135,7 @@ thisModule =
       if @runNowLock
         @runNowLock = false
         callback()
+
+  AsyncLoop: AsyncLoop
 
 return thisModule

@@ -1,4 +1,4 @@
-currentWorker = sugs.api.worker.getCurrent()
+currentWorker = sugs.api.core.worker.getCurrent()
 
 thisModule =
   spawn: (config) ->
@@ -11,7 +11,7 @@ thisModule =
     dataJson = "{}"
     if typeof(config.data) != 'undefined'
       dataJson = JSON.stringify config.data
-    sugs.api.worker.spawn prefix, componentJson, dataJson
+    sugs.api.core.worker.spawn prefix, componentJson, dataJson
   current: currentWorker
 
 return thisModule

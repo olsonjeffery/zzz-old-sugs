@@ -32,16 +32,6 @@ namespace sugs {
 namespace core {
 namespace ext {
 
-predicateResult execStartupCallbacks(jsEnv jsEnv) {
-  jsval argv[0];
-
-  jsval rval;
-  if (JS_CallFunctionName(jsEnv.cx, jsEnv.global, "doStartup", 0, argv, &rval) == JS_FALSE) {
-    return {JS_FALSE, "error occured while called doStartup()\n"};
-  }
-  return { JS_TRUE, ""};
-}
-
 void ScriptRunnerComponent::setup(jsEnv jsEnv, pathStrings paths)
 {
   predicateResult result;
@@ -61,20 +51,6 @@ void ScriptRunnerComponent::loadEntryPointScript(jsEnv jsEnv, pathStrings paths,
   jsval argv[1];
   argv[0] = epVal;
   jsval rVal;
-}
-
-void callIntoJsMainLoop(jsEnv jsEnv, int msElapsed) {
-  jsval argv[1];
-
-  argv[0] = INT_TO_JSVAL(msElapsed);
-  jsval rval;
-  JS_CallFunctionName(jsEnv.cx, jsEnv.global, "runMainLoop", 1, argv, &rval);
-}
-
-bool ScriptRunnerComponent::doWork(jsEnv jsEnv, pathStrings paths) {
-  time_t currMs = getCurrentMilliseconds();
-  callIntoJsMainLoop(jsEnv, currMs - this->_lastMs);
-  this->_lastMs = currMs;
 }
 
 Component* ScriptRunnerComponentFactory::create(jsEnv jsEnv, JSObject* configJson)

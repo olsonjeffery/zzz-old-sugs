@@ -47,7 +47,6 @@ class Component
 public:
   Component() {}
   virtual void setup(jsEnv jsEnv, pathStrings paths);
-  virtual bool doWork(jsEnv jsEnv, pathStrings paths);
   virtual void finish(jsEnv jsEnv, pathStrings paths);
 };
 
@@ -90,15 +89,12 @@ class ScriptRunnerComponent : public Component
 public:
   ScriptRunnerComponent(std::string entryPointScript)
   {
-    this->_lastMs = getCurrentMilliseconds();
     this->_entryPoint = entryPointScript;
   }
 
   virtual void setup(jsEnv jsEnv, pathStrings paths);
-  virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 
 private:
-  time_t _lastMs;
   std::string _entryPoint;
 
   void loadEntryPointScript(jsEnv jsEnv, pathStrings paths, const char* path);

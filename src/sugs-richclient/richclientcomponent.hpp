@@ -44,7 +44,6 @@ class RichClientComponent : public sugs::core::ext::Component
   ~RichClientComponent() { }
 
   virtual void setup(jsEnv jsEnv, pathStrings paths);
-  virtual bool doWork(jsEnv jsEnv, pathStrings paths);
 };
 
 class RichClientComponentFactory : public sugs::core::ext::ComponentFactory

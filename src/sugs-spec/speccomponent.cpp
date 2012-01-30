@@ -61,17 +61,6 @@ static JSFunctionSpec specFuncs[] = {
   JS_FS_END
 };
 
-void storeSpecRunnerInputPath(jsEnv jsEnv, std::string rawPaths, JSObject* specObj)
-{
-  const char* pathCStr = rawPaths.c_str();
-  JSString* pathString = JS_NewStringCopyZ(jsEnv.cx, pathCStr);
-  jsval pathVal = STRING_TO_JSVAL(pathString);
-  if(!JS_SetProperty(jsEnv.cx, specObj, "rawPath", &pathVal)) {
-    JS_ReportError(jsEnv.cx, "storeSpecRunnerInputPath: failed to set rawPAth prop");
-    JS_ReportPendingException(jsEnv.cx);
-  }
-}
-
 namespace sugs {
 namespace spec {
 
@@ -82,33 +71,12 @@ void SpecComponent::setup(jsEnv jsEnv, pathStrings paths)
     printf("failure to register spec global natives!\n");
     exit(1);
   }
-  std::string rawPaths = this->_rawPaths;
-  storeSpecRunnerInputPath(jsEnv, rawPaths, specObj);
-  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.spec", specObj);
-  printf("storing the rawPath! %s\n", rawPaths.c_str());
-}
-
-bool runOnce = false;
-bool SpecComponent::doWork(jsEnv jsEnv, pathStrings paths)
-{
-  if (!runOnce) {
-    runOnce = true;
-    return true;
-  }
-  return false;
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.spec", specObj);
 }
 
 sugs::core::ext::Component* SpecComponentFactory::create(jsEnv jsEnv, JSObject* configJson)
 {
-  jsval rawPathVal;
-  if (!JS_GetProperty(jsEnv.cx, configJson, "rawPath", &rawPathVal)) {
-    printf("ScriptRunnerComponentFactory::create() : failed to pull entryPoint val from config json object");
-    exit(EXIT_FAILURE);
-  }
-  JSString* rawPathStr = JSVAL_TO_STRING(rawPathVal);
-  std::string rawPath(JS_EncodeString(jsEnv.cx, rawPathStr));
-  printf("VALUE OF RAWPATH: %s", rawPath.c_str());
-  return new SpecComponent(rawPath);
+  return new SpecComponent();
 }
 
 std::string SpecComponentFactory::getName()

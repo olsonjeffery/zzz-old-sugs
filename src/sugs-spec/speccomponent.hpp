@@ -44,16 +44,7 @@ namespace spec {
 class SpecComponent : public sugs::core::ext::Component
 {
   public:
-  SpecComponent(std::string rawPaths)
-  {
-    this->_rawPaths = rawPaths;
-  }
-
   virtual void setup(jsEnv jsEnv, pathStrings paths);
-  virtual bool doWork(jsEnv jsEnv, pathStrings paths);
-
-  private:
-  std::string _rawPaths;
 };
 
 class SpecComponentFactory : public sugs::core::ext::ComponentFactory

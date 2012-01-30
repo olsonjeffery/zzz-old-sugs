@@ -56,15 +56,16 @@ int main(int argc, char *argv[])
   sugs::core::ext::ComponentFactory* specCf = new sugs::spec::SpecComponentFactory();
   sugs::core::ext::ComponentLibrary::registerComponentFactory(specCf);
 
-  sugs::core::worker::Worker* worker = new sugs::core::worker::Worker(msgEx, "spec_runner", config.paths, config.customJson);
-  sugs::core::ext::ComponentPair fsPair(filesystemCf, "{}");
   std::string rawPathJson("{ rawPath: '" + FLAGS_path + "' }");
-  std::cout << "raw path: " << rawPathJson << std::endl;
-  sugs::core::ext::ComponentPair specPair(specCf, rawPathJson);
+  sugs::core::worker::Worker* worker = new sugs::core::worker::Worker(msgEx, "spec_runner", config.paths, rawPathJson);
+
+  sugs::core::ext::ComponentPair fsPair(filesystemCf, "{}");
+  sugs::core::ext::ComponentPair specPair(specCf, "{}");
   sugs::core::ext::ComponentPair scriptRunnerPair(scriptRunnerCf, "{entryPoint:'spec/clirunner.coffee'}");
   worker->addComponentPair(fsPair);
   worker->addComponentPair(specPair);
   worker->addComponentPair(scriptRunnerPair);
+
   worker->start(false);
 
   // run the $.mainLoop in runner.coffee
