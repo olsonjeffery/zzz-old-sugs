@@ -60,3 +60,15 @@ When "embedding an object within a namspace and providing a namespace that is on
 
   It "should place the addedObject as a property of the outerObject", ->
     assert outer.hello.foo == 'bar'
+
+When "embedding an object within a namespace and the ns string has what will be parsed into an empty token", ->
+  outer = { bar : 'baz' }
+  addedObj = { foo : 'bar' }
+  nsStr = 'bargle..hoopie'
+  error = null
+  Before ->
+    error = trap_error ->
+      embedObjectInNamespace outer, nsStr, addedObj
+
+  It "should cause an error", ->
+    assert error != null

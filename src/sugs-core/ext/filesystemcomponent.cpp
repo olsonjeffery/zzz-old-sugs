@@ -91,7 +91,7 @@ void FilesystemComponent::setup(jsEnv jsEnv, pathStrings paths)
     printf("FAILURE TO DEFINE fsFuncs!\n");
   }
   printf("LOADING FILESYSTEM COMPONENT\n");
-  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugsNative.core.fs", fsFuncsObj);
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, "sugsNative.core.fs", fsFuncsObj);
 }
 
 Component* FilesystemComponentFactory::create(jsEnv jsEnv, JSObject* configJson)

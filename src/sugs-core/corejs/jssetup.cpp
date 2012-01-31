@@ -148,6 +148,27 @@ JSBool sugs_native_random_uuid(JSContext* cx, uintN argc, jsval* vp)
 	return JS_TRUE;
 }
 
+JSBool sugs_native_embedObjectInNamespace(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* outter;
+  JSString* ns;
+  JSObject* inner;
+  if (!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oSo", &outter, &ns, &inner)) {
+      JS_ReportError(cx, "reformer_native_embedObjectInNamespace: couldn't parse params");
+      return JS_FALSE;
+  }
+
+  const char* nsCStr = JS_EncodeString(cx, ns);
+
+  bool result = sugs::common::jsutil::embedObjectInNamespace(cx, outter, nsCStr, inner);
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  if (!result) {
+    return JS_FALSE;
+  }
+  return JS_TRUE;
+}
+
 static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("puts", reformer_native_puts, 1, 0),
   JS_FS("__native_require", reformer_native_executeScript, 2, 0),
@@ -156,6 +177,7 @@ static JSFunctionSpec reformer_global_native_functions[] = {
   JS_FS("__native_fileExists", reformer_native_fileExists, 1, 0),
   JS_FS("__native_thread_sleep", reformer_native_threadSleep, 1, 0),
   JS_FS("__native_random_uuid", sugs_native_random_uuid, 0, 0),
+  JS_FS("__embedObjectInNamespace", sugs_native_embedObjectInNamespace, 3, 0),
   JS_FS_END
 };
 

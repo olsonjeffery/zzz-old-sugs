@@ -71,7 +71,7 @@ void SpecComponent::setup(jsEnv jsEnv, pathStrings paths)
     printf("failure to register spec global natives!\n");
     exit(1);
   }
-  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.spec", specObj);
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, "sugs.api.spec", specObj);
 }
 
 sugs::core::ext::Component* SpecComponentFactory::create(jsEnv jsEnv, JSObject* configJson)

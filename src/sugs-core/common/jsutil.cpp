@@ -56,16 +56,88 @@ JSClass* getDefaultClassDef() {
   return &defaultClassDefWithPrivateMember;
 }
 
-void embedObjectInNamespace(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner)
-{
-  jsval argv[3];
-  argv[0] = OBJECT_TO_JSVAL(outter);
-  JSString* nsString = JS_NewStringCopyZ(cx, ns);
-  argv[1] = STRING_TO_JSVAL(nsString);
-  argv[2] = OBJECT_TO_JSVAL(inner);
+std::vector<std::string> &split(const std::string &s, char delim, std::vector<std::string> &elems) {
+    std::stringstream ss(s);
+    std::string item;
+    while(std::getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+    return elems;
+}
 
-  jsval rVal;
-  JS_CallFunctionName(cx, global, "embedObjectInNamespace", 3, argv, &rVal);
+
+std::vector<std::string> splitAndReturnVector(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    return split(s, delim, elems);
+}
+
+bool embedObjectInNamespace(JSContext* cx, JSObject* outter, const char* ns, JSObject* inner)
+{
+  bool result = true;
+  const std::string fullNsStr(ns);
+  if (fullNsStr == "") {
+    JS_ReportError(cx, "Must provide a non-empty namespace string");
+    return false;
+  }
+  std::string periodStr = ".";
+  char periodChar = periodStr.at(0);
+  std::vector<std::string> tokens = splitAndReturnVector(fullNsStr, periodChar);
+  if (tokens.size() == 1)
+  {
+    std::string name = tokens.at(0);
+    jsval innerVal = OBJECT_TO_JSVAL(inner);
+    if(!JS_SetProperty(cx, outter, name.c_str(), &innerVal)) {
+      JS_ReportError(cx, "embedObjectInNamespace: error setting %s property in outter obj", name.c_str());
+      result = false;
+    }
+  }
+  else {
+    JSObject* current = outter;
+    for(int ctr = 0; ctr < tokens.size(); ctr++)
+    {
+      std::string name = tokens.at(ctr);
+      if(ctr == tokens.size() - 1) {
+        jsval innerVal = OBJECT_TO_JSVAL(inner);
+        if(!JS_SetProperty(cx, current, name.c_str(), &innerVal)) {
+          JS_ReportError(cx, "embedObjectInNamespace: failed to set inner property '%s'", ns);
+          result = false;
+          break;
+        }
+      }
+      else {
+        if (name == "") { // skip empty token
+          JS_ReportError(cx, "embedObjectInNamespace: empty token in provided namespace '%s'", ns);
+          result = false;
+          break;
+        }
+        JSBool hasProp = JS_FALSE;
+        if(!JS_HasProperty(cx, current, name.c_str(), &hasProp))
+        {
+          JS_ReportError(cx, "embedObjectInNamespace: failed to determine if object has property '%s'", name.c_str());
+          result = false;
+          break;
+        }
+        if (hasProp == JS_FALSE) {
+          JSObject* newProp = JS_NewObject(cx, sugs::common::jsutil::getDefaultClassDef(), NULL, NULL);
+          jsval newPropVal = OBJECT_TO_JSVAL(newProp);
+          if(!JS_SetProperty(cx, current, name.c_str(), &newPropVal)) {
+            JS_ReportError(cx, "embedObjectInNamespace: failed to create new property '%s'", name.c_str());
+            result = false;
+            break;
+          }
+        }
+
+        jsval nextPropVal;
+        if(!JS_GetProperty(cx, current, name.c_str(), &nextPropVal)) {
+          JS_ReportError(cx, "embedObjectInNamespace: failed to get property '%s'", name.c_str());
+          result = false;
+          break;
+        }
+        current = JSVAL_TO_OBJECT(nextPropVal);
+      }
+    }
+  }
+  return result;
 }
 
 bool newJSObjectFromFunctionSpec(JSContext* cx, JSFunctionSpec* spec, JSObject** obj)

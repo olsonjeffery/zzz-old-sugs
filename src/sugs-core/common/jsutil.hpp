@@ -26,10 +26,14 @@
  *
  */
 
- #ifndef __jsutil_hpp__
- #define __jsutil_hpp__
+#ifndef __jsutil_hpp__
+#define __jsutil_hpp__
 
- #include <jsapi.h>
+#include <jsapi.h>
+
+#include <string>
+#include <sstream>
+#include <vector>
 
 namespace sugs {
 namespace common {
@@ -48,7 +52,7 @@ JSClass* getDefaultClassDef();
 // const char* ns -- period-delimited string indicating the nested namespace being inserted into. If the object doesn't
 //   exist already, it will be created as we go.
 // JSObject* addedObj -- the object being added to the outerObj
-void embedObjectInNamespace(JSContext* cx, JSObject* global, JSObject* outter, const char* ns, JSObject* inner);
+bool embedObjectInNamespace(JSContext* cx, JSObject* outter, const char* ns, JSObject* inner);
 
 bool newJSObjectFromFunctionSpec(JSContext* cx, JSFunctionSpec* spec, JSObject** out);
 }

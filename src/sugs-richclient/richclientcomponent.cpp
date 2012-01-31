@@ -58,7 +58,7 @@ void RichClientComponent::setup(jsEnv jsEnv, pathStrings paths) {
     JS_ReportError(jsEnv.cx,"RichClientComponent/componentRegisterNativeFunctions: Unable to register window funcs obj functions...");
   }
   // probably should combine all of these into one global namespace object
-  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.richclient", richClientObj);
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, "sugs.api.richclient", richClientObj);
 
   sugs::richclient::gfx::registerGraphicsNatives(jsEnv.cx, jsEnv.global);
   sugs::richclient::input::registerInputNatives(jsEnv.cx, jsEnv.global);

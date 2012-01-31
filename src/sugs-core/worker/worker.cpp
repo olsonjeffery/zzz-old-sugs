@@ -429,7 +429,7 @@ static JSFunctionSpec workerSpawnFunctionSpec[] = {
 void bindWorkerSpawnFunctions(jsEnv jsEnv) {
   JSObject* workerNativeObj;
   sugs::common::jsutil::newJSObjectFromFunctionSpec(jsEnv.cx, workerSpawnFunctionSpec, &workerNativeObj);
-  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, jsEnv.global, "sugs.api.core.worker", workerNativeObj);
+  sugs::common::jsutil::embedObjectInNamespace(jsEnv.cx, jsEnv.global, "sugs.api.core.worker", workerNativeObj);
 }
 
 pathStrings Worker::getPaths() {

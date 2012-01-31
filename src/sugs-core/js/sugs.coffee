@@ -78,34 +78,5 @@ global.require = (path) ->
     result = scriptLoadCache[fullPath]
   result
 
-global.embedObjectInNamespace = (outter, ns, inner, propName) ->
-  all = ns.split '.'
-  if ns == ""
-    outter[propName] = inner
-  else
-    tail = (obj, curr, rest) ->
-      if typeof(obj[curr]) == "undefined"
-        obj[curr] = {}
-      obj = obj[curr]
-      if rest.length == 0
-        obj[propName] = inner
-      else
-        tail obj, _.first(rest), _.rest(rest)
-    tail outter, _.first(all), _.rest(all)
-global.embedObjectInNamespace = (outerObj, ns, addedObj) ->
-  if ns == ""
-    throw "You must provide a valid namespace string to embed an object."
-  allNames = ns.split '.'
-  if allNames.length == 1
-    outerObj[allNames.first()] = addedObj
-  else
-    namespaceCreator = (currObj, names) ->
-      if names.length == 1
-        currObj[names.first()] = addedObj
-      else
-        currName = names.first()
-        remainingNames = names.from(1)
-        if (typeof currObj[currName]) == "undefined"
-          currObj[currName] = {}
-        namespaceCreator currObj[currName], remainingNames
-    namespaceCreator outerObj, allNames
+global.embedObjectInNamespace = (outter, ns, inner) ->
+  __embedObjectInNamespace outter, ns, inner
