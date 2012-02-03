@@ -29,40 +29,6 @@ global = this
 msgExMsgHandlers = {}
 worker = require 'worker'
 
-publishFast = (targetAgentId, msgId, msg) ->
-  isUdp = true
-  if typeof msg == "undefined" #called with only two args.. msgId = msg payload
-    data =
-      msg: msgId
-      meta:
-        sender: worker.current.getId()
-        msgId: targetAgentId
-    global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
-  else
-    data =
-      msg: msg
-      meta:
-        sender: worker.current.getId()
-        msgId: msgId
-    global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, isUdp
-
-publishDurable = (targetAgentId, msgId, msg) ->
-  isUdp = false
-  if typeof msg == "undefined" #called with only two args.. msgId = msg payload
-    data =
-      msg: msgId
-      meta:
-        sender: worker.current.getId()
-        msgId: targetAgentId
-    global.__native_publish_broadcast targetAgentId, JSON.stringify data, isUdp
-  else
-    data =
-      msg: msg
-      meta:
-        sender: worker.current.getId()
-        msgId: msgId
-    global.__native_publish_single_target targetAgentId, msgId, JSON.stringify data, isUdp
-
 global.__processIncomingMessage = (msgId, jsonData) ->
   if typeof msgExMsgHandlers[msgId] == "undefined"
     throw "No handlers for msg ex registered handler of #{msgId}"
@@ -72,15 +38,44 @@ global.__processIncomingMessage = (msgId, jsonData) ->
       cb.call data, data.msg, data.meta
 
 class PubSubMessenger
+  _publishBroadcast: (endpoint, data, isUdp) ->
+    dataJson = JSON.stringify data
+    global.__native_publish_broadcast endpoint, dataJson, isUdp
+  _publishSingle: (targetWorkerId, msgId, data, isUdp) ->
+    dataJson = JSON.stringify data
+    #puts "PUBLISH SINGLE MSG ENDPOINT #{targetWorkerId} #{msgId} #{data} #{isUdp}"
+    global.__native_publish_single_target targetWorkerId, msgId, JSON.stringify data, isUdp
+
   subscribe : (msgId, callback) ->
     if typeof msgExMsgHandlers[msgId] == "undefined"
       msgExMsgHandlers[msgId] = []
     msgExMsgHandlers[msgId].push callback
     global.__native_subscribe msgId
 
-  publish: (targetAgentId, msgId, msg) ->
-    publishDurable targetAgentId, msgId, msg
-  publishFast: (targetAgentId, msgId, msg) ->
-    publishFast targetAgentId, msgId, msg
+  publish: (targetWorkerId, msgId, msg, isUdp) ->
+    isUdpVal = false
+    if (typeof isUdp) != 'undefined'
+      isUdpVal = isUdp
+    if typeof msg == "undefined" #called with only two args.. msgId = msg payload
+      data =
+        msg: msgId
+        meta:
+          sender: worker.current.getId()
+          msgId: targetWorkerId
+      @_publishBroadcast targetWorkerId, data, isUdpVal
+    else
+      data =
+        msg: msg
+        meta:
+          sender: worker.current.getId()
+          msgId: msgId
+      @_publishSingle targetWorkerId, msgId, data, isUdpVal
+  publishFast: (targetWorkerId, msgId, msg) ->
+    @publish targetWorkerId, msgId, msg, true
 
-return new PubSubMessenger()
+retModule = new PubSubMessenger()
+retModule.testImpl = new PubSubMessenger()
+retModule.testImpl._publishSingle = ->
+retModule.testImpl._publishBroadcast = ->
+
+return retModule

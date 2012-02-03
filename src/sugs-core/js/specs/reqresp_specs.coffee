@@ -27,8 +27,9 @@ When "a new request is received with a request handler bound", ->
   magicKey = 'asdasda'
   reqMsgProperlyPassed = false
   Before ->
-    impl.publish = (clientId, msgId, msg) ->
-      publishWasCalled = true
+    impl.pubsub =
+      publish: (clientId, msgId, msg) ->
+        publishWasCalled = true
     msg =
       msgId: msgId
       msg:
@@ -75,8 +76,9 @@ When "a response handler is registered for and then a response is received for a
     unique: 'ndvkjnldsfg'
   requestHandlerSucceeded = false
   Before ->
-    impl.publish = (clientId, msgId, msg) ->
-      publishWasCalled = true
+    impl.pubsub =
+      publish: (clientId, msgId, msg) ->
+        publishWasCalled = true
     ticketId = '321x'
     clientId = "client_x1"
     respHandler = (respMsg, metaInfo) ->
@@ -109,9 +111,10 @@ When "an error occurs handling a responder to a request", ->
   publishWasCalled = false
   failureFlagSet = false
   Before ->
-    impl.publish = (clientId, msgId, msg) ->
-      publishWasCalled = true
-      failureFlagSet = msg.success == false
+    impl.pubsub =
+      publish: (clientId, msgId, msg) ->
+        publishWasCalled = true
+        failureFlagSet = msg.success == false
     msg =
       msgId: msgId
       msg:

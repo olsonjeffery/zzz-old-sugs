@@ -57,24 +57,25 @@ registerRequestTicket = (ticketId, clientId, msgId, msg, respHandler) ->
      clientId: worker.current.getId()
      ticketId: ticketId
      msgId: msgId
-  @publish clientId, 'sugs:messaging:receive:req', wireMsg
+  @pubsub.publish clientId, 'sugs:messaging:receive:req', wireMsg
 
 processIncomingRequest = (wireMsg, metaInfo) ->
+  puts "WIREMSG IS UNDEFINED: #{typeof wiremsg == 'undefined'}"
   {msg, clientId, ticketId, msgId} = wireMsg
   if typeof(@respBindings[msgId]) == 'undefined'
     # error condition
     throw new NoRequestHandlerError()
   else
     handler = @respBindings[msgId]
-    publisher = @publish
+    pubsubMod = @pubsub
     respObj =             # this needs to have the goods to process
       send: (respMsg) ->  # the response..
         respMsg.ticketId = ticketId
-        wireMsg =
+        wireMsgInner =
           msg: respMsg
           ticketId: ticketId
           success: true
-        publisher clientId, 'sugs:messaging:receive:resp', wireMsg
+        pubsubMod.publish clientId, 'sugs:messaging:receive:resp', wireMsgInner
     try
       handler.call {meta:metaInfo, msg:msg}, msg, respObj, metaInfo
     catch reqHandlerFailError
@@ -90,7 +91,7 @@ processIncomingRequest = (wireMsg, metaInfo) ->
         ticketId: ticketId
         msg: errorMsg
         success: false
-      publisher clientId, 'sugs:messaging:receive:resp', wireMsg
+      pubsubMod.publish clientId, 'sugs:messaging:receive:resp', wireMsg
       throw reqHandlerFailError
 
 processIncomingResponse = (wireMsg, metaInfo) ->
@@ -114,7 +115,7 @@ impl =
   processIncomingResponse: processIncomingResponse
   # these are the actual impls that wire into the
   # pubsub module.. these don't get exported
-  publish: pubsub.publish
+  pubsub: pubsub
 impl.init()
 
 # these are the actual subscriptions to catch stuff
@@ -124,7 +125,7 @@ pubsub.subscribe 'sugs:messaging:receive:req', (msg) ->
 pubsub.subscribe 'sugs:messaging:receive:resp', (msg) ->
   impl.processIncomingResponse msg, @meta
 
-class RequestResponseMessenger
+class eequestResponseMessenger
   constructor: (@pubsub) ->
 
   req: (clientId, msg, respHandler) ->
