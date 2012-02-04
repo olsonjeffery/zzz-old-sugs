@@ -39,5 +39,11 @@ When 'calling publish with three args and the first arg is an empty array', ->
   It 'should cause an error', ->
     assert error != null
 
-When 'calling publish less than two arguments', ->
-  It 'should cause an error'
+When 'calling publish less than three arguments', ->
+  error = null
+  Before ->
+    error = trap_error ->
+      pubsub.publish 'some:endpoint'
+        msg: ''
+  It 'should cause an error', ->
+    assert error != null

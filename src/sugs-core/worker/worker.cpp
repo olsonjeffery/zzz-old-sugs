@@ -132,7 +132,7 @@ native_subscribe(JSContext* cx, uintN argc, jsval* vp)
 }
 
 static JSBool
-native_publish_broadcast_new(JSContext* cx, uintN argc, jsval* vp)
+native_publish_broadcast(JSContext* cx, uintN argc, jsval* vp)
 {
   JSObject* global = JS_GetGlobalObject(cx);
 
@@ -149,7 +149,7 @@ native_publish_broadcast_new(JSContext* cx, uintN argc, jsval* vp)
 
   jsuint numberOfWorkers = 0;
   if(!JS_GetArrayLength(cx, workerIds, &numberOfWorkers)) {
-    JS_ReportError(cx, "native_publishBroadcast: failed to get array length for workerIds.. is it not an array?");
+    JS_ReportError(cx, "native_publish_broadcast: failed to get array length for workerIds.. is it not an array?");
     return JS_FALSE;
   }
 
@@ -173,41 +173,17 @@ native_publish_broadcast_new(JSContext* cx, uintN argc, jsval* vp)
   return JS_TRUE;
 }
 
-
-
 static JSBool
-native_publish_broadcast(JSContext* cx, uintN argc, jsval* vp)
-{
-  JSObject* global = JS_GetGlobalObject(cx);
-
-  JSString* msgIdStr;
-  JSString* jsonDataStr;
-  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "SS", &msgIdStr, &jsonDataStr)) {
-    JS_ReportError(cx, "native_publish_broadcast: failed to convert arguments");
-    return JS_FALSE;
-  }
-  std::string msgId(JS_EncodeString(cx, msgIdStr));
-  std::string jsonData(JS_EncodeString(cx, jsonDataStr));
-
-  Worker* worker = ((contextPrivateData*)JS_GetContextPrivate(cx))->worker;
-  std::string myWorkerId = worker->getWorkerId();
-
-  worker->getMessageExchange()->publish(myWorkerId, msgId, jsonData);
-
-  JS_SET_RVAL(cx, vp, JSVAL_VOID);
-  return JS_TRUE;
-}
-
-static JSBool
-native_publish_single_target(JSContext* cx, uintN argc, jsval* vp)
+native_publish_single(JSContext* cx, uintN argc, jsval* vp)
 {
   JSObject* global = JS_GetGlobalObject(cx);
 
   JSString* targetStr;
   JSString* msgIdStr;
   JSString* jsonDataStr;
-  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "SSS", &targetStr, &msgIdStr, &jsonDataStr)) {
-    JS_ReportError(cx, "native_publish_broadcast: failed to convert arguments");
+  JSBool isUdp;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "SSSb", &targetStr, &msgIdStr, &jsonDataStr, &isUdp)) {
+    JS_ReportError(cx, "native_publish_single: failed to convert arguments");
     return JS_FALSE;
   }
   std::string target(JS_EncodeString(cx, targetStr));
@@ -224,10 +200,9 @@ native_publish_single_target(JSContext* cx, uintN argc, jsval* vp)
 }
 
 static JSFunctionSpec messagingFunctionSpec[] = {
-  JS_FS("__native_subscribe", native_subscribe, 1, 0),
-  JS_FS("__native_publish_broadcast", native_publish_broadcast, 2, 0),
-  JS_FS("__native_publishBroadcastNew", native_publish_broadcast_new, 3, 0),
-  JS_FS("__native_publish_single_target", native_publish_single_target, 3, 0),
+  JS_FS("native_subscribe", native_subscribe, 1, 0),
+  JS_FS("native_publishBroadcast", native_publish_broadcast, 4, 0),
+  JS_FS("native_publishSingle", native_publish_single, 4, 0),
   JS_FS_END
 };
 

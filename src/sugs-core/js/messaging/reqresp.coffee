@@ -60,7 +60,6 @@ registerRequestTicket = (ticketId, clientId, msgId, msg, respHandler) ->
   @pubsub.publish clientId, 'sugs:messaging:receive:req', wireMsg
 
 processIncomingRequest = (wireMsg, metaInfo) ->
-  puts "WIREMSG IS UNDEFINED: #{typeof wiremsg == 'undefined'}"
   {msg, clientId, ticketId, msgId} = wireMsg
   if typeof(@respBindings[msgId]) == 'undefined'
     # error condition

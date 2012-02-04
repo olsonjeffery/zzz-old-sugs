@@ -40,32 +40,23 @@ global.__processIncomingMessage = (msgId, jsonData) ->
 class PubSubMessenger
   _publishBroadcastNew: (workerIds, endpoint, data, isUdp) ->
     dataJson = JSON.stringify data
-    global.__native_publishBroadcastNew workerIds, endpoint, dataJson, isUdp
-  _publishBroadcastOld: (endpoint, data, isUdp) ->
-    dataJson = JSON.stringify data
-    global.__native_publish_broadcast endpoint, dataJson, isUdp
+    global.native_publishBroadcast workerIds, endpoint, dataJson, isUdp
   _publishSingle: (targetWorkerId, msgId, data, isUdp) ->
     dataJson = JSON.stringify data
-    #puts "PUBLISH SINGLE MSG ENDPOINT #{targetWorkerId} #{msgId} #{data} #{isUdp}"
-    global.__native_publish_single_target targetWorkerId, msgId, JSON.stringify data, isUdp
+    global.native_publishSingle targetWorkerId, msgId, dataJson, isUdp
 
   subscribe : (msgId, callback) ->
     if typeof msgExMsgHandlers[msgId] == "undefined"
       msgExMsgHandlers[msgId] = []
     msgExMsgHandlers[msgId].push callback
-    global.__native_subscribe msgId
+    global.native_subscribe msgId
 
   publish: (targetWorkerId, msgId, msg, isUdp) ->
     isUdpVal = false
     if (typeof isUdp) != 'undefined'
       isUdpVal = isUdp
     if typeof msg == "undefined" #called with only two args.. msgId = msg payload
-      data =
-        msg: msgId
-        meta:
-          sender: worker.current.getId()
-          msgId: targetWorkerId
-      @_publishBroadcastOld targetWorkerId, data, isUdpVal
+      throw "msg is undefined. provider targetWorkerId: '#{targetWorkerId}'. please specify the recipient(s), msgId and msg"
     else
       data =
         msg: msg
