@@ -38,7 +38,10 @@ global.__processIncomingMessage = (msgId, jsonData) ->
       cb.call data, data.msg, data.meta
 
 class PubSubMessenger
-  _publishBroadcast: (endpoint, data, isUdp) ->
+  _publishBroadcastNew: (workerIds, endpoint, data, isUdp) ->
+    dataJson = JSON.stringify data
+    global.__native_publishBroadcastNew workerIds, endpoint, dataJson, isUdp
+  _publishBroadcastOld: (endpoint, data, isUdp) ->
     dataJson = JSON.stringify data
     global.__native_publish_broadcast endpoint, dataJson, isUdp
   _publishSingle: (targetWorkerId, msgId, data, isUdp) ->
@@ -62,20 +65,27 @@ class PubSubMessenger
         meta:
           sender: worker.current.getId()
           msgId: targetWorkerId
-      @_publishBroadcast targetWorkerId, data, isUdpVal
+      @_publishBroadcastOld targetWorkerId, data, isUdpVal
     else
       data =
         msg: msg
         meta:
           sender: worker.current.getId()
           msgId: msgId
-      @_publishSingle targetWorkerId, msgId, data, isUdpVal
+      if targetWorkerId instanceof Array
+        if targetWorkerId.length == 0
+          throw "You must provide at least one worker Id to publish a message to"
+        @_publishBroadcastNew targetWorkerId, msgId, data, isUdpVal
+      else
+        @_publishSingle targetWorkerId, msgId, data, isUdpVal
+
   publishFast: (targetWorkerId, msgId, msg) ->
     @publish targetWorkerId, msgId, msg, true
 
 retModule = new PubSubMessenger()
 retModule.testImpl = new PubSubMessenger()
 retModule.testImpl._publishSingle = ->
-retModule.testImpl._publishBroadcast = ->
+retModule.testImpl._publishBroadcastOld = ->
+retModule.testImpl._publishBroadcastNew = ->
 
 return retModule

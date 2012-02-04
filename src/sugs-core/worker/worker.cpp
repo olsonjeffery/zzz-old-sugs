@@ -132,6 +132,50 @@ native_subscribe(JSContext* cx, uintN argc, jsval* vp)
 }
 
 static JSBool
+native_publish_broadcast_new(JSContext* cx, uintN argc, jsval* vp)
+{
+  JSObject* global = JS_GetGlobalObject(cx);
+
+  JSObject* workerIds;
+  JSString* msgIdStr;
+  JSString* jsonDataStr;
+  JSBool isUdp;
+  if(!JS_ConvertArguments(cx, argc, JS_ARGV(cx, vp), "oSSb", &workerIds, &msgIdStr, &jsonDataStr, &isUdp)) {
+    JS_ReportError(cx, "native_publish_broadcast: failed to convert arguments");
+    return JS_FALSE;
+  }
+  std::string msgId(JS_EncodeString(cx, msgIdStr));
+  std::string jsonData(JS_EncodeString(cx, jsonDataStr));
+
+  jsuint numberOfWorkers = 0;
+  if(!JS_GetArrayLength(cx, workerIds, &numberOfWorkers)) {
+    JS_ReportError(cx, "native_publishBroadcast: failed to get array length for workerIds.. is it not an array?");
+    return JS_FALSE;
+  }
+
+  Worker* worker = ((contextPrivateData*)JS_GetContextPrivate(cx))->worker;
+  std::string myWorkerId = worker->getWorkerId();
+
+  MessageExchange* msgEx = worker->getMessageExchange();
+  for(int ctr = 0; ctr < numberOfWorkers; ctr++)
+  {
+    jsval currVal;
+    if(!JS_GetElement(cx, workerIds, ctr, &currVal)) {
+      JS_ReportError(cx, "native_publishBroadcast: failed to get element at position %d in workerIds with max length of %d", ctr, numberOfWorkers);
+      return JS_FALSE;
+    }
+    JSString* workerIdStr = JSVAL_TO_STRING(currVal);
+    std::string workerId(JS_EncodeString(cx, workerIdStr));
+    msgEx->publish(workerId, myWorkerId, msgId, jsonData);
+  }
+
+  JS_SET_RVAL(cx, vp, JSVAL_VOID);
+  return JS_TRUE;
+}
+
+
+
+static JSBool
 native_publish_broadcast(JSContext* cx, uintN argc, jsval* vp)
 {
   JSObject* global = JS_GetGlobalObject(cx);
@@ -182,6 +226,7 @@ native_publish_single_target(JSContext* cx, uintN argc, jsval* vp)
 static JSFunctionSpec messagingFunctionSpec[] = {
   JS_FS("__native_subscribe", native_subscribe, 1, 0),
   JS_FS("__native_publish_broadcast", native_publish_broadcast, 2, 0),
+  JS_FS("__native_publishBroadcastNew", native_publish_broadcast_new, 3, 0),
   JS_FS("__native_publish_single_target", native_publish_single_target, 3, 0),
   JS_FS_END
 };
