@@ -30,16 +30,22 @@ if dirs.length > 0
       for f in files
         if not isATempFile(f) and isASpecsFile(f)
           testableList.push(f)
-puts "testable files..."
 # load the scripts that contain specs
+runSpecs = true
 for f in testableList
   puts "About to run spec script #{f}"
-  sugs.api.spec.runScript f
+  try
+    sugs.api.spec.runScript f
+  catch e
+    puts "FAILURE TO PARSE SPEC FILE: #{f}"
+    puts e
+    runSpecs = false
 # now we have our specs loaded, so let's run them..
 
 ############
 # RUN SPECS
 ############
-results = spec.runner.run()
-puts "#{results.totalSpecs} Specs (in #{results.totalContexts} Contexts)"
-puts "#{results.successes} Passes, #{results.failures} Failures (#{results.contextFailures} Ctxs), #{results.errors} Errors and #{results.unimpl} Unimpl'd"
+if runSpecs
+  results = spec.runner.run()
+  puts "#{results.totalSpecs} Specs (in #{results.totalContexts} Contexts)"
+  puts "#{results.successes} Passes, #{results.failures} Failures (#{results.contextFailures} Ctxs), #{results.errors} Errors and #{results.unimpl} Unimpl'd"

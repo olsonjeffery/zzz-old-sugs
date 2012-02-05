@@ -51,6 +51,7 @@ spec_runScript(JSContext* cx, uintN argc, jsval* vp)
   }
   if (!result.result) {
     JS_ReportPendingException(cx);
+    return JS_FALSE;
   }
   jsval rVal = JSVAL_VOID;
   JS_SET_RVAL(cx, vp, rVal);
